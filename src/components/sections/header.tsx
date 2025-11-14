@@ -20,7 +20,9 @@ const navLinks = [
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
+  const pathname = usePathname();
+  const isAboutPage = pathname === '/about';
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -29,18 +31,19 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const textColor = isScrolled ? 'text-black' : 'text-white';
+  const linkColor = isScrolled || isAboutPage ? 'text-black' : 'text-white';
+  const logoColor = isScrolled || isAboutPage ? 'text-navy' : 'text-white';
+  const headerBg = isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : isAboutPage ? 'bg-white' : 'bg-transparent';
   
   return (
     <header
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent'
+        headerBg
       )}
     >
-      <div className="container mx-auto px-4 md:px-6">
-        <div className={cn("flex items-center justify-between transition-all duration-300 h-20")}>
-          <Logo isScrolled={isScrolled} />
+      <div className={cn("flex items-center justify-between transition-all duration-300 h-20", "container mx-auto px-4 md:px-6")}>
+          <Logo isScrolled={isScrolled || isAboutPage} />
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center space-x-8 md:flex h-full">
@@ -50,7 +53,7 @@ export function Header() {
                 href={link.href}
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-ocean',
-                  textColor
+                  linkColor
                 )}
               >
                 {link.name}
@@ -69,7 +72,7 @@ export function Header() {
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Menu className={cn('h-8 w-8', textColor)} />
+                  <Menu className={cn('h-8 w-8', isScrolled || isAboutPage ? 'text-black' : 'text-white')} />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
@@ -104,7 +107,6 @@ export function Header() {
             </Sheet>
           </div>
         </div>
-      </div>
     </header>
   );
 }
