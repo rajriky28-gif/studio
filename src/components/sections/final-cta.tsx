@@ -23,7 +23,7 @@ export function FinalCta() {
               </a>
             </Button>
           </div>
-          <div className="mt-6 flex flex-col items-center justify-center gap-4 text-sm text-silver sm:flex-row sm:gap-6">
+          <div className="mt-6 flex flex-col items-center justify-center gap-4 text-sm text-charcoal/80 sm:flex-row sm:gap-6">
             <span className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-cyan" /> No credit card required
             </span>
