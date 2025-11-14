@@ -30,7 +30,7 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
           <div className="space-y-4">
             <div className="text-white">
-              <Logo />
+              <Logo isScrolled={false}/>
             </div>
             <p className="text-sm uppercase tracking-[2px] text-cyan">BUILD BEYOND</p>
             <p className="max-w-xs text-base text-white/70">
