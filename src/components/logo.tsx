@@ -3,13 +3,13 @@ import Image from 'next/image';
 
 export function Logo() {
   return (
-    <Link href="/" className="inline-flex items-center gap-2">
+    <Link href="/" className="inline-flex items-center">
       <Image 
         src="/logo.png" 
         alt="Lumivex Logo" 
-        width={40} 
-        height={40} 
-        className="h-10 w-10"
+        width={56} 
+        height={56} 
+        className="h-14 w-14"
         priority
       />
       <span className="text-2xl font-bold tracking-tight text-inherit">Lumivex</span>
