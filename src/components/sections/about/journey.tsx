@@ -12,12 +12,12 @@ interface Milestone {
 }
 
 const milestones: Milestone[] = [
-  { date: 'Q3 2024', status: 'Complete', icon: Lightbulb, title: 'Conception', content: "The idea for Lumivex was born from frustration. Watching talented entrepreneurs unable to bring their automation ideas to life because of technical barriers. We knew there had to be a better way." },
-  { date: 'Q4 2024', status: 'Complete', icon: Search, title: 'Research & Planning', content: "Deep research into AI orchestration, natural language processing, and autonomous system design. Interviewed 200+ potential users to understand real needs and pain points." },
-  { date: 'Q1 2025', status: 'Complete', icon: DraftingCompass, title: 'Architecture Design', content: "Designed the 6-layer architecture that powers Lumivex. Prototyped the reasoning engine, built the module library foundation, and validated the autonomous assembly approach." },
-  { date: 'Q2 2025', status: 'In Progress', icon: Code, title: 'Platform Development', content: "Currently building the platform. Developing the reasoning layer, assembly automation, and user interface. Early internal testing showing promising results.", progress: "~65% complete" },
-  { date: 'Q3 2025', status: 'Upcoming', icon: Rocket, title: 'Beta Launch', content: "Invitation-only beta for waitlist members. Limited access to validate the platform, gather feedback, and refine before public launch.", target: "Summer 2025" },
-  { date: 'Q4 2025', status: 'Planned', icon: Globe, title: 'Public Launch', content: "Full public launch with complete feature set, documentation, and support infrastructure. Opening Lumivex to everyone ready to build intelligent agents.", target: "Fall 2025" },
+  { date: 'Q1 2025', status: 'Complete', icon: Lightbulb, title: 'Conception', content: "The idea for Lumivex was born from frustration. Watching talented entrepreneurs unable to bring their automation ideas to life because of technical barriers. We knew there had to be a better way." },
+  { date: 'Q2 2025', status: 'Complete', icon: Search, title: 'Research & Planning', content: "Deep research into AI orchestration, natural language processing, and autonomous system design. Interviewed 200+ potential users to understand real needs and pain points." },
+  { date: 'Q3 2025', status: 'Complete', icon: DraftingCompass, title: 'Architecture Design', content: "Designed the 6-layer architecture that powers Lumivex. Prototyped the reasoning engine, built the module library foundation, and validated the autonomous assembly approach." },
+  { date: 'Q4 2025', status: 'In Progress', icon: Code, title: 'Platform Development', content: "Currently building the platform. Developing the reasoning layer, assembly automation, and user interface. Early internal testing showing promising results.", progress: "~65% complete" },
+  { date: 'Q1 2026', status: 'Upcoming', icon: Rocket, title: 'Beta Launch', content: "Invitation-only beta for waitlist members. Limited access to validate the platform, gather feedback, and refine before public launch.", target: "Early 2026" },
+  { date: 'Q2 2026', status: 'Planned', icon: Globe, title: 'Public Launch', content: "Full public launch with complete feature set, documentation, and support infrastructure. Opening Lumivex to everyone ready to build intelligent agents.", target: "Mid 2026" },
 ];
 
 const statusStyles = {
