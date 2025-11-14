@@ -7,12 +7,12 @@ export function Logo() {
       <Image 
         src="/logo.png" 
         alt="Lumivex Logo" 
-        width={72} 
-        height={72} 
-        className="h-18 w-18"
+        width={96} 
+        height={96} 
+        className="h-24 w-24"
         priority
       />
-      <span className="text-2xl font-bold tracking-tight text-inherit -ml-2">Lumivex</span>
+      <span className="text-2xl font-bold tracking-tight text-inherit -ml-4">Lumivex</span>
     </Link>
   );
 }
