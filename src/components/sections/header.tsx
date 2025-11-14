@@ -34,7 +34,7 @@ export function Header() {
       )}
     >
       <div className="container mx-auto px-4 md:px-6">
-        <div className={cn("flex h-16 items-center justify-between", isScrolled ? 'text-primary' : 'text-white')}>
+        <div className={cn("flex h-20 items-center justify-between", isScrolled ? 'text-primary' : 'text-white')}>
           <Logo />
 
           {/* Desktop Navigation */}
@@ -70,7 +70,7 @@ export function Header() {
               </SheetTrigger>
               <SheetContent side="right" className="w-full bg-white p-0">
                 <div className="flex h-full flex-col">
-                  <div className="flex h-16 items-center justify-between border-b px-4 text-primary">
+                  <div className="flex h-20 items-center justify-between border-b px-4 text-primary">
                     <Logo />
                     <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
                       <X className="h-8 w-8 text-primary" />

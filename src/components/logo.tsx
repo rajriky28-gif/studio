@@ -7,9 +7,9 @@ export function Logo() {
       <Image 
         src="/logo.png" 
         alt="Lumivex Logo" 
-        width={56} 
-        height={56} 
-        className="h-14 w-14"
+        width={72} 
+        height={72} 
+        className="h-18 w-18"
         priority
       />
       <span className="text-2xl font-bold tracking-tight text-inherit -ml-2">Lumivex</span>
