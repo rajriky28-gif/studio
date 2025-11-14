@@ -7,6 +7,7 @@ import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -19,6 +20,9 @@ const navLinks = [
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isAboutPage = pathname === '/about';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,16 +32,19 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const textColor = isScrolled || isAboutPage ? 'text-primary' : 'text-white';
+  const logoColorState = isScrolled || isAboutPage;
+
   return (
     <header
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent'
+        isScrolled || isAboutPage ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent'
       )}
     >
       <div className="container mx-auto px-4 md:px-6">
         <div className={cn("flex items-center justify-between transition-all duration-300 h-20")}>
-          <Logo isScrolled={isScrolled} />
+          <Logo isScrolled={logoColorState} />
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center space-x-8 md:flex h-full">
@@ -47,7 +54,7 @@ export function Header() {
                 href={link.href}
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-ocean',
-                  isScrolled ? 'text-primary' : 'text-white'
+                  textColor
                 )}
               >
                 {link.name}
@@ -66,7 +73,7 @@ export function Header() {
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Menu className={cn('h-8 w-8', isScrolled ? 'text-primary' : 'text-white')} />
+                  <Menu className={cn('h-8 w-8', textColor)} />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
