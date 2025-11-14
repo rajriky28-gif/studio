@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
+  { name: 'Home', href: '/' },
   { name: 'About', href: '#about' },
   { name: 'Vision', href: '#vision' },
   { name: 'Waitlist', href: '#waitlist' },
@@ -34,7 +35,7 @@ export function Header() {
       )}
     >
       <div className="container mx-auto px-4 md:px-6">
-        <div className={cn("flex items-center justify-between transition-all duration-300", isScrolled ? 'h-20' : 'h-24')}>
+        <div className={cn("flex items-center justify-between transition-all duration-300 h-20")}>
           <Logo isScrolled={isScrolled} />
 
           {/* Desktop Navigation */}
