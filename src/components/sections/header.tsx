@@ -50,7 +50,7 @@ export function Header() {
                 href={link.href}
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-ocean',
-                  isScrolled ? 'text-black' : 'text-white'
+                  isScrolled ? 'text-black' : 'text-black'
                 )}
               >
                 {link.name}
