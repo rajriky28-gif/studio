@@ -36,14 +36,18 @@ export function Journey() {
         </h2>
         <div className="relative max-w-3xl mx-auto">
           <div className="absolute left-4 sm:left-1/2 -ml-px w-0.5 h-full bg-cyan/30" aria-hidden="true"></div>
-          {milestones.map((item, index) => (
+          {milestones.map((item, index) => {
+            const is2025OrLater = parseInt(item.date.split(' ')[1]) >= 2025;
+            const isLeftAligned = !is2025OrLater && index % 2 !== 0;
+
+            return (
             <div key={item.title} className="relative flex items-start group">
               <div className="absolute left-4 sm:left-1/2 -ml-[1.3rem] mt-2.5 w-10 h-10 rounded-full bg-navy-gradient-deep border-2 border-cyan flex items-center justify-center">
                 <item.icon className="h-5 w-5 text-cyan" />
               </div>
-              <div className="pl-16 sm:pl-0 sm:w-1/2 sm:pr-8 sm:text-right group-odd:sm:w-1/2 group-odd:sm:pr-0 group-odd:sm:pl-8 group-odd:sm:text-left">
-                <div className={`p-4 rounded-xl mb-8 w-full ${index % 2 === 0 ? 'sm:ml-auto' : 'sm:mr-auto'}`}>
-                    <div className="flex items-center gap-4 mb-2 justify-start sm:justify-end group-odd:sm:justify-start">
+              <div className={`pl-16 sm:pl-0 sm:w-1/2 ${isLeftAligned ? 'sm:pr-0 sm:pl-8 sm:text-left' : 'sm:pr-8 sm:text-right'}`}>
+                <div className={`p-4 rounded-xl mb-8 w-full ${!isLeftAligned ? 'sm:ml-auto' : 'sm:mr-auto'}`}>
+                    <div className={`flex items-center gap-4 mb-2 justify-start ${!isLeftAligned ? 'sm:justify-end' : 'sm:justify-start'}`}>
                         <span className="text-sm font-semibold text-cyan uppercase tracking-wider">{item.date}</span>
                         <span className={`px-2 py-0.5 text-xs rounded-full text-white ${statusStyles[item.status]}`}>{item.status}</span>
                     </div>
@@ -53,9 +57,9 @@ export function Journey() {
                     {item.target && <p className="text-cyan text-sm mt-2">{item.target}</p>}
                 </div>
               </div>
-              <div className="hidden sm:block w-1/2"></div>
+              <div className={`hidden sm:block w-1/2 ${isLeftAligned ? '' : 'order-first'}`}></div>
             </div>
-          ))}
+          )})}
         </div>
       </div>
     </section>
