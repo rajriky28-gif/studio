@@ -43,7 +43,10 @@ export function Header() {
               <Link
                 key={link.name}
                 href={link.href}
-                className="text-sm font-medium text-primary transition-colors hover:text-ocean"
+                className={cn(
+                  'text-sm font-medium transition-colors hover:text-ocean',
+                  isScrolled ? 'text-primary' : 'text-white'
+                )}
               >
                 {link.name}
               </Link>
@@ -61,7 +64,7 @@ export function Header() {
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Menu className="h-6 w-6 text-primary" />
+                  <Menu className={cn('h-6 w-6', isScrolled ? 'text-primary' : 'text-white')} />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
