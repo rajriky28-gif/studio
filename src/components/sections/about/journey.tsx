@@ -37,27 +37,31 @@ export function Journey() {
         <div className="relative max-w-3xl mx-auto">
           <div className="absolute left-4 sm:left-1/2 -ml-px w-0.5 h-full bg-cyan/30" aria-hidden="true"></div>
           {milestones.map((item, index) => {
-            const isLeftAligned = index % 2 !== 0;
+            const isRightAligned = index % 2 !== 0;
 
             return (
-            <div key={item.title} className={`relative flex items-start group ${isLeftAligned ? 'sm:flex-row-reverse' : ''}`}>
-              <div className={`absolute left-4 sm:left-1/2 -ml-[1.3rem] mt-2.5 w-10 h-10 rounded-full bg-navy-gradient-deep border-2 border-cyan flex items-center justify-center ${isLeftAligned ? 'sm:right-4 sm:left-auto sm:-mr-[1.3rem]' : ''}`}>
-                <item.icon className="h-5 w-5 text-cyan" />
-              </div>
-              <div className={`pl-16 sm:pl-0 sm:w-1/2 ${isLeftAligned ? 'sm:pr-0 sm:pl-8 sm:text-left' : 'sm:pr-8 sm:text-right'}`}>
-                <div className={`p-4 rounded-xl mb-8 w-full ${!isLeftAligned ? 'sm:ml-auto' : 'sm:mr-auto'}`}>
-                    <div className={`flex items-center gap-4 mb-2 justify-start ${!isLeftAligned ? 'sm:justify-end' : 'sm:justify-start'}`}>
-                        <span className="text-sm font-semibold text-cyan uppercase tracking-wider">{item.date}</span>
-                        <span className={`px-2 py-0.5 text-xs rounded-full text-white ${statusStyles[item.status]}`}>{item.status}</span>
+              <div key={item.title} className={`relative flex items-center mb-8 last:mb-0`}>
+                <div className={`sm:w-1/2 ${isRightAligned ? 'sm:order-last sm:pl-8' : 'sm:pr-8 sm:text-right'}`}>
+                  <div className="pl-16 sm:pl-0">
+                    <div className={`flex items-center gap-4 mb-2 ${!isRightAligned ? 'sm:justify-end' : 'sm:justify-start'}`}>
+                      <span className="text-sm font-semibold text-cyan uppercase tracking-wider">{item.date}</span>
+                      <span className={`px-2 py-0.5 text-xs rounded-full text-white ${statusStyles[item.status]}`}>{item.status}</span>
                     </div>
                     <h3 className="text-2xl font-medium mb-2">{item.title}</h3>
                     <p className="text-white/80 leading-relaxed">{item.content}</p>
                     {item.progress && <p className="text-cyan text-sm mt-2">{item.progress}</p>}
                     {item.target && <p className="text-cyan text-sm mt-2">{item.target}</p>}
+                  </div>
                 </div>
+
+                <div className="absolute left-4 sm:left-1/2 -ml-[1.3rem] w-10 h-10 rounded-full bg-navy-gradient-deep border-2 border-cyan flex items-center justify-center z-10">
+                  <item.icon className="h-5 w-5 text-cyan" />
+                </div>
+
+                <div className="hidden sm:block w-1/2"></div>
               </div>
-            </div>
-          )})}
+            );
+          })}
         </div>
       </div>
     </section>
