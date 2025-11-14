@@ -12,7 +12,7 @@ export function Logo() {
         className="h-10 w-10"
         priority
       />
-      <span className="text-2xl font-bold tracking-tight text-inherit -ml-1">Lumivex</span>
+      <span className="text-2xl font-bold tracking-tight text-inherit -ml-2">Lumivex</span>
     </Link>
   );
 }
