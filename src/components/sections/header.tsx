@@ -34,7 +34,7 @@ export function Header() {
       )}
     >
       <div className="container mx-auto px-4 md:px-6">
-        <div className={cn("flex h-32 items-center justify-between", isScrolled ? 'text-primary' : 'text-white')}>
+        <div className={cn("flex h-20 items-center justify-between", isScrolled ? 'text-primary' : 'text-white')}>
           <Logo />
 
           {/* Desktop Navigation */}
