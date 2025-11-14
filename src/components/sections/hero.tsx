@@ -5,8 +5,20 @@ import { AnimatedCounter } from '@/components/animated-counter';
 
 export function Hero() {
   return (
-    <section className="relative flex min-h-screen w-full flex-col items-center justify-center bg-cream-gradient px-4 py-20 text-center">
-      <div className="container mx-auto">
+    <section className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-4 py-20 text-center">
+      <div className="absolute top-0 left-0 w-full h-full bg-cream-gradient z-0"></div>
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute z-10 w-auto min-w-full min-h-full max-w-none object-cover"
+      >
+        <source src="/background.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      <div className="absolute top-0 left-0 w-full h-full bg-black/50 z-20"></div>
+      <div className="container mx-auto relative z-30">
         <Badge
           variant="outline"
           className="animate-pulse-badge border-cyan bg-cyan/10 py-2 px-6 text-sm font-semibold uppercase text-cyan rounded-full"
@@ -14,17 +26,17 @@ export function Hero() {
           🚀 Coming Soon
         </Badge>
 
-        <h1 className="mt-8 text-5xl font-light leading-tight tracking-tighter text-navy sm:text-7xl md:text-8xl animate-fade-in-up [animation-delay:0.2s]">
+        <h1 className="mt-8 text-5xl font-light leading-tight tracking-tighter text-white sm:text-7xl md:text-8xl animate-fade-in-up [animation-delay:0.2s]">
           The AI That
           <br />
           Builds AI
         </h1>
 
-        <p className="mx-auto mt-8 max-w-3xl text-lg font-light text-charcoal sm:text-xl md:text-2xl animate-fade-in-up [animation-delay:0.4s]">
+        <p className="mx-auto mt-8 max-w-3xl text-lg font-light text-white/90 sm:text-xl md:text-2xl animate-fade-in-up [animation-delay:0.4s]">
           Create fully autonomous AI agents with a single conversation. No code. No complexity. Just intelligence.
         </p>
 
-        <p className="mt-8 text-lg font-medium text-ocean animate-fade-in-up [animation-delay:0.6s]">
+        <p className="mt-8 text-lg font-medium text-cyan animate-fade-in-up [animation-delay:0.6s]">
           Launching Q2 2025
         </p>
 
@@ -39,7 +51,7 @@ export function Hero() {
               <ArrowRight className="ml-2 h-5 w-5" />
             </a>
           </Button>
-          <p className="mt-4 text-sm text-silver">
+          <p className="mt-4 text-sm text-white/70">
             Be among the first to experience the future of AI creation
           </p>
         </div>
@@ -47,10 +59,10 @@ export function Hero() {
         <div className="mt-6 flex items-center justify-center gap-2 text-base text-cyan font-medium animate-fade-in-up [animation-delay:1s]">
           <Flame className="h-5 w-5" />
           <AnimatedCounter target={2847} />
-          <span className="text-charcoal">innovators already waiting</span>
+          <span className="text-white/90">innovators already waiting</span>
         </div>
       </div>
-      <div className="absolute bottom-10 flex flex-col items-center gap-2 text-silver animate-fade-in-up [animation-delay:1.2s]">
+      <div className="absolute bottom-10 flex flex-col items-center gap-2 text-white/70 animate-fade-in-up [animation-delay:1.2s] z-30">
         <span className="text-sm">Discover more</span>
         <ArrowDown className="h-5 w-5 animate-bounce" />
       </div>
