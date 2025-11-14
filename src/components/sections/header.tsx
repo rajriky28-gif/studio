@@ -34,11 +34,11 @@ export function Header() {
       )}
     >
       <div className="container mx-auto px-4 md:px-6">
-        <div className={cn("flex items-center justify-between transition-all duration-300", isScrolled ? 'h-20' : 'h-28')}>
+        <div className={cn("flex items-start justify-between transition-all duration-300 py-4", isScrolled ? 'h-20' : 'h-28')}>
           <Logo />
 
           {/* Desktop Navigation */}
-          <nav className="hidden items-center space-x-8 md:flex">
+          <nav className="hidden items-center space-x-8 md:flex pt-3">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -53,7 +53,7 @@ export function Header() {
             ))}
           </nav>
           
-          <div className="hidden items-center space-x-4 md:flex">
+          <div className="hidden items-center space-x-4 md:flex pt-1">
             <Button asChild className="bg-navy-gradient rounded-lg px-6 font-semibold">
               <Link href="#waitlist">Join Waitlist</Link>
             </Button>
