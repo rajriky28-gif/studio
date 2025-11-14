@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export function Logo() {
   return (
-    <Link href="/" className="inline-flex items-center gap-2">
+    <Link href="/" className="inline-flex items-center gap-0">
       <Image 
         src="/logo.png" 
         alt="Lumivex Logo" 
