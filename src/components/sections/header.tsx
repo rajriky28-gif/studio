@@ -20,10 +20,7 @@ const navLinks = [
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const pathname = usePathname();
-
-  const isAboutPage = pathname === '/about';
-
+  
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -32,19 +29,18 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const textColor = isScrolled || isAboutPage ? 'text-primary' : 'text-white';
-  const logoColorState = isScrolled || isAboutPage;
-
+  const textColor = isScrolled ? 'text-black' : 'text-white';
+  
   return (
     <header
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        isScrolled || isAboutPage ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent'
+        isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent'
       )}
     >
       <div className="container mx-auto px-4 md:px-6">
         <div className={cn("flex items-center justify-between transition-all duration-300 h-20")}>
-          <Logo isScrolled={logoColorState} />
+          <Logo isScrolled={isScrolled} />
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center space-x-8 md:flex h-full">
