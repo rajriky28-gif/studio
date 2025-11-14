@@ -30,9 +30,7 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const linkColor = isScrolled ? 'text-black' : 'text-white';
-  const logoColor = isScrolled ? 'text-navy' : 'text-white';
-  const headerBg = isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent';
+  const headerBg = isScrolled || pathname !== '/' ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent';
   
   return (
     <header
@@ -42,7 +40,7 @@ export function Header() {
       )}
     >
       <div className={cn("flex items-center justify-between transition-all duration-300 h-20", "container mx-auto px-4 md:px-6")}>
-          <Logo isScrolled={isScrolled} />
+          <Logo isScrolled={isScrolled || pathname !== '/'} />
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center space-x-8 md:flex h-full">
@@ -52,7 +50,7 @@ export function Header() {
                 href={link.href}
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-ocean',
-                  isScrolled ? 'text-black' : 'text-black'
+                  isScrolled || pathname !== '/' ? 'text-black' : 'text-black'
                 )}
               >
                 {link.name}
