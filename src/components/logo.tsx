@@ -8,14 +8,14 @@ export function Logo({ isScrolled }: { isScrolled?: boolean }) {
       <Image 
         src="/logo.png" 
         alt="Lumivex Logo" 
-        width={168} 
-        height={168} 
-        className="h-28 w-28"
+        width={128} 
+        height={128} 
+        className="h-20 w-20"
         priority
       />
       <span 
         className={cn(
-          "text-4xl font-bold tracking-tight transition-colors -ml-5",
+          "text-3xl font-bold tracking-tight transition-colors -ml-4",
           isScrolled ? "text-primary" : "text-white"
         )}
       >

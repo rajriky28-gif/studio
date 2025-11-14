@@ -34,7 +34,7 @@ export function Header() {
       )}
     >
       <div className="container mx-auto px-4 md:px-6">
-        <div className={cn("flex items-start justify-between transition-all duration-300", isScrolled ? 'h-20' : 'h-28')}>
+        <div className={cn("flex items-center justify-between transition-all duration-300", isScrolled ? 'h-20' : 'h-24')}>
           <Logo isScrolled={isScrolled} />
 
           {/* Desktop Navigation */}
@@ -60,7 +60,7 @@ export function Header() {
           </div>
 
           {/* Mobile Navigation */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center h-full">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -70,7 +70,7 @@ export function Header() {
               </SheetTrigger>
               <SheetContent side="right" className="w-full bg-white p-0">
                 <div className="flex h-full flex-col">
-                  <div className={cn("flex items-center justify-between border-b px-4 text-primary", isScrolled ? 'h-20' : 'h-28')}>
+                  <div className={cn("flex items-center justify-between border-b px-4 text-primary h-20")}>
                     <Logo isScrolled={true} />
                     <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
                       <X className="h-8 w-8 text-primary" />
