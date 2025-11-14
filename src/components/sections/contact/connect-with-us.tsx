@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Linkedin, Twitter, Mail } from 'lucide-react';
+import { Linkedin, Mail } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { DiscordIcon } from '@/components/discord-icon';
 import { XIcon } from '@/components/x-icon';
