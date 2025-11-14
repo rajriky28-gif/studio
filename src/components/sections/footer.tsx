@@ -1,22 +1,23 @@
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
-import { Linkedin, Twitter } from 'lucide-react';
-import { DiscordIcon } from '@/components/discord-icon';
+import { Linkedin } from 'lucide-react';
+import Image from 'next/image';
+import { XIcon } from '../x-icon';
 
 export function Footer() {
   const socialLinks = [
-    { name: 'X', icon: Twitter, href: '#' },
-    { name: 'LinkedIn', icon: Linkedin, href: '#' },
-    { name: 'Discord', icon: DiscordIcon, href: '#' },
+    { name: 'X', icon: XIcon, href: '#', isImage: false },
+    { name: 'LinkedIn', icon: Linkedin, href: '#', isImage: false },
+    { name: 'Discord', icon: '/discord.png', href: '#', isImage: true },
   ];
 
   const links = {
     Company: [
-      { name: 'About', href: '#about' },
+      { name: 'About', href: '/about' },
       { name: 'Vision', href: '#vision' },
       { name: 'Blog', href: '#' },
-      { name: 'Contact', href: 'mailto:hello@lumivex.com' },
+      { name: 'Contact', href: '/contact' },
     ],
     "Stay Updated": [
       { name: 'Join Waitlist', href: '#waitlist' },
@@ -40,7 +41,11 @@ export function Footer() {
               {socialLinks.map((social) => (
                 <Button key={social.name} variant="ghost" size="icon" asChild className="text-white/70 hover:bg-white/10 hover:text-cyan">
                   <a href={social.href} aria-label={social.name}>
-                    <social.icon className="h-5 w-5" />
+                    {social.isImage ? (
+                      <Image src={social.icon as string} alt={social.name} width={20} height={20} />
+                    ) : (
+                      <social.icon className="h-5 w-5" />
+                    )}
                   </a>
                 </Button>
               ))}

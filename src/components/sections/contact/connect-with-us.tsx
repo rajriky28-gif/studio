@@ -2,16 +2,18 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Linkedin, Mail } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { DiscordIcon } from '@/components/discord-icon';
+import Image from 'next/image';
 import { XIcon } from '@/components/x-icon';
+import React from 'react';
 
 interface SocialChannel {
   name: string;
-  icon: LucideIcon | ((props: any) => JSX.Element);
+  icon: LucideIcon | ((props: any) => JSX.Element) | string;
   handle: string;
   purpose: string;
   cta: string;
   href: string;
+  isImage: boolean;
 }
 
 const socialChannels: SocialChannel[] = [
@@ -21,7 +23,8 @@ const socialChannels: SocialChannel[] = [
     handle: '@lumivex',
     purpose: 'Real-time updates, announcements, and behind-the-scenes insights into our development journey.',
     cta: 'Follow on X →',
-    href: '#'
+    href: '#',
+    isImage: false,
   },
   {
     name: 'LinkedIn',
@@ -29,15 +32,17 @@ const socialChannels: SocialChannel[] = [
     handle: 'Lumivex',
     purpose: 'Company updates, team announcements, thought leadership, and professional networking.',
     cta: 'Connect on LinkedIn →',
-    href: '#'
+    href: '#',
+    isImage: false,
   },
   {
     name: 'Discord',
-    icon: DiscordIcon,
+    icon: '/discord.png',
     handle: 'Lumivex Community',
     purpose: 'Join discussions with other early supporters, share ideas, provide feedback, and shape the future of Lumivex.',
     cta: 'Join Discord →',
-    href: '#'
+    href: '#',
+    isImage: true,
   },
   {
     name: 'Newsletter',
@@ -45,7 +50,8 @@ const socialChannels: SocialChannel[] = [
     handle: 'Bi-weekly',
     purpose: 'Exclusive development updates, early access opportunities, and in-depth articles delivered to your inbox.',
     cta: 'Subscribe →',
-    href: '#waitlist'
+    href: '#waitlist',
+    isImage: false,
   },
 ];
 
@@ -68,7 +74,11 @@ export function ConnectWithUs() {
               className="group rounded-3xl border border-stone-200 bg-white p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:border-cyan hover:shadow-2xl hover:shadow-cyan/10 flex flex-col"
             >
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-cream">
-                <channel.icon className="h-8 w-8 text-navy" />
+                {channel.isImage ? (
+                  <Image src={channel.icon as string} alt={channel.name} width={32} height={32} />
+                ) : (
+                  React.createElement(channel.icon as React.ElementType, { className: 'h-8 w-8 text-navy' })
+                )}
               </div>
               <h3 className="mt-6 text-xl font-medium text-navy">{channel.name}</h3>
               <p className="text-sm text-silver">{channel.handle}</p>
