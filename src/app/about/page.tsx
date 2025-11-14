@@ -10,7 +10,6 @@ import { Journey } from "@/components/sections/about/journey";
 import { Team } from "@/components/sections/about/team";
 import { Impact } from "@/components/sections/about/impact";
 import { JoinUs } from "@/components/sections/about/join-us";
-import { Contact } from "@/components/sections/about/contact";
 import { FinalCta } from "@/components/sections/final-cta";
 
 
@@ -29,7 +28,6 @@ export default function AboutPage() {
         <Team />
         <Impact />
         <JoinUs />
-        <Contact />
         <FinalCta />
       </main>
       <Footer />

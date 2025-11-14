@@ -12,8 +12,8 @@ import { usePathname } from 'next/navigation';
 const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'About', href: '/about' },
+  { name: 'Contact', href: '/contact' },
   { name: 'Vision', href: '#vision' },
-  { name: 'Contact', href: 'mailto:hello@lumivex.com' },
   { name: 'Waitlist', href: '#waitlist' },
 ];
 
@@ -21,7 +21,6 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const isAboutPage = pathname === '/about';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,9 +30,9 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const linkColor = isScrolled || isAboutPage ? 'text-black' : 'text-white';
-  const logoColor = isScrolled || isAboutPage ? 'text-navy' : 'text-white';
-  const headerBg = isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : isAboutPage ? 'bg-white' : 'bg-transparent';
+  const linkColor = isScrolled ? 'text-black' : 'text-white';
+  const logoColor = isScrolled ? 'text-navy' : 'text-white';
+  const headerBg = isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent';
   
   return (
     <header
@@ -43,7 +42,7 @@ export function Header() {
       )}
     >
       <div className={cn("flex items-center justify-between transition-all duration-300 h-20", "container mx-auto px-4 md:px-6")}>
-          <Logo isScrolled={isScrolled || isAboutPage} />
+          <Logo isScrolled={isScrolled} />
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center space-x-8 md:flex h-full">
@@ -53,7 +52,7 @@ export function Header() {
                 href={link.href}
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-ocean',
-                  linkColor
+                  isScrolled ? 'text-black' : 'text-black'
                 )}
               >
                 {link.name}
@@ -72,7 +71,7 @@ export function Header() {
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Menu className={cn('h-8 w-8', isScrolled || isAboutPage ? 'text-black' : 'text-white')} />
+                  <Menu className={cn('h-8 w-8', isScrolled || pathname !== '/' ? 'text-black' : 'text-white')} />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
