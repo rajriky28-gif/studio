@@ -27,7 +27,7 @@ export function JoinUs() {
             <Bell className="h-14 w-14 text-cyan mx-auto mb-6" />
             <h3 className="text-2xl font-medium mb-2">Stay Informed</h3>
             <p className="text-white/80 mb-6">Follow our journey. Behind-the-scenes updates, progress reports, and launch announcements.</p>
-            <Button variant="outline" asChild className="border-white/50 text-white hover:bg-white/20 hover:text-white">
+            <Button variant="outline" asChild className="bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white font-semibold">
               <Link href="#">Follow on X</Link>
             </Button>
           </div>
@@ -36,7 +36,7 @@ export function JoinUs() {
             <Users className="h-14 w-14 text-cyan mx-auto mb-6" />
             <h3 className="text-2xl font-medium mb-2">Join the Community</h3>
             <p className="text-white/80 mb-6">Connect with other early supporters. Share ideas, provide feedback, shape the future.</p>
-            <Button variant="outline" asChild className="border-white/50 text-white hover:bg-white/20 hover:text-white">
+            <Button variant="outline" asChild className="bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white font-semibold">
               <Link href="#">Join Discord</Link>
             </Button>
           </div>
