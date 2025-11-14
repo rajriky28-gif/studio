@@ -1,6 +1,5 @@
-import { Book, MessageCircle, CalendarX, Zap, Wrench, Sparkles } from 'lucide-react';
+import { Book, MessageCircle, CalendarX, Zap, Wrench, Sparkles, Target, RefreshCcw, ArrowRight } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { ArrowRight } from 'lucide-react';
 
 interface Transformation {
   before: {
@@ -35,11 +34,6 @@ const transformations: Transformation[] = [
     resultIcon: RefreshCcw
   },
 ];
-
-// Dummy icons, replace with actual ones if available
-const Target: LucideIcon = (props) => <svg {...props}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>;
-const RefreshCcw: LucideIcon = (props) => <svg {...props}><path d="M3 2v6h6"/><path d="M21 12A9 9 0 0 0 6 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0 0 15 6.7L21 16"/></svg>;
-
 
 export function Solution() {
   return (
