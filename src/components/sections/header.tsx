@@ -34,11 +34,11 @@ export function Header() {
       )}
     >
       <div className="container mx-auto px-4 md:px-6">
-        <div className={cn("flex items-center justify-between transition-all duration-300", isScrolled ? 'h-20' : 'h-28')}>
-          <Logo />
+        <div className={cn("flex items-start justify-between transition-all duration-300", isScrolled ? 'h-20' : 'h-28')}>
+          <Logo isScrolled={isScrolled} />
 
           {/* Desktop Navigation */}
-          <nav className="hidden items-center space-x-8 md:flex">
+          <nav className="hidden items-center space-x-8 md:flex h-full">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -53,7 +53,7 @@ export function Header() {
             ))}
           </nav>
           
-          <div className="hidden items-center space-x-4 md:flex">
+          <div className="hidden items-center space-x-4 md:flex h-full">
             <Button asChild className="bg-navy-gradient rounded-lg px-6 font-semibold">
               <Link href="#waitlist">Join Waitlist</Link>
             </Button>
@@ -71,7 +71,7 @@ export function Header() {
               <SheetContent side="right" className="w-full bg-white p-0">
                 <div className="flex h-full flex-col">
                   <div className={cn("flex items-center justify-between border-b px-4 text-primary", isScrolled ? 'h-20' : 'h-28')}>
-                    <Logo />
+                    <Logo isScrolled={true} />
                     <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
                       <X className="h-8 w-8 text-primary" />
                       <span className="sr-only">Close menu</span>
