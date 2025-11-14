@@ -37,12 +37,11 @@ export function Journey() {
         <div className="relative max-w-3xl mx-auto">
           <div className="absolute left-4 sm:left-1/2 -ml-px w-0.5 h-full bg-cyan/30" aria-hidden="true"></div>
           {milestones.map((item, index) => {
-            const is2025OrLater = parseInt(item.date.split(' ')[1]) >= 2025;
-            const isLeftAligned = !is2025OrLater && index % 2 !== 0;
+            const isLeftAligned = index % 2 !== 0;
 
             return (
-            <div key={item.title} className="relative flex items-start group">
-              <div className="absolute left-4 sm:left-1/2 -ml-[1.3rem] mt-2.5 w-10 h-10 rounded-full bg-navy-gradient-deep border-2 border-cyan flex items-center justify-center">
+            <div key={item.title} className={`relative flex items-start group ${isLeftAligned ? 'sm:flex-row-reverse' : ''}`}>
+              <div className={`absolute left-4 sm:left-1/2 -ml-[1.3rem] mt-2.5 w-10 h-10 rounded-full bg-navy-gradient-deep border-2 border-cyan flex items-center justify-center ${isLeftAligned ? 'sm:right-4 sm:left-auto sm:-mr-[1.3rem]' : ''}`}>
                 <item.icon className="h-5 w-5 text-cyan" />
               </div>
               <div className={`pl-16 sm:pl-0 sm:w-1/2 ${isLeftAligned ? 'sm:pr-0 sm:pl-8 sm:text-left' : 'sm:pr-8 sm:text-right'}`}>
@@ -57,7 +56,6 @@ export function Journey() {
                     {item.target && <p className="text-cyan text-sm mt-2">{item.target}</p>}
                 </div>
               </div>
-              <div className={`hidden sm:block w-1/2 ${isLeftAligned ? '' : 'order-first'}`}></div>
             </div>
           )})}
         </div>
