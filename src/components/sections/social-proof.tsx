@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Linkedin, Mail, Twitter } from 'lucide-react';
+import { Linkedin, Mail, Instagram } from 'lucide-react';
 import { DiscordIcon } from '@/components/discord-icon';
 import type { LucideIcon } from 'lucide-react';
 
@@ -11,7 +11,7 @@ interface SocialLink {
 }
 
 const socialLinks: SocialLink[] = [
-  { name: 'Follow on X', icon: Twitter, href: '#' },
+  { name: 'Stay updated on IG', icon: Instagram, href: '#' },
   { name: 'Connect on LinkedIn', icon: Linkedin, href: '#' },
   { name: 'Join Community', icon: DiscordIcon, href: '#' },
   { name: 'Subscribe', icon: Mail, href: '#waitlist' },
