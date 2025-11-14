@@ -21,7 +21,7 @@ export function Hero() {
       <div className="container mx-auto relative z-30">
         <Badge
           variant="outline"
-          className="animate-pulse-badge border-cyan bg-cyan/10 py-2 px-6 text-sm font-semibold uppercase text-cyan rounded-full"
+          className="animate-pulse-badge border-cyan bg-cyan/10 py-2 px-6 text-sm font-semibold uppercase text-cyan rounded-full mt-4"
         >
           🚀 Coming Soon
         </Badge>
