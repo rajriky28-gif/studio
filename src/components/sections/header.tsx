@@ -12,6 +12,7 @@ const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'About', href: '#about' },
   { name: 'Vision', href: '#vision' },
+  { name: 'Contact', href: 'mailto:hello@lumivex.com' },
   { name: 'Waitlist', href: '#waitlist' },
 ];
 
