@@ -1,17 +1,16 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Linkedin, Mail, Instagram } from 'lucide-react';
-import { XIcon } from '@/components/x-icon';
+import { Linkedin, Mail, Instagram, Twitter } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface SocialLink {
   name: string;
-  icon: LucideIcon | typeof XIcon;
+  icon: LucideIcon;
   href: string;
 }
 
 const socialLinks: SocialLink[] = [
-  { name: 'Join us on X', icon: XIcon, href: '#' },
+  { name: 'Join us on X', icon: Twitter, href: '#' },
   { name: 'Connect on LinkedIn', icon: Linkedin, href: '#' },
   { name: 'Stay updated on IG', icon: Instagram, href: '#' },
   { name: 'Subscribe', icon: Mail, href: '#waitlist' },

@@ -1,13 +1,12 @@
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
-import { Linkedin } from 'lucide-react';
+import { Linkedin, Twitter } from 'lucide-react';
 import { DiscordIcon } from '@/components/discord-icon';
-import { XIcon } from '@/components/x-icon';
 
 export function Footer() {
   const socialLinks = [
-    { name: 'X', icon: XIcon, href: '#' },
+    { name: 'X', icon: Twitter, href: '#' },
     { name: 'LinkedIn', icon: Linkedin, href: '#' },
     { name: 'Discord', icon: DiscordIcon, href: '#' },
   ];
