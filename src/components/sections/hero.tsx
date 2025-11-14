@@ -17,7 +17,7 @@ export function Hero() {
         <source src="/background.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-      <div className="absolute top-0 left-0 w-full h-full bg-black/30 z-20"></div>
+      <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-20"></div>
       <div className="container mx-auto relative z-30">
         <Badge
           variant="outline"
