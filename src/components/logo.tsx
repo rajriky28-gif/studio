@@ -3,16 +3,16 @@ import Image from 'next/image';
 
 export function Logo() {
   return (
-    <Link href="/" className="inline-flex items-center gap-2.5">
+    <Link href="/" className="inline-flex items-center gap-4">
       <Image 
         src="/logo.png" 
         alt="Lumivex Logo" 
-        width={40} 
-        height={40} 
-        className="h-10 w-auto"
+        width={120} 
+        height={120} 
+        className="h-12 w-auto"
         priority
       />
-      <span className="text-2xl font-bold tracking-tight text-inherit">Lumivex</span>
+      <span className="text-4xl font-bold tracking-tight text-inherit">Lumivex</span>
     </Link>
   );
 }

@@ -34,7 +34,7 @@ export function Header() {
       )}
     >
       <div className="container mx-auto px-4 md:px-6">
-        <div className={cn("flex h-[70px] items-center justify-between", isScrolled ? 'text-primary' : 'text-white')}>
+        <div className={cn("flex h-24 items-center justify-between", isScrolled ? 'text-primary' : 'text-white')}>
           <Logo />
 
           {/* Desktop Navigation */}
@@ -64,16 +64,16 @@ export function Header() {
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Menu className={cn('h-6 w-6', isScrolled ? 'text-primary' : 'text-white')} />
+                  <Menu className={cn('h-8 w-8', isScrolled ? 'text-primary' : 'text-white')} />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-full bg-white p-0">
                 <div className="flex h-full flex-col">
-                  <div className="flex h-[70px] items-center justify-between border-b px-4 text-primary">
+                  <div className="flex h-24 items-center justify-between border-b px-4 text-primary">
                     <Logo />
                     <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
-                      <X className="h-6 w-6 text-primary" />
+                      <X className="h-8 w-8 text-primary" />
                       <span className="sr-only">Close menu</span>
                     </Button>
                   </div>
