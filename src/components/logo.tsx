@@ -16,7 +16,7 @@ export function Logo({ isScrolled }: { isScrolled?: boolean }) {
       <span 
         className={cn(
           "text-3xl font-bold tracking-tight transition-colors -ml-4",
-          isScrolled ? "text-navy" : "text-white"
+          isScrolled ? "text-navy" : "text-navy"
         )}
       >
         Lumivex
