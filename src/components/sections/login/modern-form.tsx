@@ -8,7 +8,7 @@ import * as z from 'zod';
 import { Eye, EyeOff, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormMessage, FormItem, FormField } from '@/components/ui/form';
+import { Form, FormControl, FormMessage, FormItem, FormLabel, FormField } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { GoogleButton } from './google-button';
@@ -109,7 +109,7 @@ export function ModernForm() {
 
   return (
     <motion.div 
-        className="w-full max-w-[580px] rounded-[32px] border border-white/15 bg-white/10 p-12 shadow-2xl backdrop-blur-2xl"
+        className="w-full max-w-[520px] rounded-[32px] border border-white/15 bg-white/10 p-12 shadow-2xl backdrop-blur-2xl"
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
