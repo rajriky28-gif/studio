@@ -178,8 +178,10 @@ export function ModernForm() {
                     )}
                 </AnimatePresence>
                 
-                <FloatingLabelInput form={form} name="email" label="Email Address" type="email" />
-                <FloatingLabelInput form={form} name="password" label="Password" type="password" />
+                <div className="space-y-5">
+                    <FloatingLabelInput form={form} name="email" label="Email Address" type="email" />
+                    <FloatingLabelInput form={form} name="password" label="Password" type="password" />
+                </div>
 
                 {!isLogin && (
                     <PasswordStrength password={signupForm.watch('password')} />
@@ -293,7 +295,7 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
                 <div 
                     className={cn(
                         "group relative rounded-xl border-t-0 border-x-0 border-b transition-all duration-300",
-                        "bg-white/5 border-b-white/10",
+                        "bg-transparent border-b-white/10",
                         error ? "border-b-red-500/50" : "focus-within:border-b-cyan/80",
                         error ? "focus-within:shadow-[0_4px_6px_-1px_rgba(239,68,68,0.1)]" : "focus-within:shadow-[0_4px_6px_-1px_rgba(6,182,212,0.1)]"
                     )}
@@ -313,7 +315,7 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
                         id={name}
                         type={inputType}
                         className={cn(
-                            "h-14 w-full bg-transparent border-none p-0 px-4 pt-4 text-base text-white ring-offset-background placeholder:text-transparent",
+                            "h-14 w-full bg-transparent border-none p-0 px-4 pt-4 text-base text-white ring-offset-background",
                             "focus-visible:ring-0 focus-visible:ring-offset-0"
                         )}
                         {...field}
