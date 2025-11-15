@@ -41,7 +41,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Side - Form */}
-      <div className="flex w-full flex-col items-center justify-center bg-transparent py-12 lg:w-[60%]">
+      <div className="flex w-full flex-col items-center justify-center bg-transparent p-4 py-12 lg:w-[60%] lg:p-12">
         {/* Mobile Logo */}
         <div className="lg:hidden mb-8 text-center">
             <div className="flex justify-center">
@@ -49,7 +49,7 @@ export default function LoginPage() {
             </div>
         </div>
 
-        <div className="w-full max-w-[580px] lg:max-w-none lg:w-auto lg:p-0 px-4">
+        <div className="w-full">
             <Suspense fallback={<LoginFormSkeleton />}>
               <ModernForm />
             </Suspense>

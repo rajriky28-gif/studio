@@ -109,7 +109,7 @@ export function ModernForm() {
 
   return (
     <motion.div 
-        className="w-full max-w-[580px] rounded-[32px] border border-white/15 bg-white/10 p-12 shadow-2xl backdrop-blur-2xl"
+        className="w-full max-w-[580px] mx-auto rounded-[32px] border border-white/15 bg-white/10 p-12 shadow-2xl backdrop-blur-2xl"
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
@@ -197,7 +197,9 @@ export function ModernForm() {
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.4, ease: 'easeInOut' }}
                     >
-                         <FloatingLabelInput form={signupForm} name="confirmPassword" label="Confirm Password" type="password" />
+                         <div className="mt-5">
+                           <FloatingLabelInput form={signupForm} name="confirmPassword" label="Confirm Password" type="password" />
+                         </div>
                     </motion.div>
                     )}
                 </AnimatePresence>
@@ -294,10 +296,11 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
             <div className="relative">
                 <div 
                     className={cn(
-                        "group relative rounded-xl border-t-0 border-x-0 border-b transition-all duration-300",
-                        "bg-transparent border-b-white/10",
-                        error ? "border-b-red-500/50" : "focus-within:border-b-cyan/80",
-                        error ? "focus-within:shadow-[0_4px_6px_-1px_rgba(239,68,68,0.1)]" : "focus-within:shadow-[0_4px_6px_-1px_rgba(6,182,212,0.1)]"
+                        "group relative rounded-xl border transition-all duration-300",
+                        "border-white/10 bg-white/[.05]",
+                        error ? "border-red-500/50" : "focus-within:border-cyan/80",
+                        error ? "focus-within:shadow-[0_4px_6px_-1px_rgba(239,68,68,0.1)]" : "focus-within:shadow-[0_4px_6px_-1px_rgba(6,182,212,0.1)]",
+                        "hover:border-white/20"
                     )}
                 >
                     <label
@@ -306,7 +309,8 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
                             "absolute left-4 transition-all duration-300 pointer-events-none text-white/50",
                             "group-focus-within:top-2 group-focus-within:text-xs group-focus-within:text-cyan/90",
                             value ? "top-2 text-xs text-cyan/90" : "top-1/2 -translate-y-1/2 text-base",
-                             error ? "group-focus-within:text-red-400" : ""
+                             error ? "group-focus-within:text-red-400 text-red-400" : "",
+                             value && !error ? "text-cyan/90" : ""
                         )}
                     >
                         {label}
@@ -315,7 +319,7 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
                         id={name}
                         type={inputType}
                         className={cn(
-                            "h-14 w-full bg-transparent border-none p-0 px-4 pt-4 text-base text-white ring-offset-background",
+                            "h-14 w-full bg-transparent border-none p-0 px-4 pt-5 text-base text-white ring-offset-background placeholder-transparent",
                             "focus-visible:ring-0 focus-visible:ring-offset-0"
                         )}
                         {...field}
