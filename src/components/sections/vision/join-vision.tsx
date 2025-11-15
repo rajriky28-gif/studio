@@ -1,5 +1,7 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { XIcon } from '@/components/x-icon';
+import { useCallback } from 'react';
 
 const contributions = [
   {
@@ -13,8 +15,9 @@ const contributions = [
     number: "2.",
     title: "Spread the Word",
     description: "Share our vision with others who believe technology should serve everyone. Every conversation plants seeds for the future.",
-    cta: "Share on Twitter →",
+    cta: "Share on X →",
     href: "#",
+    isShare: true,
   },
   {
     number: "3.",
@@ -26,6 +29,14 @@ const contributions = [
 ];
 
 export function JoinVision() {
+
+  const handleShare = () => {
+    const text = "I'm excited about @Lumivex's vision to make AI creation as simple as conversation. A world where every idea can become an intelligent system—instantly. Check it out:";
+    const url = "https://lumivex.com/vision";
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    window.open(twitterUrl, '_blank', 'width=550,height=420');
+  }
+
   return (
     <section className="bg-cream py-28">
       <div className="container mx-auto px-4 md:px-6 text-center">
@@ -41,9 +52,15 @@ export function JoinVision() {
               <span className="text-3xl font-bold text-cyan mb-4">{item.number}</span>
               <h3 className="text-2xl font-medium text-navy mb-3">{item.title}</h3>
               <p className="text-charcoal/80 mb-6 flex-grow">{item.description}</p>
-              <Button asChild variant="link" className="text-ocean font-semibold p-0 h-auto justify-start">
-                <Link href={item.href}>{item.cta}</Link>
-              </Button>
+              {item.isShare ? (
+                 <Button onClick={handleShare} variant="link" className="text-ocean font-semibold p-0 h-auto justify-start">
+                    {item.cta}
+                </Button>
+              ) : (
+                <Button asChild variant="link" className="text-ocean font-semibold p-0 h-auto justify-start">
+                  <Link href={item.href}>{item.cta}</Link>
+                </Button>
+              )}
             </div>
           ))}
         </div>

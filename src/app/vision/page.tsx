@@ -1,3 +1,4 @@
+'use client';
 import { Header } from "@/components/sections/header";
 import { Footer } from "@/components/sections/footer";
 import { VisionHero } from "@/components/sections/vision/hero";
