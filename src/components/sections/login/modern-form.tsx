@@ -8,7 +8,7 @@ import * as z from 'zod';
 import { Eye, EyeOff, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormMessage, FormItem } from '@/components/ui/form';
+import { Form, FormControl, FormMessage, FormItem } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { GoogleButton } from './google-button';
@@ -126,8 +126,28 @@ export function ModernForm() {
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 style={{ left: isLogin ? '6px' : 'calc(50% + 3px)' }}
             />
-            <Button onClick={() => handleStateChange('login')} variant="ghost" className="relative z-10 w-1/2 rounded-lg py-3 text-white">Login</Button>
-            <Button onClick={() => handleStateChange('signup')} variant="ghost" className="relative z-10 w-1/2 rounded-lg py-3 text-white">Sign Up</Button>
+            <Button 
+                onClick={() => handleStateChange('login')} 
+                variant="ghost" 
+                className={cn(
+                    "relative z-10 w-1/2 rounded-lg py-3 transition-colors duration-300",
+                    isLogin ? "text-white" : "text-white/50 hover:text-white/70"
+                )}
+                disabled={isLogin}
+            >
+                Login
+            </Button>
+            <Button 
+                onClick={() => handleStateChange('signup')} 
+                variant="ghost" 
+                className={cn(
+                    "relative z-10 w-1/2 rounded-lg py-3 transition-colors duration-300",
+                    !isLogin ? "text-white" : "text-white/50 hover:text-white/70"
+                )}
+                disabled={!isLogin}
+            >
+                Sign Up
+            </Button>
         </div>
 
         <div className="mt-8">
@@ -293,7 +313,7 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
         control={form.control}
         name={name}
         render={({ field }) => (
-            <div className="relative">
+            <div className="relative mb-5">
                 <div 
                     className={cn(
                         "group relative rounded-xl border transition-all duration-300",
@@ -308,9 +328,9 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
                         className={cn(
                             "absolute left-4 transition-all duration-300 pointer-events-none text-white/50",
                             "group-focus-within:top-2 group-focus-within:text-xs group-focus-within:text-cyan/90",
-                            value ? "top-2 text-xs text-cyan/90" : "top-1/2 -translate-y-1/2 text-base",
-                             error ? "group-focus-within:text-red-400 text-red-400" : "",
-                             value && !error ? "text-cyan/90" : ""
+                            value ? "top-2 text-xs" : "top-1/2 -translate-y-1/2 text-base",
+                            error ? "group-focus-within:text-red-400 text-red-400" : (value ? "text-cyan/90" : ""),
+                            value && !error ? "text-cyan/90" : ""
                         )}
                     >
                         {label}
@@ -319,7 +339,7 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
                         id={name}
                         type={inputType}
                         className={cn(
-                            "h-14 w-full bg-transparent border-none p-0 px-4 pt-5 text-base text-white ring-offset-background placeholder-transparent",
+                            "h-14 w-full bg-transparent border-none p-0 px-4 pt-5 text-base text-white ring-offset-background",
                             "focus-visible:ring-0 focus-visible:ring-offset-0"
                         )}
                         {...field}
