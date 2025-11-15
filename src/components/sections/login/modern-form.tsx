@@ -290,7 +290,7 @@ function FloatingLabelInput({ form, name, label, type = 'text', showValidationIc
                 "peer h-14 border-0 border-b-2 border-stone-200 bg-transparent p-0 text-base placeholder-transparent focus:border-cyan focus:ring-0",
                 error ? "border-red-500 focus:border-red-500" : ""
               )}
-              placeholder={label}
+              placeholder=" " // Use a space for the placeholder to enable the :placeholder-shown pseudo-class
               {...field}
             />
           </FormControl>
