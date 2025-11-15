@@ -6,7 +6,7 @@ import { FutureWeSee } from "@/components/sections/vision/future-we-see";
 import { Pillars } from "@/components/sections/vision/pillars";
 import { WorldWeBuild } from "@/components/sections/vision/world-we-build";
 import { RippleEffects } from "@/components/sections/vision/ripple-effects";
-import { VisionTimeline } from "@/components/sections/vision/timeline";
+import { Roadmap } from "@/components/sections/vision/timeline";
 import { WhyNow } from "@/components/sections/vision/why-now";
 import { Commitment } from "@/components/sections/vision/commitment";
 import { JoinVision } from "@/components/sections/vision/join-vision";
@@ -22,7 +22,7 @@ export default function VisionPage() {
         <Pillars />
         <WorldWeBuild />
         <RippleEffects />
-        <VisionTimeline />
+        <Roadmap />
         <WhyNow />
         <Commitment />
         <JoinVision />
