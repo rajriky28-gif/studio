@@ -7,7 +7,7 @@ import * as z from 'zod';
 import { Eye, EyeOff, Check, X, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormMessage } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { GoogleButton } from './google-button';
@@ -282,18 +282,16 @@ function FloatingLabelInput({ form, name, label, type = 'text', showValidationIc
       control={form.control}
       name={name}
       render={({ field, fieldState: { error } }) => (
-        <FormItem className="relative">
-          <FormControl>
-            <Input
-              type={inputType}
-              className={cn(
-                "peer h-14 border-0 border-b-2 border-stone-200 bg-transparent p-0 text-base placeholder-transparent focus:border-cyan focus:ring-0",
-                error ? "border-red-500 focus:border-red-500" : ""
-              )}
-              placeholder=" " // Use a space for the placeholder to enable the :placeholder-shown pseudo-class
-              {...field}
-            />
-          </FormControl>
+        <div className="relative">
+          <Input
+            type={inputType}
+            className={cn(
+              "peer h-14 w-full border-0 border-b-2 border-stone-200 bg-transparent p-0 text-base ring-offset-background placeholder-transparent focus:border-cyan focus:ring-0",
+              error ? "border-red-500 focus:border-red-500" : ""
+            )}
+            placeholder=" " // Use a space for the placeholder to enable the :placeholder-shown pseudo-class
+            {...field}
+          />
           <label
             htmlFor={name}
             className={cn(
@@ -320,7 +318,7 @@ function FloatingLabelInput({ form, name, label, type = 'text', showValidationIc
             </div>
           )}
            <FormMessage className="text-xs pt-1" />
-        </FormItem>
+        </div>
       )}
     />
   );
