@@ -1,22 +1,36 @@
+
 'use client';
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useFirebase } from "@/firebase";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo } from "firebase/auth";
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 export function GoogleButton() {
-  const { auth } = useFirebase();
+  const { auth, firestore } = useFirebase();
 
   const handleGoogleLogin = async () => {
-    if (!auth) return;
+    if (!auth || !firestore) return;
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-      // After successful login, you might want to redirect the user
-      // For now, Firebase's onAuthStateChanged will handle the user state update.
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const additionalInfo = getAdditionalUserInfo(result);
+
+      if (additionalInfo?.isNewUser) {
+        const userDocRef = doc(firestore, "users", user.uid);
+        await setDoc(userDocRef, {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            createdAt: serverTimestamp(),
+        });
+      }
+      
       console.log('Successfully signed in with Google');
-      // window.location.href = '/dashboard'; // Example redirect
+      // Redirect is handled by an auth state listener in a higher-order component
     } catch (error) {
       console.error('Error during Google sign-in:', error);
     }
@@ -25,7 +39,7 @@ export function GoogleButton() {
   return (
     <Button
       variant="outline"
-      className="h-14 w-full border-2 border-stone-200 text-base font-semibold text-charcoal hover:border-cyan hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
+      className="h-14 w-full border-stone-300 bg-white text-base font-semibold text-charcoal shadow-sm transition-all duration-200 hover:border-cyan hover:shadow-lg hover:shadow-cyan/10 hover:-translate-y-px"
       onClick={handleGoogleLogin}
     >
       <Image src="/google-logo.svg" alt="Google" width={24} height={24} className="mr-3" />

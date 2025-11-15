@@ -1,38 +1,47 @@
 
-import { LoginForm } from '@/components/sections/login/login-form';
+import { ModernForm } from '@/components/sections/login/modern-form';
 import { Logo } from '@/components/logo';
-import Link from 'next/link';
+import { Suspense } from 'react';
+
+// A simple loading fallback for the form
+function LoginFormSkeleton() {
+    return <div className="w-full h-[400px] bg-gray-100 animate-pulse rounded-lg"></div>;
+}
 
 export default function LoginPage() {
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-cream-gradient px-4 py-12">
-      {/* Subtle animated particles can be added here if desired */}
-      <div className="absolute top-0 left-0 -z-10 h-full w-full"></div>
-
-      <header className="mb-10 text-center">
-        <div className="flex justify-center">
-            <Logo isScrolled={true} isHomePage={false} />
+    <div className="flex min-h-screen w-full bg-white">
+      {/* Left Side - Visuals & Branding */}
+      <div className="relative hidden lg:flex w-0 flex-1 flex-col justify-center bg-navy-gradient p-12 text-white">
+        <div className="absolute top-8 left-8">
+            <Logo isScrolled={false} isHomePage={true}/>
         </div>
-        <p className="mt-2 text-xs uppercase tracking-[3px] text-cyan">
-          BUILD BEYOND
-        </p>
-      </header>
-      
-      <main className="z-10 w-full">
-        <LoginForm />
-      </main>
+        <div className="z-10">
+            <h1 className="text-6xl font-light leading-tight tracking-tight text-white/90">
+                Build AI Agents
+            </h1>
+            <p className="mt-4 text-2xl text-white/70">
+                With just a conversation.
+            </p>
+        </div>
+         <div className="absolute bottom-8 left-8 text-xs text-white/40">
+          © {new Date().getFullYear()} Lumivex. All rights reserved.
+        </div>
+      </div>
 
-      <footer className="mt-8 text-center">
-        <p className="text-sm text-charcoal">
-          Need help?{' '}
-          <Link href="/contact" className="font-semibold text-ocean hover:underline">
-            Contact Support
-          </Link>
-        </p>
-        <p className="mt-4 max-w-sm text-xs text-silver">
-          By continuing, you agree to our Terms of Service and Privacy Policy.
-        </p>
-      </footer>
+      {/* Right Side - Form */}
+      <div className="flex w-full flex-1 flex-col justify-center bg-white px-4 py-12 lg:w-[40%] lg:flex-none">
+        <div className="mx-auto w-full max-w-sm lg:w-[420px]">
+            <div className="lg:hidden mb-12 text-center">
+                <div className="flex justify-center">
+                     <Logo isScrolled={true} isHomePage={false} />
+                </div>
+            </div>
+            <Suspense fallback={<LoginFormSkeleton />}>
+              <ModernForm />
+            </Suspense>
+        </div>
+      </div>
     </div>
   );
 }
