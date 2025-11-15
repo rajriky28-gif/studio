@@ -1,69 +1,121 @@
-
 {
   "entities": {
-    "WaitlistEntry": {
-      "title": "WaitlistEntry",
-      "type": "object",
-      "description": "Represents a user who has signed up for the waitlist.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the waitlist entry, matching the document ID."
-        },
-        "email": {
-          "type": "string",
-          "description": "Email address of the user.",
-          "format": "email"
-        },
-        "timestamp": {
-          "type": "object",
-          "description": "Server-side timestamp of when the user signed up."
-        }
-      },
-      "required": [
-        "id",
-        "email",
-        "timestamp"
-      ]
-    },
     "UserProfile": {
       "title": "UserProfile",
       "type": "object",
-      "description": "Represents a user's public profile.",
+      "description": "Represents a user's public profile and auth info.",
       "properties": {
-        "uid": {
-          "type": "string",
-          "description": "The user's unique ID from Firebase Authentication."
-        },
-        "email": {
-          "type": "string",
-          "description": "The user's email address.",
-          "format": "email"
-        },
-        "displayName": {
-          "type": "string",
-          "description": "The user's display name."
-        },
-        "photoURL": {
-          "type": "string",
-          "description": "URL of the user's profile picture.",
-          "format": "uri"
-        },
-        "createdAt": {
+        "uid": { "type": "string", "description": "Firebase Auth UID (Document ID)" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "authProvider": { "type": "string" },
+        "createdAt": { "type": "object", "description": "Server timestamp" },
+        "lastLoginAt": { "type": "object", "description": "Server timestamp" },
+        "onWaitlist": { "type": "boolean", "default": false },
+        "waitlistJoinedAt": { "type": "object", "description": "Server timestamp or null" },
+        "company": { "type": "string" },
+        "role": { "type": "string" },
+        "country": { "type": "string" }
+      },
+      "required": ["uid", "email", "displayName", "authProvider", "createdAt", "lastLoginAt", "onWaitlist"]
+    },
+    "WaitlistEntry": {
+      "title": "WaitlistEntry",
+      "type": "object",
+      "description": "Waitlist-specific data for a user.",
+      "properties": {
+        "userId": { "type": "string", "description": "Links to users collection" },
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string" },
+        "joinedAt": { "type": "object", "description": "Server timestamp" },
+        "useCase": { "type": "string" },
+        "referralSource": { "type": "string" },
+        "referralCode": { "type": "string", "description": "THEIR unique code" },
+        "enteredReferralCode": { "type": "string", "description": "Code THEY entered" },
+        "referralCount": { "type": "number", "default": 0 },
+        "referralTier": { "type": "string", "enum": ["none", "advocate", "champion", "ambassador"], "default": "none" },
+        "basePosition": { "type": "number" },
+        "bonusPositions": { "type": "number", "default": 0 },
+        "currentPosition": { "type": "number" },
+        "status": { "type": "string", "enum": ["waiting", "beta-invited", "active"], "default": "waiting" },
+        "betaInvitedAt": { "type": "object", "description": "Server timestamp or null" },
+        "emailPreferences": {
           "type": "object",
-          "description": "Server-side timestamp of when the user account was created."
+          "properties": {
+            "productUpdates": { "type": "boolean" },
+            "betaTesting": { "type": "boolean" },
+            "partnerships": { "type": "boolean" }
+          }
         }
       },
-      "required": [
-        "uid",
-        "email",
-        "createdAt"
-      ]
+      "required": ["userId", "email", "name", "joinedAt", "referralCode", "referralCount", "referralTier", "basePosition", "currentPosition", "status"]
+    },
+    "Referral": {
+      "title": "Referral",
+      "type": "object",
+      "description": "Tracks a single referral event.",
+      "properties": {
+        "referralCode": { "type": "string" },
+        "referrerUserId": { "type": "string" },
+        "newUserId": { "type": "string" },
+        "usedAt": { "type": "object", "description": "Server timestamp" },
+        "bonusApplied": { "type": "boolean", "default": true }
+      },
+      "required": ["referralCode", "referrerUserId", "newUserId", "usedAt", "bonusApplied"]
+    },
+    "ReferralCode": {
+      "title": "ReferralCode",
+      "type": "object",
+      "description": "An index of all referral codes for quick validation.",
+      "properties": {
+        "code": { "type": "string", "description": "The referral code (Document ID)" },
+        "userId": { "type": "string", "description": "Owner of the code" },
+        "createdAt": { "type": "object", "description": "Server timestamp" },
+        "isActive": { "type": "boolean", "default": true }
+      },
+      "required": ["code", "userId", "createdAt", "isActive"]
+    },
+    "GlobalStats": {
+      "title": "GlobalStats",
+      "type": "object",
+      "description": "Global site-wide statistics.",
+      "properties": {
+        "totalMembers": { "type": "number" },
+        "totalReferrals": { "type": "number" },
+        "countriesCount": { "type": "number" },
+        "lastUpdated": { "type": "object", "description": "Server timestamp" },
+        "tierCounts": {
+          "type": "object",
+          "properties": {
+            "advocate": { "type": "number" },
+            "champion": { "type": "number" },
+            "ambassador": { "type": "number" }
+          }
+        }
+      },
+      "required": ["totalMembers", "totalReferrals", "lastUpdated"]
+    },
+    "Dashboard": {
+      "title": "Dashboard",
+      "type": "object",
+      "description": "Data for the user's personal dashboard.",
+      "properties": {
+        "userId": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "waitlistJoinedAt": { "type": "object" },
+        "referralCode": { "type": "string" },
+        "referralTier": { "type": "string" },
+        "currentPosition": { "type": "number" },
+        "basePosition": { "type": "number" },
+        "bonusPositions": { "type": "number" },
+        "referralCount": { "type": "number" }
+      }
     }
   },
   "auth": {
     "providers": [
-      "anonymous",
       "google.com",
       "password"
     ]
@@ -71,23 +123,43 @@
   "firestore": {
     "structure": [
       {
-        "path": "/waitlistEntries/{waitlistEntryId}",
-        "definition": {
-          "entityName": "WaitlistEntry",
-          "schema": {
-            "$ref": "#/backend/entities/WaitlistEntry"
-          },
-          "description": "Stores individual waitlist sign-ups. Each document ID is unique."
-        }
-      },
-      {
         "path": "/users/{userId}",
         "definition": {
           "entityName": "UserProfile",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Stores public user profile information. The document ID must match the user's UID."
+          "schema": { "$ref": "#/entities/UserProfile" },
+          "description": "Stores all user profile data. Doc ID is Firebase UID."
+        }
+      },
+      {
+        "path": "/waitlist/{userId}",
+        "definition": {
+          "entityName": "WaitlistEntry",
+          "schema": { "$ref": "#/entities/WaitlistEntry" },
+          "description": "Stores waitlist-specific data. Doc ID is Firebase UID."
+        }
+      },
+      {
+        "path": "/referrals/{referralId}",
+        "definition": {
+          "entityName": "Referral",
+          "schema": { "$ref": "#/entities/Referral" },
+          "description": "Logs every successful referral event."
+        }
+      },
+      {
+        "path": "/referralCodes/{code}",
+        "definition": {
+          "entityName": "ReferralCode",
+          "schema": { "$ref": "#/entities/ReferralCode" },
+          "description": "Index for all referral codes for fast lookups. Doc ID is the code."
+        }
+      },
+      {
+        "path": "/stats/global",
+        "definition": {
+          "entityName": "GlobalStats",
+          "schema": { "$ref": "#/entities/GlobalStats" },
+          "description": "A single document holding global site statistics."
         }
       }
     ]
