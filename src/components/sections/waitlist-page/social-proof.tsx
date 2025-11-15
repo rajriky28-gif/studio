@@ -37,11 +37,18 @@ const recentSignups = [
 
 export function SocialProof() {
   const [currentSignup, setCurrentSignup] = useState(0);
+  const [minutes, setMinutes] = useState(0);
 
   useEffect(() => {
+    // Generate the initial random number on the client-side
+    setMinutes(Math.floor(Math.random() * 18) + 2);
+
     const interval = setInterval(() => {
       setCurrentSignup((prev) => (prev + 1) % recentSignups.length);
+      // Generate a new random number for the next signup message
+      setMinutes(Math.floor(Math.random() * 18) + 2);
     }, 5000);
+
     return () => clearInterval(interval);
   }, []);
   
@@ -66,10 +73,12 @@ export function SocialProof() {
           ))}
         </div>
         <div className="mt-16 text-center">
-            <div className="inline-block bg-white p-4 rounded-lg shadow-md border">
+            <div className="inline-block bg-white p-4 rounded-lg shadow-md border min-h-[50px]">
+              {minutes > 0 && (
                 <p className="text-charcoal">
-                    {recentSignups[currentSignup]} joined {Math.floor(Math.random() * 18) + 2} minutes ago
+                    {recentSignups[currentSignup]} joined {minutes} minutes ago
                 </p>
+              )}
             </div>
         </div>
       </div>
