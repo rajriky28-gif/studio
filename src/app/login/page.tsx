@@ -1,42 +1,55 @@
 
-import { ModernForm } from '@/components/sections/login/modern-form';
-import { Logo } from '@/components/logo';
 import { Suspense } from 'react';
+import { Logo } from '@/components/logo';
+import { CheckCircle } from 'lucide-react';
+import { ModernForm } from '@/components/sections/login/modern-form';
 
-// A simple loading fallback for the form
 function LoginFormSkeleton() {
-    return <div className="w-full h-[400px] bg-gray-100 animate-pulse rounded-lg"></div>;
+    return <div className="w-full h-[500px] bg-white/10 animate-pulse rounded-lg"></div>;
 }
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen w-full bg-white">
+    <div className="flex min-h-screen w-full bg-navy-gradient-deep font-body">
       {/* Left Side - Visuals & Branding */}
-      <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-center bg-navy-gradient p-12 text-white">
-        <div className="absolute top-8 left-8">
+      <div className="relative hidden lg:flex lg:w-[45%] flex-col justify-center p-12 text-white overflow-hidden">
+         <div className="absolute top-8 left-8">
             <Logo isScrolled={false} isHomePage={true}/>
         </div>
-        <div className="z-10">
-            <h1 className="text-6xl font-light leading-tight tracking-tight text-white/90">
+        
+        <div className="z-10 flex flex-col gap-8">
+            <h1 className="text-7xl font-light leading-tight tracking-tighter">
                 Build AI Agents
             </h1>
-            <p className="mt-4 text-2xl text-white/70">
-                With just a conversation.
+            <p className="text-2xl text-cyan/80">
+                With nothing but conversation.
             </p>
+            <div className="flex gap-3">
+                <div className="py-3 px-5 rounded-full border border-white/20 bg-white/10 text-sm flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-cyan"/> No Code
+                </div>
+                <div className="py-3 px-5 rounded-full border border-white/20 bg-white/10 text-sm flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-cyan"/> 3 Minutes
+                </div>
+                 <div className="py-3 px-5 rounded-full border border-white/20 bg-white/10 text-sm flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-cyan"/> Production Ready
+                </div>
+            </div>
         </div>
-         <div className="absolute bottom-8 left-8 text-xs text-white/40">
-          © {new Date().getFullYear()} Lumivex. All rights reserved.
-        </div>
+
+        {/* Orbs and Particles would go here - simplified for now */}
       </div>
 
       {/* Right Side - Form */}
-      <div className="flex w-full flex-col justify-center bg-white px-4 py-12 lg:w-1/2">
-        <div className="mx-auto w-full max-w-sm lg:w-[420px]">
-            <div className="lg:hidden mb-12 text-center">
-                <div className="flex justify-center">
-                     <Logo isScrolled={true} isHomePage={false} />
-                </div>
+      <div className="flex w-full flex-col items-center justify-center bg-transparent py-12 lg:w-[55%]">
+        {/* Mobile Logo */}
+        <div className="lg:hidden mb-8 text-center">
+            <div className="flex justify-center">
+                 <Logo isScrolled={true} isHomePage={true} />
             </div>
+        </div>
+
+        <div className="w-full max-w-[520px] lg:max-w-none lg:w-auto lg:p-0 px-4">
             <Suspense fallback={<LoginFormSkeleton />}>
               <ModernForm />
             </Suspense>

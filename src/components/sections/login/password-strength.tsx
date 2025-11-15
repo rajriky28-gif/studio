@@ -2,6 +2,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 type Strength = 'Weak' | 'Fair' | 'Good' | 'Strong' | '';
@@ -27,11 +28,11 @@ const checkPasswordStrength = (password: string): Strength => {
 };
 
 const strengthConfig = {
-  'Weak': { color: 'bg-red-500', width: '25%' },
-  'Fair': { color: 'bg-orange-500', width: '50%' },
-  'Good': { color: 'bg-yellow-500', width: '75%' },
-  'Strong': { color: 'bg-green-500', width: '100%' },
-  '': { color: 'bg-transparent', width: '0%' },
+  'Weak': { color: 'bg-red-500', width: '25%', label: 'Weak' },
+  'Fair': { color: 'bg-orange-500', width: '50%', label: 'Fair' },
+  'Good': { color: 'bg-yellow-500', width: '75%', label: 'Good' },
+  'Strong': { color: 'bg-green-500', width: '100%', label: 'Strong' },
+  '': { color: 'bg-transparent', width: '0%', label: '' },
 };
 
 export function PasswordStrength({ password }: { password?: string }) {
@@ -44,19 +45,35 @@ export function PasswordStrength({ password }: { password?: string }) {
   if (!password) return null;
 
   return (
-    <div className="mt-2">
-      <div className="relative h-1 w-full rounded-full bg-gray-200">
-        <div
-          className={cn(
-            'h-1 rounded-full transition-all duration-300',
-            strengthConfig[strength].color
-          )}
-          style={{ width: strengthConfig[strength].width }}
-        ></div>
-      </div>
-      <p className="mt-1 text-xs text-right text-gray-500">
-        {strength}
-      </p>
+    <div className="mt-2 space-y-2">
+        <div className="flex gap-1.5 h-1">
+            {Object.keys(strengthConfig).slice(0, 4).map((key, i) => {
+                const level = Object.keys(strengthConfig).indexOf(strength);
+                return (
+                    <motion.div 
+                        key={key}
+                        className={cn("h-full w-1/4 rounded-full", level >= i + 1 ? strengthConfig[strength as Strength].color : 'bg-white/10')}
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{ duration: 0.3, delay: i * 0.05 }}
+                    />
+                );
+            })}
+        </div>
+        <AnimatePresence mode="wait">
+            {strength && (
+                <motion.p 
+                    key={strength}
+                    className="text-xs text-right"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    style={{ color: strengthConfig[strength].color.replace('bg-', '') }}
+                >
+                    {strengthConfig[strength].label}
+                </motion.p>
+            )}
+        </AnimatePresence>
     </div>
   );
 }
