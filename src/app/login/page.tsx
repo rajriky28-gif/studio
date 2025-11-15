@@ -12,7 +12,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen w-full bg-white">
       {/* Left Side - Visuals & Branding */}
-      <div className="relative hidden lg:flex w-0 flex-1 flex-col justify-center bg-navy-gradient p-12 text-white">
+      <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-center bg-navy-gradient p-12 text-white">
         <div className="absolute top-8 left-8">
             <Logo isScrolled={false} isHomePage={true}/>
         </div>
@@ -30,7 +30,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Side - Form */}
-      <div className="flex w-full flex-1 flex-col justify-center bg-white px-4 py-12 lg:w-[40%] lg:flex-none">
+      <div className="flex w-full flex-col justify-center bg-white px-4 py-12 lg:w-1/2">
         <div className="mx-auto w-full max-w-sm lg:w-[420px]">
             <div className="lg:hidden mb-12 text-center">
                 <div className="flex justify-center">
