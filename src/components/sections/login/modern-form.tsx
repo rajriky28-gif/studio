@@ -201,8 +201,8 @@ export function ModernForm() {
                 </AnimatePresence>
                 
                 <div className="space-y-5">
-                    <FloatingLabelInput form={form} name="email" label="Email Address" type="email" />
-                    <FloatingLabelInput form={form} name="password" label="Password" type="password" />
+                    <FloatingLabelInput form={isLogin ? loginForm : signupForm} name="email" label="Email Address" type="email" />
+                    <FloatingLabelInput form={isLogin ? loginForm : signupForm} name="password" label="Password" type="password" />
                 </div>
 
                 {!isLogin && (
