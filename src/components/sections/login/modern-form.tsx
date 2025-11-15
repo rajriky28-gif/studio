@@ -8,7 +8,7 @@ import * as z from 'zod';
 import { Eye, EyeOff, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormMessage, FormItem } from '@/components/ui/form';
+import { Form, FormControl, FormMessage, FormItem, FormField } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { GoogleButton } from './google-button';
@@ -109,7 +109,7 @@ export function ModernForm() {
 
   return (
     <motion.div 
-        className="w-full max-w-[580px] mx-auto rounded-[32px] border border-white/15 bg-white/10 p-12 shadow-2xl backdrop-blur-2xl"
+        className="w-full max-w-[580px] rounded-[32px] border border-white/15 bg-white/10 p-12 shadow-2xl backdrop-blur-2xl"
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
@@ -130,7 +130,7 @@ export function ModernForm() {
                 onClick={() => handleStateChange('login')} 
                 variant="ghost" 
                 className={cn(
-                    "relative z-10 w-1/2 rounded-lg py-3 transition-colors duration-300",
+                    "relative z-10 w-1/2 rounded-lg py-3 transition-colors duration-300 hover:bg-transparent",
                     isLogin ? "text-white" : "text-white/50 hover:text-white/70"
                 )}
                 disabled={isLogin}
@@ -141,7 +141,7 @@ export function ModernForm() {
                 onClick={() => handleStateChange('signup')} 
                 variant="ghost" 
                 className={cn(
-                    "relative z-10 w-1/2 rounded-lg py-3 transition-colors duration-300",
+                    "relative z-10 w-1/2 rounded-lg py-3 transition-colors duration-300 hover:bg-transparent",
                     !isLogin ? "text-white" : "text-white/50 hover:text-white/70"
                 )}
                 disabled={!isLogin}
@@ -313,7 +313,7 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
         control={form.control}
         name={name}
         render={({ field }) => (
-            <div className="relative mb-5">
+            <FormItem className="relative mb-5">
                 <div 
                     className={cn(
                         "group relative rounded-xl border transition-all duration-300",
@@ -323,7 +323,7 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
                         "hover:border-white/20"
                     )}
                 >
-                    <label
+                     <label
                         htmlFor={name}
                         className={cn(
                             "absolute left-4 transition-all duration-300 pointer-events-none text-white/50",
@@ -335,15 +335,17 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
                     >
                         {label}
                     </label>
-                    <Input
-                        id={name}
-                        type={inputType}
-                        className={cn(
-                            "h-14 w-full bg-transparent border-none p-0 px-4 pt-5 text-base text-white ring-offset-background",
-                            "focus-visible:ring-0 focus-visible:ring-offset-0"
-                        )}
-                        {...field}
-                    />
+                    <FormControl>
+                        <Input
+                            id={name}
+                            type={inputType}
+                            className={cn(
+                                "h-14 w-full bg-transparent border-none p-0 px-4 pt-5 text-base text-white ring-offset-background",
+                                "focus-visible:ring-0 focus-visible:ring-offset-0"
+                            )}
+                            {...field}
+                        />
+                    </FormControl>
                     {type === 'password' && (
                         <button
                         type="button"
@@ -360,7 +362,7 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
                     )}
                 </div>
                 <FormMessage className="text-xs pt-1 text-red-400" />
-            </div>
+            </FormItem>
         )}
       />
     );
