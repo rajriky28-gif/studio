@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
-export function Logo({ isScrolled }: { isScrolled?: boolean }) {
+export function Logo({ isScrolled, isHomePage }: { isScrolled?: boolean, isHomePage?: boolean }) {
   return (
     <Link href="/" className="inline-flex items-center gap-0">
       <Image 
@@ -16,7 +16,7 @@ export function Logo({ isScrolled }: { isScrolled?: boolean }) {
       <span 
         className={cn(
           "text-3xl font-bold tracking-tight transition-colors -ml-4",
-          isScrolled ? "text-navy" : "text-white"
+          isScrolled ? "text-navy" : (isHomePage ? "text-white" : "text-navy")
         )}
       >
         Lumivex

@@ -21,6 +21,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const isHomePage = pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,7 +41,7 @@ export function Header() {
       )}
     >
       <div className={cn("flex items-center justify-between transition-all duration-300 h-20", "container mx-auto px-4 md:px-6")}>
-          <Logo isScrolled={isScrolled} />
+          <Logo isScrolled={isScrolled} isHomePage={isHomePage} />
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center space-x-8 md:flex h-full">
@@ -50,7 +51,7 @@ export function Header() {
                 href={link.href}
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-ocean',
-                  isScrolled ? 'text-black' : 'text-white'
+                  isScrolled ? 'text-black' : (isHomePage ? 'text-white' : 'text-black')
                 )}
               >
                 {link.name}
@@ -69,14 +70,14 @@ export function Header() {
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Menu className={cn('h-8 w-8', isScrolled ? 'text-black' : 'text-white')} />
+                  <Menu className={cn('h-8 w-8', isScrolled ? 'text-black' : (isHomePage ? 'text-white' : 'text-black'))} />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-full bg-white p-0">
                 <div className="flex h-full flex-col">
                   <div className={cn("flex items-center justify-between border-b px-4 text-primary h-20")}>
-                    <Logo isScrolled={true} />
+                    <Logo isScrolled={true} isHomePage={false} />
                     <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
                       <X className="h-8 w-8 text-primary" />
                       <span className="sr-only">Close menu</span>
