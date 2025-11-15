@@ -18,5 +18,16 @@ service cloud.firestore {
                       && request.resource.data.keys().hasAll(['id', 'email', 'timestamp'])
                       && request.resource.data.email is string;
     }
+
+    // Users collection:
+    // - A user can read their own profile.
+    // - A user can create their own profile document.
+    // - A user can update their own profile document.
+    // - No one can delete user profiles.
+    match /users/{userId} {
+      allow read, update: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false;
+    }
   }
 }

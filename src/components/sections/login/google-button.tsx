@@ -1,13 +1,25 @@
-
 'use client';
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useFirebase } from "@/firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 export function GoogleButton() {
-  const handleGoogleLogin = () => {
-    // Firebase Google Auth logic goes here
-    console.log('Continuing with Google');
+  const { auth } = useFirebase();
+
+  const handleGoogleLogin = async () => {
+    if (!auth) return;
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      // After successful login, you might want to redirect the user
+      // For now, Firebase's onAuthStateChanged will handle the user state update.
+      console.log('Successfully signed in with Google');
+      // window.location.href = '/dashboard'; // Example redirect
+    } catch (error) {
+      console.error('Error during Google sign-in:', error);
+    }
   };
 
   return (
