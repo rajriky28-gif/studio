@@ -8,19 +8,22 @@ const testimonials = [
     quote: "I've been waiting for something like this. The ability to build AI agents without coding will be a game-changer for my business.",
     name: 'David Chen',
     title: 'Founder, TechStart Solutions',
-    image: '/avatars/david.jpg',
+    image: 'https://picsum.photos/seed/david/48/48',
+    imageHint: 'man portrait',
   },
   {
     quote: "Finally, a platform that speaks my language instead of forcing me to learn theirs. Can't wait to get my hands on Lumivex.",
     name: 'Sarah Mitchell',
     title: 'Marketing Director, GrowthCo',
-    image: '/avatars/sarah.jpg',
+    image: 'https://picsum.photos/seed/sarah/48/48',
+    imageHint: 'woman portrait',
   },
   {
     quote: "As someone who's tried every automation tool out there, Lumivex's approach is exactly what the market needs. Revolutionary concept.",
     name: 'Marcus Johnson',
     title: 'Operations Consultant',
-    image: '/avatars/marcus.jpg',
+    image: 'https://picsum.photos/seed/marcus/48/48',
+    imageHint: 'man portrait professional',
   },
 ];
 
@@ -63,7 +66,7 @@ export function SocialProof() {
             <div key={testimonial.name} className="bg-cream/60 p-8 rounded-xl border border-stone-200">
               <p className="text-charcoal leading-relaxed mb-6">"{testimonial.quote}"</p>
               <div className="flex items-center gap-4">
-                <Image src={testimonial.image} alt={testimonial.name} width={48} height={48} className="rounded-full" />
+                <Image src={testimonial.image} alt={testimonial.name} width={48} height={48} className="rounded-full" data-ai-hint={testimonial.imageHint}/>
                 <div>
                   <p className="font-semibold text-navy">{testimonial.name}</p>
                   <p className="text-sm text-charcoal/80">{testimonial.title}</p>
