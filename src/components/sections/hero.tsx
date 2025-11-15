@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowDown, ArrowRight, Flame } from 'lucide-react';
 import { AnimatedCounter } from '@/components/animated-counter';
+import Link from 'next/link';
 
 export function Hero() {
   return (
@@ -46,10 +47,10 @@ export function Hero() {
             className="h-auto bg-navy-gradient px-12 py-5 text-base font-semibold text-white shadow-lg shadow-ocean/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-ocean/50 md:text-lg"
             asChild
           >
-            <a href="#waitlist">
+            <Link href="/waitlist">
               Join the Waitlist
               <ArrowRight className="ml-2 h-5 w-5" />
-            </a>
+            </Link>
           </Button>
           <p className="mt-4 text-sm text-white/70">
             Be among the first to experience the future of AI creation

@@ -1,7 +1,8 @@
 import { Gift, Rocket, Star } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { WaitlistForm } from '@/components/waitlist-form';
+import { Button } from '@/components/ui/button';
 import { AnimatedCounter } from '@/components/animated-counter';
+import Link from 'next/link';
 
 interface Benefit {
   icon: LucideIcon;
@@ -52,10 +53,12 @@ export function Waitlist() {
           ))}
         </div>
 
-        <div className="mx-auto mt-16 max-w-2xl">
-          <div className="rounded-2xl bg-white p-8 shadow-lg sm:p-12">
-            <WaitlistForm />
-          </div>
+        <div className="mx-auto mt-16 max-w-2xl text-center">
+            <Button size="lg" asChild className="h-14 bg-navy-gradient text-lg font-semibold text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-ocean/20">
+                <Link href="/waitlist">
+                    Join the Waitlist
+                </Link>
+            </Button>
           <p className="mt-8 text-center text-base font-medium text-navy">
             Join <AnimatedCounter target={2847} />+ innovators already waiting
           </p>

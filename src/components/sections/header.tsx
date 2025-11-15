@@ -13,8 +13,8 @@ const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'About', href: '/about' },
   { name: 'Vision', href: '/vision' },
+  { name: 'Waitlist', href: '/waitlist' },
   { name: 'Contact', href: '/contact' },
-  { name: 'Waitlist', href: '#waitlist' },
 ];
 
 export function Header() {
@@ -61,7 +61,7 @@ export function Header() {
           
           <div className="hidden items-center space-x-4 md:flex h-full">
             <Button asChild className="bg-navy-gradient rounded-lg px-6 font-semibold">
-              <Link href="#waitlist">Join Waitlist</Link>
+              <Link href="/waitlist">Join Waitlist</Link>
             </Button>
           </div>
 
@@ -97,7 +97,7 @@ export function Header() {
                   </nav>
                   <div className="p-4 border-t">
                     <Button asChild className="w-full bg-navy-gradient rounded-lg py-6 text-lg font-semibold">
-                       <Link href="#waitlist" onClick={() => setIsMobileMenuOpen(false)}>Join Waitlist</Link>
+                       <Link href="/waitlist" onClick={() => setIsMobileMenuOpen(false)}>Join Waitlist</Link>
                     </Button>
                   </div>
                 </div>

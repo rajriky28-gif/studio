@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, CheckCircle } from 'lucide-react';
+import Link from 'next/link';
 
 export function FinalCta() {
   return (
@@ -18,9 +19,9 @@ export function FinalCta() {
               className="h-auto w-full sm:w-auto bg-navy-gradient px-14 py-5 text-lg font-semibold text-white shadow-lg shadow-ocean/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-ocean/50"
               asChild
             >
-              <a href="#waitlist">
+              <Link href="/waitlist">
                 Join Waitlist Now <ArrowRight className="ml-2 h-5 w-5" />
-              </a>
+              </Link>
             </Button>
           </div>
           <div className="mt-6 flex flex-col items-center justify-center gap-4 text-sm text-charcoal/80 sm:flex-row sm:gap-6">
