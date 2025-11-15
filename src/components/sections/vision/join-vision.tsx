@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { XIcon } from '@/components/x-icon';
@@ -30,12 +32,12 @@ const contributions = [
 
 export function JoinVision() {
 
-  const handleShare = () => {
+  const handleShare = useCallback(() => {
     const text = "I'm excited about @Lumivex's vision to make AI creation as simple as conversation. A world where every idea can become an intelligent system—instantly. Check it out:";
     const url = "https://lumivex.com/vision";
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
     window.open(twitterUrl, '_blank', 'width=550,height=420');
-  }
+  }, [])
 
   return (
     <section className="bg-cream py-28">
