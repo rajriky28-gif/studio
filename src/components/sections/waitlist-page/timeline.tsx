@@ -1,4 +1,4 @@
-import { Check, Code, Rocket, Globe } from 'lucide-react';
+import { Check, Code, Rocket, Globe, ChevronDown } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface Milestone {
@@ -56,21 +56,27 @@ export function Timeline() {
             Here's what happens between now and when you get access to Lumivex.
           </p>
         </div>
-        <div className="relative max-w-2xl mx-auto">
-          <div className="absolute left-6 w-0.5 h-full bg-cyan/20" aria-hidden="true"></div>
+        <div className="max-w-2xl mx-auto">
           {milestones.map((item, index) => (
-            <div key={item.title} className="relative pl-16 pb-12 last:pb-0">
-              <div className="absolute left-0 top-0">
-                <div className="w-12 h-12 rounded-full bg-ocean/10 flex items-center justify-center">
-                  <item.icon className="h-6 w-6 text-ocean" />
+            <div key={item.title} className="flex flex-col items-center">
+              <div className="relative pl-16 pb-8">
+                  <div className="absolute left-0 top-0">
+                    <div className="w-12 h-12 rounded-full bg-ocean/10 flex items-center justify-center">
+                      <item.icon className="h-6 w-6 text-ocean" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 mb-2">
+                    <h3 className="text-xl font-medium text-navy">{item.title}</h3>
+                    <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${statusStyles[item.status]}`}>{item.status}</span>
+                  </div>
+                  <p className="text-sm text-silver mb-2">{item.statusDetail}</p>
+                  <p className="text-charcoal/80">{item.description}</p>
+              </div>
+              {index < milestones.length - 1 && (
+                <div className="h-12 w-12 flex justify-center items-center my-2">
+                  <ChevronDown className="h-8 w-8 text-cyan/50" />
                 </div>
-              </div>
-              <div className="flex items-center gap-4 mb-2">
-                <h3 className="text-xl font-medium text-navy">{item.title}</h3>
-                <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${statusStyles[item.status]}`}>{item.status}</span>
-              </div>
-              <p className="text-sm text-silver mb-2">{item.statusDetail}</p>
-              <p className="text-charcoal/80">{item.description}</p>
+              )}
             </div>
           ))}
         </div>
