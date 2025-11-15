@@ -9,7 +9,7 @@ const transformations: Transformation[] = [
   {
     title: 'From Months to Minutes',
     currentState: "Building custom AI automation requires months of development, testing, and iteration. Small businesses can't afford it. Individuals can't access it. Most ideas never get built.",
-    futureState: 'Any automation idea becomes reality in minutes. A restaurant owner creates a reservation management agent over coffee. A nonprofit builds a donor communication system between meetings.',
+    futureState: 'Any automation idea becomes reality in minutes. A restaurant owner creates a reservation management agent over coffee. A nonprofit builds a donor communication system between meetings. A student creates a research assistant during study break.',
     impacts: [
       '100x acceleration in automation deployment',
       'Ideas tested and validated same day',
@@ -20,7 +20,7 @@ const transformations: Transformation[] = [
   {
     title: 'From Technical Elite to Universal Creators',
     currentState: 'Only those with coding skills, technical education, or large budgets can build intelligent automation. The vast majority of people with great ideas are excluded.',
-    futureState: 'A nurse creates a patient intake agent. A farmer builds crop monitoring automation. A teacher develops personalized learning assistants. Anyone with a need becomes a creator.',
+    futureState: 'A nurse creates a patient intake agent. A farmer builds crop monitoring automation. A teacher develops personalized learning assistants. A chef creates inventory management intelligence. Anyone with a need becomes a creator.',
     impacts: [
       '10 million+ new AI creators worldwide',
       'Solutions built by people who understand the problems',

@@ -80,8 +80,7 @@ export function VisionTimeline() {
                 <div className="flex items-baseline gap-4 mb-4">
                   <span className="text-cyan text-5xl font-bold">{phase.number}</span>
                   <div>
-                    <h3 className="text-2xl font-bold text-navy">Phase {phase.number}: {phase.year}</h3>
-                    <p className="text-ocean font-semibold">{phase.goal}</p>
+                    <h3 className="text-2xl font-bold text-navy">Phase {phase.number}: {phase.goal} ({phase.year})</h3>
                   </div>
                 </div>
                 <div className="mb-4">

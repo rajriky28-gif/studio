@@ -59,7 +59,7 @@ export function RippleEffects() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto">
           <h2 className="text-5xl sm:text-6xl font-light mb-5">
-            The Ripple Effects
+            Beyond the Platform
           </h2>
           <p className="text-xl text-white/80 font-light leading-relaxed mb-20">
             Democratizing AI creation doesn't just change how we build technology—it transforms society, economy, and human potential.

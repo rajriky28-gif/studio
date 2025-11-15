@@ -8,6 +8,8 @@ interface Pillar {
   reality: string;
   ourVision: string;
   whatThisMeans: string[];
+  paradigmShift?: string;
+  networkEffect?: string;
   impact: string;
 }
 
@@ -38,6 +40,7 @@ const pillars: Pillar[] = [
       'AI selects optimal components, configures integrations, handles edge cases',
       'Systems that continuously improve themselves without human intervention'
     ],
+    paradigmShift: 'Just as compilers freed programmers from writing machine code, and frameworks freed them from reinventing common patterns, Lumivex frees everyone from technical implementation entirely. You describe the "what," AI handles the "how."',
     impact: 'When AI builds AI, human creativity is unleashed at unprecedented scale. Ideas flow directly into reality. Innovation cycles collapse from months to minutes. The bottleneck shifts from implementation to imagination—and human imagination is infinite.'
   },
   {
@@ -52,6 +55,7 @@ const pillars: Pillar[] = [
         "Agents learn from community patterns and improve collectively",
         "Innovation compounds as each contribution enhances the whole"
     ],
+    networkEffect: "As more creators build modules, users gain more capability. As more users build agents, creators gain more opportunities. As more agents operate, the platform learns more patterns. Growth becomes exponential, not linear.",
     impact: "The most powerful innovations emerge from collective intelligence, not individual genius. When thousands of creators contribute, millions benefit. The platform becomes smarter with every use, creating a rising tide that lifts all boats."
   },
 ];
@@ -70,9 +74,11 @@ export function Pillars() {
         </div>
         <div className="space-y-20">
           {pillars.map((pillar, index) => (
-            <div key={index} className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+            <div key={index} className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
               <div className={`text-center lg:text-left ${index % 2 !== 0 ? 'lg:order-last' : ''}`}>
-                <pillar.icon className="h-24 w-24 text-cyan mx-auto lg:mx-0 mb-6" />
+                <div className="inline-block bg-white p-4 rounded-2xl shadow-md mb-6">
+                  <pillar.icon className="h-20 w-20 text-cyan" />
+                </div>
                 <h3 className="text-ocean text-3xl font-light leading-snug mb-8">
                   {pillar.visionStatement}
                 </h3>
@@ -86,6 +92,21 @@ export function Pillars() {
                 <ul className="space-y-3 list-disc list-inside text-charcoal/90 mb-6">
                   {pillar.whatThisMeans.map((item) => <li key={item}>{item}</li>)}
                 </ul>
+                
+                {pillar.paradigmShift && (
+                  <>
+                    <h4 className="font-semibold text-navy mb-2">The Paradigm Shift:</h4>
+                    <p className="text-charcoal/90 mb-6">{pillar.paradigmShift}</p>
+                  </>
+                )}
+
+                {pillar.networkEffect && (
+                  <>
+                    <h4 className="font-semibold text-navy mb-2">The Network Effect:</h4>
+                    <p className="text-charcoal/90 mb-6">{pillar.networkEffect}</p>
+                  </>
+                )}
+                
                 <h4 className="font-semibold text-navy mb-2">Impact:</h4>
                 <p className="text-charcoal/90 italic">"{pillar.impact}"</p>
               </div>
