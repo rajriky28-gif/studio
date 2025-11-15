@@ -104,12 +104,10 @@ export function ModernForm() {
   };
 
   const isLogin = formState === 'login';
-  const form = isLogin ? loginForm : signupForm;
-  const onSubmit = isLogin ? onLoginSubmit : onSignupSubmit;
 
   return (
     <motion.div 
-        className="w-full max-w-[580px] rounded-[32px] border border-white/15 bg-white/10 p-12 shadow-2xl backdrop-blur-2xl"
+        className="w-full max-w-lg rounded-[32px] border border-white/15 bg-white/10 p-12 shadow-2xl backdrop-blur-2xl"
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
@@ -134,7 +132,7 @@ export function ModernForm() {
                     isLogin ? "text-white" : "text-white/50 hover:text-white/70",
                     "hover:bg-transparent"
                 )}
-                disabled={isLogin}
+                disabled={isLoading}
             >
                 Login
             </Button>
@@ -146,7 +144,7 @@ export function ModernForm() {
                     !isLogin ? "text-white" : "text-white/50 hover:text-white/70",
                     "hover:bg-transparent"
                 )}
-                disabled={!isLogin}
+                disabled={isLoading}
             >
                 Sign Up
             </Button>
@@ -175,127 +173,83 @@ export function ModernForm() {
                 <p>{error}</p>
             </motion.div>
         )}
-      </AnimatePresence>
+        </AnimatePresence>
 
-        <FormProvider {...form}>
-            <form 
-              onSubmit={form.handleSubmit(onSubmit as any)} 
-              className="space-y-5"
-            >
-                <motion.div layout transition={{ type: 'spring', duration: 0.6, bounce: 0.2 }}>
-                <AnimatePresence initial={false}>
-                    {!isLogin && (
-                    <motion.div
-                        key="fullName"
-                        className="overflow-hidden"
-                        initial={{ height: 0, opacity: 0, y: -20 }}
-                        animate={{ height: 'auto', opacity: 1, y: 0 }}
-                        exit={{ height: 0, opacity: 0, y: -20 }}
-                        transition={{ duration: 0.4, ease: 'easeInOut' }}
-                    >
-                        <div className="mb-5">
-                           <FloatingLabelInput form={signupForm} name="fullName" label="Full Name" />
-                        </div>
-                    </motion.div>
-                    )}
-                </AnimatePresence>
-                
-                <div className="space-y-5">
-                    <FloatingLabelInput form={isLogin ? loginForm : signupForm} name="email" label="Email Address" type="email" />
-                    <FloatingLabelInput form={isLogin ? loginForm : signupForm} name="password" label="Password" type="password" />
-                </div>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={formState}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } }}
+            exit={{ opacity: 0, y: -20, transition: { duration: 0.3, ease: 'easeIn' } }}
+          >
+            {isLogin ? (
+              <FormProvider {...loginForm}>
+                <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-5">
+                  <FloatingLabelInput form={loginForm} name="email" label="Email Address" type="email" />
+                  <FloatingLabelInput form={loginForm} name="password" label="Password" type="password" />
+                  
+                  <div className="text-right pt-2">
+                      <Link href="#" className="text-sm font-medium text-cyan/80 hover:text-cyan hover:underline">
+                        Forgot Password?
+                      </Link>
+                  </div>
 
-                {!isLogin && (
-                    <PasswordStrength password={signupForm.watch('password')} />
-                )}
+                  <div className="pt-6">
+                    <Button type="submit" className="w-full h-14 bg-gradient-to-r from-cyan to-blue-500 text-base font-semibold text-white shadow-lg shadow-cyan/20 transition-all duration-300 hover:shadow-xl hover:shadow-cyan/40 hover:-translate-y-px" disabled={isLoading}>
+                        {isLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : 'Login to Lumivex'}
+                    </Button>
+                  </div>
+                </form>
+              </FormProvider>
+            ) : (
+              <FormProvider {...signupForm}>
+                <form onSubmit={signupForm.handleSubmit(onSignupSubmit)} className="space-y-5">
+                  <FloatingLabelInput form={signupForm} name="fullName" label="Full Name" />
+                  <FloatingLabelInput form={signupForm} name="email" label="Email Address" type="email" />
+                  <FloatingLabelInput form={signupForm} name="password" label="Password" type="password" />
+                  <PasswordStrength password={signupForm.watch('password')} />
+                  <FloatingLabelInput form={signupForm} name="confirmPassword" label="Confirm Password" type="password" />
+                  
+                  <div className="pt-4">
+                    <FormField
+                      control={signupForm.control}
+                      name="terms"
+                      render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                          <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} id="terms" /></FormControl>
+                          <div className="grid gap-1.5 leading-none">
+                              <label htmlFor="terms" className="text-sm font-normal text-white/70 peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                              I agree to the <Link href="#" className="text-cyan/80 hover:underline">Terms</Link> and <Link href="#" className="text-cyan/80 hover:underline">Privacy Policy</Link>
+                              </label>
+                              <FormMessage />
+                          </div>
+                          </FormItem>
+                      )}
+                    />
+                  </div>
 
-                <AnimatePresence>
-                    {!isLogin && (
-                    <motion.div
-                        key="confirmPassword"
-                        className="overflow-hidden"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1, transition: { delay: 0.1 } }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.4, ease: 'easeInOut' }}
-                    >
-                         <div className="mt-5">
-                           <FloatingLabelInput form={signupForm} name="confirmPassword" label="Confirm Password" type="password" />
-                         </div>
-                    </motion.div>
-                    )}
-                </AnimatePresence>
-                </motion.div>
-                
-                <motion.div layout>
-                    <AnimatePresence>
-                        {isLogin && (
-                        <motion.div
-                            key="forgotPassword"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1, transition: { delay: 0.3 } }}
-                            exit={{ opacity: 0 }}
-                            className="text-right pt-2"
-                        >
-                            <Link href="#" className="text-sm font-medium text-cyan/80 hover:text-cyan hover:underline">
-                            Forgot Password?
-                            </Link>
-                        </motion.div>
-                        )}
-                    </AnimatePresence>
-                </motion.div>
-                
-                <AnimatePresence>
-                    {!isLogin && (
-                    <motion.div
-                        key="terms"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1, transition: { delay: 0.4 } }}
-                        exit={{ opacity: 0 }}
-                        className="overflow-hidden pt-4"
-                    >
-                        <FormField
-                        control={signupForm.control}
-                        name="terms"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                            <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} id="terms" /></FormControl>
-                            <div className="grid gap-1.5 leading-none">
-                                <label htmlFor="terms" className="text-sm font-normal text-white/70 peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                I agree to the <Link href="#" className="text-cyan/80 hover:underline">Terms</Link> and <Link href="#" className="text-cyan/80 hover:underline">Privacy Policy</Link>
-                                </label>
-                                <FormMessage />
-                            </div>
-                            </FormItem>
-                        )}
-                        />
-                    </motion.div>
-                    )}
-                </AnimatePresence>
-
-                <div className="pt-6">
-                <Button
-                    type="submit"
-                    className="w-full h-14 bg-gradient-to-r from-cyan to-blue-500 text-base font-semibold text-white shadow-lg shadow-cyan/20 transition-all duration-300 hover:shadow-xl hover:shadow-cyan/40 hover:-translate-y-px"
-                    disabled={isLoading || (!isLogin && !signupForm.formState.isValid)}
-                >
-                    {isLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : (isLogin ? 'Login to Lumivex' : 'Create Account')}
-                </Button>
-                </div>
-
-                <p className="pt-4 text-center text-sm text-white/60">
-                {isLogin ? "Don't have an account? " : "Already have an account? "}
-                <button type="button" onClick={() => handleStateChange(isLogin ? 'signup' : 'login')} className="font-semibold text-cyan/90 hover:text-cyan hover:underline">
-                    {isLogin ? 'Sign up' : 'Login'}
-                </button>
-                </p>
-            </form>
-        </FormProvider>
+                  <div className="pt-6">
+                    <Button type="submit" className="w-full h-14 bg-gradient-to-r from-cyan to-blue-500 text-base font-semibold text-white shadow-lg shadow-cyan/20 transition-all duration-300 hover:shadow-xl hover:shadow-cyan/40 hover:-translate-y-px" disabled={isLoading || !signupForm.formState.isValid}>
+                        {isLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : 'Create Account'}
+                    </Button>
+                  </div>
+                </form>
+              </FormProvider>
+            )}
+          </motion.div>
+        </AnimatePresence>
+        
+        <p className="pt-8 text-center text-sm text-white/60">
+          {isLogin ? "Don't have an account? " : "Already have an account? "}
+          <button type="button" onClick={() => handleStateChange(isLogin ? 'signup' : 'login')} className="font-semibold text-cyan/90 hover:text-cyan hover:underline" disabled={isLoading}>
+              {isLogin ? 'Sign up' : 'Login'}
+          </button>
+        </p>
         
         <div className="mt-12 text-center text-xs text-white/40 space-x-4">
             <span>🔒 Secure & Encrypted</span>
             <span>✓ GDPR Compliant</span>
-       </div>
+        </div>
     </motion.div>
   );
 }
@@ -315,7 +269,7 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
         control={form.control}
         name={name}
         render={({ field }) => (
-            <FormItem className="relative mb-5">
+            <FormItem className="relative mb-1">
                 <div 
                     className={cn(
                         "group relative rounded-xl border transition-all duration-300",
