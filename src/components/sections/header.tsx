@@ -32,6 +32,7 @@ export function Header() {
   }, []);
 
   const headerBg = isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent';
+  const linkColor = isScrolled ? 'text-navy' : (isHomePage ? 'text-white' : 'text-navy');
   
   return (
     <header
@@ -51,7 +52,7 @@ export function Header() {
                 href={link.href}
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-ocean',
-                  isScrolled ? 'text-navy' : (isHomePage ? 'text-white' : 'text-navy')
+                  linkColor
                 )}
               >
                 {link.name}
@@ -60,7 +61,7 @@ export function Header() {
           </nav>
           
           <div className="hidden items-center space-x-2 md:flex h-full">
-            <Button asChild variant="ghost" className={cn('transition-colors hover:text-ocean', isScrolled ? 'text-navy' : (isHomePage ? 'text-white' : 'text-navy'))}>
+            <Button asChild variant="ghost" className={cn('transition-colors hover:text-ocean hover:bg-transparent', linkColor)}>
                 <Link href="/login">Login</Link>
             </Button>
             <Button asChild className="bg-navy-gradient rounded-lg px-6 font-semibold">
