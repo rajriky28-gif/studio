@@ -15,7 +15,7 @@ export function Footer() {
   const links = {
     Company: [
       { name: 'About', href: '/about' },
-      { name: 'Vision', href: '#vision' },
+      { name: 'Vision', href: '/vision' },
       { name: 'Blog', href: '#' },
       { name: 'Contact', href: '/contact' },
     ],
@@ -84,7 +84,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-16 border-t border-white/10 pt-8 flex flex-col-reverse items-center justify-between gap-4 text-sm text-white/50 sm:flex-row">
-          <p>© {new Date().getFullYear()} Lumivex. Coming Soon.</p>
+          <p>© {new Date().getFullYear()} Lumivex. Building the future of AI creation.</p>
           <div className="flex space-x-4">
             <Link href="#" className="transition-colors hover:text-cyan">Privacy</Link>
             <Link href="#" className="transition-colors hover:text-cyan">Terms</Link>

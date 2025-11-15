@@ -1,6 +1,5 @@
 import { Header } from "@/components/sections/header";
 import { Hero } from "@/components/sections/hero";
-import { Vision } from "@/components/sections/vision";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { UseCases } from "@/components/sections/use-cases";
 import { Features } from "@/components/sections/features";
@@ -16,7 +15,6 @@ export default function Home() {
       <Header />
       <main className="flex-grow">
         <Hero />
-        <Vision />
         <HowItWorks />
         <UseCases />
         <Features />
