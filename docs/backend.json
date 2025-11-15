@@ -1,0 +1,62 @@
+{
+  "entities": {
+    "WaitlistEntry": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "WaitlistEntry",
+      "type": "object",
+      "description": "Represents a user who has signed up for the waitlist.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the waitlist entry."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user who signed up for the waitlist.",
+          "format": "email"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of when the user signed up for the waitlist.",
+          "format": "date-time"
+        },
+        "referrer": {
+          "type": "string",
+          "description": "The URL or source from which the user came to sign up."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "timestamp"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/waitlistEntries/{waitlistEntryId}",
+        "definition": {
+          "entityName": "WaitlistEntry",
+          "schema": {
+            "$ref": "#/backend/entities/WaitlistEntry"
+          },
+          "description": "Stores waitlist entries. Includes the 'id', 'email', 'timestamp', and 'referrer' fields. All documents have the same security requirements (public write with validation).",
+          "params": [
+            {
+              "name": "waitlistEntryId",
+              "description": "Unique identifier for the waitlist entry."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "Given the pre-launch nature focused on collecting emails for a waitlist, the Firestore structure is designed for simplicity and scalability. We prioritize ease of querying and future expansion. The primary focus is on the `waitlistEntries` collection. \n\n**Authorization Independence:** Since this is a pre-launch marketing site with no user authentication required besides anonymous users to avoid spam, we can directly write to the `waitlistEntries` collection without needing to denormalize any authorization data. The collection is publicly writeable but limited via Firestore Rules.\n\n**Structural Segregation:** All documents within `waitlistEntries` have the same security posture (publicly writeable with validation rules), so we avoid structural complexity.\n\n**QAPs (Rules are not Filters):** List operations on `waitlistEntries` are not required based on the current scope, but if they were needed in the future, simple queries based on `timestamp` or `referrer` would be possible due to the flat structure."
+  }
+}
