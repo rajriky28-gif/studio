@@ -109,7 +109,7 @@ export function ModernForm() {
 
   return (
     <motion.div 
-        className="w-full max-w-[520px] rounded-[32px] border border-white/15 bg-white/10 p-12 shadow-2xl backdrop-blur-2xl"
+        className="w-full max-w-[580px] rounded-[32px] border border-white/15 bg-white/10 p-12 shadow-2xl backdrop-blur-2xl"
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
@@ -130,8 +130,9 @@ export function ModernForm() {
                 onClick={() => handleStateChange('login')} 
                 variant="ghost" 
                 className={cn(
-                    "relative z-10 w-1/2 rounded-lg py-3 transition-colors duration-300 hover:bg-transparent",
-                    isLogin ? "text-white" : "text-white/50 hover:text-white/70"
+                    "relative z-10 w-1/2 rounded-lg py-3 transition-colors duration-300",
+                    isLogin ? "text-white" : "text-white/50 hover:text-white/70",
+                    "hover:bg-transparent"
                 )}
                 disabled={isLogin}
             >
@@ -141,8 +142,9 @@ export function ModernForm() {
                 onClick={() => handleStateChange('signup')} 
                 variant="ghost" 
                 className={cn(
-                    "relative z-10 w-1/2 rounded-lg py-3 transition-colors duration-300 hover:bg-transparent",
-                    !isLogin ? "text-white" : "text-white/50 hover:text-white/70"
+                    "relative z-10 w-1/2 rounded-lg py-3 transition-colors duration-300",
+                    !isLogin ? "text-white" : "text-white/50 hover:text-white/70",
+                    "hover:bg-transparent"
                 )}
                 disabled={!isLogin}
             >
