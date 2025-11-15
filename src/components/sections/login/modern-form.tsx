@@ -109,7 +109,7 @@ export function ModernForm() {
 
   return (
     <motion.div 
-        className="w-full max-w-[520px] rounded-[32px] border border-white/15 bg-white/10 p-12 shadow-2xl backdrop-blur-2xl"
+        className="w-full max-w-2xl rounded-[32px] border border-white/15 bg-white/10 p-12 shadow-2xl backdrop-blur-2xl"
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
