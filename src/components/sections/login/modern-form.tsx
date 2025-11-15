@@ -8,7 +8,7 @@ import * as z from 'zod';
 import { Eye, EyeOff, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormMessage, FormItem } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { GoogleButton } from './google-button';
@@ -109,7 +109,7 @@ export function ModernForm() {
 
   return (
     <motion.div 
-        className="w-full max-w-2xl rounded-[32px] border border-white/15 bg-white/10 p-12 shadow-2xl backdrop-blur-2xl"
+        className="w-full max-w-[580px] rounded-[32px] border border-white/15 bg-white/10 p-12 shadow-2xl backdrop-blur-2xl"
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
@@ -292,10 +292,10 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
             <div className="relative">
                 <div 
                     className={cn(
-                        "group relative rounded-xl border transition-all duration-300",
-                        "bg-white/5 border-white/10",
-                        error ? "border-red-500/50" : "focus-within:border-cyan/80",
-                        error ? "focus-within:shadow-[0_0_0_4px_rgba(239,68,68,0.15)]" : "focus-within:shadow-[0_0_0_4px_rgba(6,182,212,0.15)]"
+                        "group relative rounded-xl border-t-0 border-x-0 border-b transition-all duration-300",
+                        "bg-white/5 border-b-white/10",
+                        error ? "border-b-red-500/50" : "focus-within:border-b-cyan/80",
+                        error ? "focus-within:shadow-[0_4px_6px_-1px_rgba(239,68,68,0.1)]" : "focus-within:shadow-[0_4px_6px_-1px_rgba(6,182,212,0.1)]"
                     )}
                 >
                     <label
@@ -339,5 +339,3 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
       />
     );
   }
-
-    
