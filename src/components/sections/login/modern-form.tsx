@@ -8,7 +8,7 @@ import * as z from 'zod';
 import { Eye, EyeOff, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormMessage, FormItem, FormLabel, FormField } from '@/components/ui/form';
+import { Form, FormControl, FormMessage, FormItem, FormLabel } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { GoogleButton } from './google-button';
@@ -18,6 +18,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfi
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
+import { FormField } from '@/components/ui/form';
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -104,6 +105,7 @@ export function ModernForm() {
   };
 
   const isLogin = formState === 'login';
+  const currentForm = isLogin ? loginForm : signupForm;
 
   return (
     <motion.div 
@@ -129,7 +131,7 @@ export function ModernForm() {
                 variant="ghost" 
                 className={cn(
                     "relative z-10 w-1/2 rounded-lg py-3 transition-colors duration-300",
-                    isLogin ? "text-white" : "text-white/50 hover:text-white/70",
+                    isLogin ? "text-white" : "text-white/50 hover:text-white/80",
                     "hover:bg-transparent"
                 )}
                 disabled={isLoading}
@@ -141,7 +143,7 @@ export function ModernForm() {
                 variant="ghost" 
                 className={cn(
                     "relative z-10 w-1/2 rounded-lg py-3 transition-colors duration-300",
-                    !isLogin ? "text-white" : "text-white/50 hover:text-white/70",
+                    !isLogin ? "text-white" : "text-white/50 hover:text-white/80",
                     "hover:bg-transparent"
                 )}
                 disabled={isLoading}
@@ -175,41 +177,37 @@ export function ModernForm() {
         )}
         </AnimatePresence>
 
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={formState}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } }}
-            exit={{ opacity: 0, y: -20, transition: { duration: 0.3, ease: 'easeIn' } }}
-          >
-            {isLogin ? (
-              <FormProvider {...loginForm}>
-                <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-5">
-                  <FloatingLabelInput form={loginForm} name="email" label="Email Address" type="email" />
-                  <FloatingLabelInput form={loginForm} name="password" label="Password" type="password" />
-                  
+        <FormProvider {...currentForm}>
+          <form onSubmit={isLogin ? loginForm.handleSubmit(onLoginSubmit) : signupForm.handleSubmit(onSignupSubmit)} className="space-y-5">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={formState}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } }}
+                exit={{ opacity: 0, y: -20, transition: { duration: 0.3, ease: 'easeIn' } }}
+                className="space-y-5"
+              >
+                {!isLogin && (
+                  <FloatingLabelInput form={signupForm} name="fullName" label="Full Name" />
+                )}
+                
+                <FloatingLabelInput form={currentForm} name="email" label="Email Address" type="email" />
+                <FloatingLabelInput form={currentForm} name="password" label="Password" type="password" />
+
+                {!isLogin && (
+                  <>
+                    <PasswordStrength password={signupForm.watch('password')} />
+                    <FloatingLabelInput form={signupForm} name="confirmPassword" label="Confirm Password" type="password" />
+                  </>
+                )}
+                
+                {isLogin ? (
                   <div className="text-right pt-2">
                       <Link href="#" className="text-sm font-medium text-cyan/80 hover:text-cyan hover:underline">
                         Forgot Password?
                       </Link>
                   </div>
-
-                  <div className="pt-6">
-                    <Button type="submit" className="w-full h-14 bg-gradient-to-r from-cyan to-blue-500 text-base font-semibold text-white shadow-lg shadow-cyan/20 transition-all duration-300 hover:shadow-xl hover:shadow-cyan/40 hover:-translate-y-px" disabled={isLoading}>
-                        {isLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : 'Login to Lumivex'}
-                    </Button>
-                  </div>
-                </form>
-              </FormProvider>
-            ) : (
-              <FormProvider {...signupForm}>
-                <form onSubmit={signupForm.handleSubmit(onSignupSubmit)} className="space-y-5">
-                  <FloatingLabelInput form={signupForm} name="fullName" label="Full Name" />
-                  <FloatingLabelInput form={signupForm} name="email" label="Email Address" type="email" />
-                  <FloatingLabelInput form={signupForm} name="password" label="Password" type="password" />
-                  <PasswordStrength password={signupForm.watch('password')} />
-                  <FloatingLabelInput form={signupForm} name="confirmPassword" label="Confirm Password" type="password" />
-                  
+                ) : (
                   <div className="pt-4">
                     <FormField
                       control={signupForm.control}
@@ -227,17 +225,17 @@ export function ModernForm() {
                       )}
                     />
                   </div>
-
-                  <div className="pt-6">
-                    <Button type="submit" className="w-full h-14 bg-gradient-to-r from-cyan to-blue-500 text-base font-semibold text-white shadow-lg shadow-cyan/20 transition-all duration-300 hover:shadow-xl hover:shadow-cyan/40 hover:-translate-y-px" disabled={isLoading || !signupForm.formState.isValid}>
-                        {isLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : 'Create Account'}
-                    </Button>
-                  </div>
-                </form>
-              </FormProvider>
-            )}
-          </motion.div>
-        </AnimatePresence>
+                )}
+              </motion.div>
+            </AnimatePresence>
+            
+            <div className="pt-6">
+              <Button type="submit" className="w-full h-14 bg-gradient-to-r from-cyan to-blue-500 text-base font-semibold text-white shadow-lg shadow-cyan/20 transition-all duration-300 hover:shadow-xl hover:shadow-cyan/40 hover:-translate-y-px" disabled={isLoading || (!isLogin && !signupForm.formState.isValid)}>
+                  {isLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : (isLogin ? 'Login to Lumivex' : 'Create Account')}
+              </Button>
+            </div>
+          </form>
+        </FormProvider>
         
         <p className="pt-8 text-center text-sm text-white/60">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
@@ -283,8 +281,8 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
                         htmlFor={name}
                         className={cn(
                             "absolute left-4 transition-all duration-300 pointer-events-none text-white/50",
-                            "group-focus-within:top-2 group-focus-within:text-xs group-focus-within:text-cyan/90",
-                            value ? "top-2 text-xs" : "top-1/2 -translate-y-1/2 text-base",
+                            "group-focus-within:top-3 group-focus-within:text-xs group-focus-within:text-cyan/90",
+                            value ? "top-3 text-xs" : "top-1/2 -translate-y-1/2 text-base",
                             error ? "group-focus-within:text-red-400 text-red-400" : (value ? "text-cyan/90" : ""),
                             value && !error ? "text-cyan/90" : ""
                         )}
