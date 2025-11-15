@@ -1,43 +1,22 @@
-/**
- * @fileoverview Firestore Security Rules for the waitlist application.
- *
- * Core Philosophy:
- * This ruleset is designed for a pre-launch waitlist application. It allows unauthenticated (anonymous) users to add their email to the waitlist while preventing malicious actors from spamming the system.
- *
- * Data Structure:
- * All waitlist entries are stored in the top-level `/waitlistEntries/{waitlistEntryId}` collection.
- *
- * Key Security Decisions:
- * - Public Writes with Validation: Anyone can create a waitlist entry, but the 'id' field must match the document ID, and the 'email' and 'timestamp' fields are required.
- * - No Listing: Listing waitlist entries is explicitly denied to prevent unauthorized data scraping.
- */
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /**
-     * @description Allows anyone to create a waitlist entry with a validated 'id', 'email', and 'timestamp'. Prevents listing or reading of waitlist entries.
-     * @path /waitlistEntries/{waitlistEntryId}
-     * @allow (create) - An unauthenticated user can create a waitlist entry with a valid email and the 'id' field matching the document ID.
-     *   Example: `request.auth == null && request.resource.data.email == 'test@example.com' && request.resource.data.id == waitlistEntryId`
-     * @deny (create) - An unauthenticated user cannot create a waitlist entry with a mismatched 'id' field.
-     *   Example: `request.auth == null && request.resource.data.email == 'test@example.com' && request.resource.data.id != waitlistEntryId`
-     * @deny (list) - No one can list waitlist entries.
-     *   Example: Any request to list documents in the `waitlistEntries` collection.
-     * @deny (get) - No one can read waitlist entries.
-     *   Example: Any request to get a specific document in the `waitlistEntries` collection.
-     * @deny (update) - No one can update waitlist entries.
-     *   Example: Any request to update a document in the `waitlistEntries` collection.
-     * @deny (delete) - No one can delete waitlist entries.
-     *   Example: Any request to delete a document in the `waitlistEntries` collection.
-     * @principle Allows public writes to the waitlist but restricts listing/reading and validates the email and ID.
-     */
+    // Waitlist collection:
+    // - Allow anyone (including unauthenticated users) to create an entry.
+    // - This is safe because we are using anonymous authentication on the client-side.
+    //   The rule `request.auth != null` ensures that only Firebase-authenticated requests
+    //   (even anonymous ones) can write.
+    // - Writes are only allowed if the incoming data has the required fields
+    //   and the `id` in the document matches the document's ID in the path.
+    // - Reading, updating, or deleting entries is not allowed to protect user data.
     match /waitlistEntries/{waitlistEntryId} {
-      allow get: if false;
-      allow list: if false;
-      allow create: if request.resource.data.id == waitlistEntryId && request.resource.data.keys().hasAll(['id', 'email', 'timestamp']);
-      allow update: if false;
-      allow delete: if false;
+      allow read, update, delete: if false;
+      allow create: if request.auth != null
+                      && request.resource.data.id == waitlistEntryId
+                      && request.resource.data.keys().hasAll(['id', 'email', 'timestamp'])
+                      && request.resource.data.email is string;
     }
   }
 }
