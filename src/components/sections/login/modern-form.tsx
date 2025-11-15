@@ -115,8 +115,8 @@ export function ModernForm() {
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
     >
         <div className="text-center">
-            <h2 className="text-4xl font-light text-white">Welcome Back</h2>
-            <p className="mt-3 text-base text-cyan/70">Enter your credentials to continue</p>
+            <h2 className="text-4xl font-light text-white">{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
+            <p className="mt-3 text-base text-cyan/70">{isLogin ? 'Enter your credentials to continue' : 'Join thousands building the future'}</p>
         </div>
 
         <div className="relative mt-10 p-1.5 flex items-center rounded-xl bg-white/10">
@@ -270,7 +270,7 @@ export function ModernForm() {
             <span>🔒 Secure & Encrypted</span>
             <span>✓ GDPR Compliant</span>
        </div>
-    </>
+    </motion.div>
   );
 }
 
@@ -339,3 +339,5 @@ function FloatingLabelInput({ form, name, label, type = 'text' }: { form: any, n
       />
     );
   }
+
+    
