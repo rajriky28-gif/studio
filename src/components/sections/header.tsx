@@ -60,7 +60,7 @@ export function Header() {
           </nav>
           
           <div className="hidden items-center space-x-2 md:flex h-full">
-            <Button asChild variant="ghost" className={cn('transition-colors hover:text-ocean', isScrolled ? 'text-navy' : (isHomePage ? 'text-white hover:text-white/80' : 'text-navy'))}>
+            <Button asChild variant="ghost" className={cn('transition-colors hover:text-ocean', isScrolled ? 'text-navy' : (isHomePage ? 'text-white' : 'text-navy'))}>
                 <Link href="/login">Login</Link>
             </Button>
             <Button asChild className="bg-navy-gradient rounded-lg px-6 font-semibold">
