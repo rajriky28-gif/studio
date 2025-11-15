@@ -51,7 +51,7 @@ export function Header() {
                 href={link.href}
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-ocean',
-                  isScrolled ? 'text-black' : (isHomePage ? 'text-white' : 'text-black')
+                  isScrolled ? 'text-navy' : (isHomePage ? 'text-white' : 'text-navy')
                 )}
               >
                 {link.name}
@@ -59,7 +59,10 @@ export function Header() {
             ))}
           </nav>
           
-          <div className="hidden items-center space-x-4 md:flex h-full">
+          <div className="hidden items-center space-x-2 md:flex h-full">
+            <Button asChild variant="ghost" className={cn('transition-colors hover:text-ocean', isScrolled ? 'text-navy' : (isHomePage ? 'text-white hover:text-white/80' : 'text-navy'))}>
+                <Link href="/login">Login</Link>
+            </Button>
             <Button asChild className="bg-navy-gradient rounded-lg px-6 font-semibold">
               <Link href="/waitlist">Join Waitlist</Link>
             </Button>
@@ -94,6 +97,13 @@ export function Header() {
                         {link.name}
                       </Link>
                     ))}
+                     <Link
+                        href="/login"
+                        className="text-2xl font-medium text-primary transition-colors hover:text-ocean"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Login
+                      </Link>
                   </nav>
                   <div className="p-4 border-t">
                     <Button asChild className="w-full bg-navy-gradient rounded-lg py-6 text-lg font-semibold">
