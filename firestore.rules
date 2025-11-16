@@ -31,7 +31,7 @@ service cloud.firestore {
     // Public jobs can be read by anyone if active
     // Admin can read/write all jobs
     match /jobs/{jobId} {
-      allow list: if true;
+      allow list: if true; // Allow anyone to query the collection
       allow read: if resource.data.status == "active" || isAdmin();
       allow write: if isAdmin();
     }
