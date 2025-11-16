@@ -110,10 +110,22 @@ export default function WaitlistForm() {
     try {
         await runTransaction(firestore, async (transaction) => {
             const statsRef = doc(firestore, "stats", "global");
-            const statsSnap = await transaction.get(statsRef);
+            let statsSnap = await transaction.get(statsRef);
             
+            // If the global stats document doesn't exist, create it within the transaction
             if (!statsSnap.exists()) {
-                throw new Error("Global stats document not found!");
+                const initialStats = {
+                    totalMembers: 0,
+                    totalReferrals: 0,
+                    countriesCount: 0,
+                    lastUpdated: serverTimestamp()
+                };
+                transaction.set(statsRef, initialStats);
+                // Create a temporary snapshot to use for the rest of the transaction
+                statsSnap = {
+                    exists: () => true,
+                    data: () => initialStats
+                } as any;
             }
 
             let bonusPositions = 0;
@@ -195,9 +207,10 @@ export default function WaitlistForm() {
         
         setSubmissionState('success');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       setSubmissionState('error');
+      setErrorMessage(error.message || 'An error occurred while joining the waitlist. Please try again.');
       
       const permissionError = new FirestorePermissionError({
         path: `Transaction to join waitlist for user ${user.uid}`,
