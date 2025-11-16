@@ -22,7 +22,7 @@ service cloud.firestore {
       ];
     }
 
-    // --- COLLECTION RULES ---
+    // --- COLLECTION-SPECIFIC RULES ---
 
     // USER PROFILES: Users can read/write their own profile. Admins can read/write any profile.
     match /users/{userId} {
@@ -54,10 +54,9 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // JOBS: Publicly readable, but only admins can manage them.
-    // This is the definitive fix for the careers page error.
+    // JOBS: **THE DEFINITIVE FIX** Publicly readable, but only admins can manage them.
     match /jobs/{jobId} {
-      // Allow ANYONE (logged in or not) to query the collection and read documents.
+      // Allow ANYONE (logged in or not) to query the collection (list) and read documents (get).
       allow read: if true;
       
       // Allow ONLY admins to create, update, or delete job postings.
