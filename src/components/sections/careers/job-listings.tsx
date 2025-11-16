@@ -3,7 +3,8 @@
 import { useMemo } from 'react';
 import { useCollection, useMemoFirebase, useFirebase } from '@/firebase';
 import { collection, query, where, orderBy } from 'firebase/firestore';
-import JobCard, { Job } from './job-card';
+import JobCard from './job-card';
+import type { Job } from './job-card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Linkedin } from 'lucide-react';
@@ -44,9 +45,36 @@ export function JobListings() {
     );
   }, [firestore]);
 
-  const { data: jobs, isLoading } = useCollection<Job>(jobsQuery);
+  const { data: jobs, isLoading, error } = useCollection<Job>(jobsQuery);
 
-  const hasJobs = jobs && jobs.length > 0;
+  const renderContent = () => {
+    if (isLoading) {
+      return <JobListingSkeleton />;
+    }
+
+    if (error || !jobs || jobs.length === 0) {
+      return (
+        <div className="text-center py-16 px-6 bg-cream/50 max-w-2xl mx-auto rounded-2xl border border-stone-200">
+          <h3 className="text-2xl font-medium text-navy">No open positions at the moment</h3>
+          <p className="text-charcoal mt-2 mb-6">Follow us on LinkedIn for updates when we're hiring.</p>
+          <Button asChild>
+            <Link href="#">
+              <Linkedin className="mr-2 h-5 w-5"/>
+              Follow on LinkedIn
+            </Link>
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="max-w-4xl mx-auto space-y-6">
+        {jobs.map((job) => (
+          <JobCard key={job.id} job={job} />
+        ))}
+      </div>
+    );
+  };
 
   return (
     <section id="positions" className="bg-white py-24 sm:py-32">
@@ -61,26 +89,7 @@ export function JobListings() {
           </p>
         </div>
         <div className="mt-16">
-          {isLoading && <JobListingSkeleton />}
-          {!isLoading && hasJobs && (
-            <div className="max-w-4xl mx-auto space-y-6">
-              {jobs.map((job) => (
-                <JobCard key={job.id} job={job} />
-              ))}
-            </div>
-          )}
-          {!isLoading && !hasJobs && (
-            <div className="text-center py-16 px-6 bg-cream/50 max-w-2xl mx-auto rounded-2xl border border-stone-200">
-              <h3 className="text-2xl font-medium text-navy">No open positions at the moment</h3>
-              <p className="text-charcoal mt-2 mb-6">Follow us on LinkedIn for updates when we're hiring.</p>
-              <Button asChild>
-                <Link href="#">
-                  <Linkedin className="mr-2 h-5 w-5"/>
-                  Follow on LinkedIn
-                </Link>
-              </Button>
-            </div>
-          )}
+          {firestore ? renderContent() : <JobListingSkeleton />}
         </div>
       </div>
     </section>
