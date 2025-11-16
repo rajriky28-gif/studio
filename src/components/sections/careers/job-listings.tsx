@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useCollection, useMemoFirebase, useFirebase } from '@/firebase';
 import { collection, query, where, orderBy } from 'firebase/firestore';
 import JobCard from './job-card';
@@ -47,11 +47,21 @@ export function JobListings() {
 
   const { data: jobs, isLoading, error } = useCollection<Job>(jobsQuery);
 
+  useEffect(() => {
+    if (error) {
+      // Log the actual error for debugging purposes, but don't let it crash the component.
+      console.error("Error fetching job listings:", error);
+    }
+  }, [error]);
+
+
   const renderContent = () => {
     if (isLoading) {
       return <JobListingSkeleton />;
     }
 
+    // If there is an error OR there are no jobs, show the empty state.
+    // This makes the component resilient to fetch errors.
     if (error || !jobs || jobs.length === 0) {
       return (
         <div className="text-center py-16 px-6 bg-cream/50 max-w-2xl mx-auto rounded-2xl border border-stone-200">
@@ -89,7 +99,7 @@ export function JobListings() {
           </p>
         </div>
         <div className="mt-16">
-          {firestore ? renderContent() : <JobListingSkeleton />}
+          {renderContent()}
         </div>
       </div>
     </section>
