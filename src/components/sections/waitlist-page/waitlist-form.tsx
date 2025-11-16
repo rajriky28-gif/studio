@@ -116,42 +116,43 @@ export default function WaitlistForm() {
                 throw new Error("Global stats document not found!");
             }
 
-            const newPosition = (statsSnap.data().totalMembers || 0) + 1;
-            const newReferralCode = `LMX${newPosition}`;
-            const enteredCode = values.referralCode?.toUpperCase();
-
-            const waitlistRef = doc(firestore, 'waitlist', user.uid);
-            const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
-            const userRef = doc(firestore, 'users', user.uid);
-
             let bonusPositions = 0;
-            let finalPosition = newPosition;
-
-            // Handle referral logic
+            const enteredCode = values.referralCode?.toUpperCase();
+            
+            // Perform all reads first
+            let referrerRef: any = null;
+            let referrerData: any = null;
             if (enteredCode && referralStatus === 'valid') {
                 const q = query(collection(firestore, 'waitlist'), where('referralCode', '==', enteredCode), limit(1));
                 const referrerSnap = await getDocs(q);
                 
                 if (!referrerSnap.empty) {
                     const referrerDoc = referrerSnap.docs[0];
-                    const referrerRef = referrerDoc.ref;
-                    const referrerData = referrerDoc.data();
-                    
+                    referrerRef = referrerDoc.ref;
+                    referrerData = referrerDoc.data();
                     bonusPositions = 10;
-                    finalPosition -= bonusPositions;
-                    
-                    const newReferrerReferralCount = (referrerData.referralCount || 0) + 1;
-                    const newReferrerBonusPositions = (referrerData.bonusPositions || 0) + 10;
-
-                    transaction.update(referrerRef, {
-                        referralCount: newReferrerReferralCount,
-                        bonusPositions: newReferrerBonusPositions,
-                        currentPosition: referrerData.basePosition - newReferrerBonusPositions
-                    });
                 }
             }
+            
+            // Now perform all writes
+            const newPosition = (statsSnap.data().totalMembers || 0) + 1;
+            const newReferralCode = `LMX${newPosition}`;
+            const finalPosition = newPosition - bonusPositions;
 
-            // 1. Set the new user's waitlist document
+            const waitlistRef = doc(firestore, 'waitlist', user.uid);
+            const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
+            const userRef = doc(firestore, 'users', user.uid);
+            
+            if (referrerRef && referrerData) {
+                const newReferrerReferralCount = (referrerData.referralCount || 0) + 1;
+                const newReferrerBonusPositions = (referrerData.bonusPositions || 0) + 10;
+                transaction.update(referrerRef, {
+                    referralCount: newReferrerReferralCount,
+                    bonusPositions: newReferrerBonusPositions,
+                    currentPosition: referrerData.basePosition - newReferrerBonusPositions
+                });
+            }
+
             transaction.set(waitlistRef, {
                 userId: user.uid,
                 email: user.email,
@@ -175,7 +176,6 @@ export default function WaitlistForm() {
                 }
             });
 
-            // 2. Create their unique referral code
             transaction.set(referralCodeRef, {
                 code: newReferralCode,
                 userId: user.uid,
@@ -183,13 +183,11 @@ export default function WaitlistForm() {
                 isActive: true,
             });
 
-            // 3. Update their user profile
             transaction.set(userRef, {
                 onWaitlist: true,
                 waitlistJoinedAt: serverTimestamp()
             }, { merge: true });
 
-            // 4. Update global stats
             transaction.update(statsRef, {
                 totalMembers: newPosition
             });
