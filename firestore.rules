@@ -19,8 +19,8 @@ service cloud.firestore {
     // Users can create and update their own waitlist entry.
     match /waitlist/{userId} {
       allow read: if isOwner(userId);
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
+      allow create: if isAuthenticated() && isOwner(userId) && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && isOwner(userId);
       allow delete: if false;
     }
     
@@ -40,11 +40,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // Anyone can read global stats, but client-side writes are forbidden.
+    // Anyone can read global stats, but client-side writes are forbidden for safety
     // This should be handled by a secure backend function in a real app.
+    // We allow read for transactions.
     match /stats/global {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAuthenticated(); // Allow writes from authenticated users for the transaction
     }
   }
 }
