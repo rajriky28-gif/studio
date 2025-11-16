@@ -110,55 +110,53 @@ export default function WaitlistForm() {
     try {
         await runTransaction(firestore, async (transaction) => {
             const statsRef = doc(firestore, "stats", "global");
-            let statsSnap = await transaction.get(statsRef);
+            const statsSnap = await transaction.get(statsRef);
+            
             let currentTotalMembers = 0;
+            let totalReferrals = 0;
 
             if (statsSnap.exists()) {
                 currentTotalMembers = statsSnap.data().totalMembers || 0;
+                totalReferrals = statsSnap.data().totalReferrals || 0;
             } else {
-                // If global stats doc doesn't exist, create it within the transaction
                 transaction.set(statsRef, { totalMembers: 0, totalReferrals: 0, lastUpdated: serverTimestamp() });
             }
 
             const newPosition = currentTotalMembers + 1;
             const newReferralCode = `LMX${newPosition}`;
-
+            
             let bonusPositions = 0;
+            let newTotalReferrals = totalReferrals;
             const enteredCode = values.referralCode?.toUpperCase();
             
-            // All reads must happen before any writes
-            let referrerRef: any = null;
-            let referrerSnap: any = null;
+            let referrerRef = null;
+            let referrerSnap = null;
+
             if (enteredCode && referralStatus === 'valid') {
                 const q = query(collection(firestore, 'waitlist'), where('referralCode', '==', enteredCode), limit(1));
-                const referrerQuerySnap = await getDocs(q); // Use getDocs for queries in transactions
+                const referrerQuerySnap = await getDocs(q);
                 
                 if (!referrerQuerySnap.empty) {
-                    const referrerDoc = referrerQuerySnap.docs[0];
-                    referrerRef = referrerDoc.ref;
-                    // Read the document using the transaction to ensure consistency
+                    referrerRef = referrerQuerySnap.docs[0].ref;
                     referrerSnap = await transaction.get(referrerRef);
-                    if (referrerSnap.exists()) {
-                      bonusPositions = 10;
+                    if(referrerSnap.exists()) {
+                        bonusPositions = 10; 
+                        newTotalReferrals += 1;
                     }
                 }
             }
             
-            // Now, perform all writes
-            
-            // 1. Update referrer if one was found and exists
+            // All writes must happen after all reads.
             if (referrerRef && referrerSnap && referrerSnap.exists()) {
                 const referrerData = referrerSnap.data();
-                const newReferrerReferralCount = (referrerData.referralCount || 0) + 1;
-                const newReferrerBonusPositions = (referrerData.bonusPositions || 0) + 10;
+                const newReferrerBonus = (referrerData.bonusPositions || 0) + 10;
                 transaction.update(referrerRef, {
-                    referralCount: newReferrerReferralCount,
-                    bonusPositions: newReferrerBonusPositions,
-                    currentPosition: referrerData.basePosition - newReferrerBonusPositions
+                    referralCount: (referrerData.referralCount || 0) + 1,
+                    bonusPositions: newReferrerBonus,
+                    currentPosition: referrerData.basePosition - newReferrerBonus,
                 });
             }
-
-            // 2. Set new user's waitlist entry
+            
             const waitlistRef = doc(firestore, 'waitlist', user.uid);
             transaction.set(waitlistRef, {
                 userId: user.uid,
@@ -183,7 +181,6 @@ export default function WaitlistForm() {
                 }
             });
 
-            // 3. Set new user's referral code
             const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
             transaction.set(referralCodeRef, {
                 code: newReferralCode,
@@ -192,16 +189,16 @@ export default function WaitlistForm() {
                 isActive: true,
             });
 
-            // 4. Update user's main profile
             const userRef = doc(firestore, 'users', user.uid);
             transaction.set(userRef, {
                 onWaitlist: true,
                 waitlistJoinedAt: serverTimestamp()
             }, { merge: true });
 
-            // 5. Update global stats
             transaction.update(statsRef, {
-                totalMembers: newPosition
+                totalMembers: newPosition,
+                totalReferrals: newTotalReferrals,
+                lastUpdated: serverTimestamp(),
             });
         });
         
