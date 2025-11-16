@@ -10,13 +10,14 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
     
-    // Users can create their own profile, and read/update it.
+    // Users can read/update their own profile.
     match /users/{userId} {
       allow read, update: if isOwner(userId);
       allow create: if isAuthenticated();
     }
     
-    // Users can create and update their own waitlist entry.
+    // Users can create and read their own waitlist entry.
+    // They can update their entry to reflect new referral counts.
     match /waitlist/{userId} {
       allow read: if isOwner(userId);
       allow create: if isAuthenticated() && isOwner(userId) && request.resource.data.userId == request.auth.uid;
@@ -40,12 +41,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // Anyone can read global stats, but client-side writes are forbidden for safety
-    // This should be handled by a secure backend function in a real app.
-    // We allow read for transactions.
+    // Global stats are not client-writable for security.
+    // This must be handled by a secure backend function in a real app.
+    // Reads are allowed for UI purposes.
     match /stats/global {
       allow read: if true;
-      allow write: if isAuthenticated(); // Allow writes from authenticated users for the transaction
+      allow write: if false; // Deny all client-side writes
     }
   }
 }
