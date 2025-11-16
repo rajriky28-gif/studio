@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useUser, useFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, doc, getDoc, writeBatch, serverTimestamp, increment } from 'firebase/firestore';
+import { collection, doc, getDoc, writeBatch, serverTimestamp, increment, runTransaction } from 'firebase/firestore';
 
 const formSchema = z.object({
   useCase: z.string().min(20, { message: "Please describe your use case (minimum 20 characters)" }).max(300, { message: "Use case cannot exceed 300 characters." }),
@@ -109,18 +109,21 @@ export default function WaitlistForm() {
     setErrorMessage('');
 
     try {
+      await runTransaction(firestore, async (transaction) => {
         const statsRef = doc(firestore, 'stats', 'global');
-        const statsSnap = await getDoc(statsRef);
+        const statsSnap = await transaction.get(statsRef);
+        
         let newPosition = 1;
         if (statsSnap.exists()) {
             newPosition = (statsSnap.data().totalMembers || 0) + 1;
         }
 
-        const batch = writeBatch(firestore);
-
         const newReferralCode = `LMX${newPosition}`;
-        
         const waitlistRef = doc(firestore, 'waitlist', user.uid);
+        const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
+        const userRef = doc(firestore, 'users', user.uid);
+        
+        // Prepare waitlist data
         const waitlistData = {
             userId: user.uid,
             email: user.email,
@@ -143,69 +146,59 @@ export default function WaitlistForm() {
                 partnerships: values.partnerships,
             }
         };
-        batch.set(waitlistRef, waitlistData);
 
-        const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
+        // Prepare referral code data
         const referralCodeData = {
             code: newReferralCode,
             userId: user.uid,
             createdAt: serverTimestamp(),
             isActive: true,
         };
-        batch.set(referralCodeRef, referralCodeData);
 
-        const userRef = doc(firestore, 'users', user.uid);
-        const userData = { onWaitlist: true, waitlistJoinedAt: serverTimestamp() };
-        batch.update(userRef, userData);
-        
-        // This part is removed from client to avoid permission issues.
-        // In a real app, this would be a server-side function.
-        // batch.update(statsRef, {
-        //     totalMembers: increment(1),
-        //     lastUpdated: serverTimestamp()
-        // });
+        // Set operations within the transaction
+        transaction.set(waitlistRef, waitlistData);
+        transaction.set(referralCodeRef, referralCodeData);
+        transaction.update(userRef, { onWaitlist: true, waitlistJoinedAt: serverTimestamp() });
+        transaction.update(statsRef, { totalMembers: increment(1), lastUpdated: serverTimestamp() });
 
+        // Handle referral
         if (values.referralCode && referralStatus === 'valid') {
             const enteredCode = values.referralCode.toUpperCase();
             const referrerCodeRef = doc(firestore, 'referralCodes', enteredCode);
-            const referrerCodeSnap = await getDoc(referrerCodeRef);
+            const referrerCodeSnap = await transaction.get(referrerCodeRef);
 
             if (referrerCodeSnap.exists()) {
                 const referrerId = referrerCodeSnap.data().userId;
                 const referrerWaitlistRef = doc(firestore, 'waitlist', referrerId);
-                const referralRecordCol = collection(firestore, 'referrals');
-                const referralRecordRef = doc(referralRecordCol);
-
-                const referralRecordData = {
+                
+                transaction.update(referrerWaitlistRef, {
+                    referralCount: increment(1),
+                    bonusPositions: increment(10)
+                });
+                
+                transaction.update(statsRef, { totalReferrals: increment(1) });
+                
+                const referralRecordRef = doc(collection(firestore, 'referrals'));
+                transaction.set(referralRecordRef, {
                     referralCode: enteredCode,
                     referrerUserId: referrerId,
                     newUserId: user.uid,
                     usedAt: serverTimestamp(),
                     bonusApplied: true,
-                };
-                batch.set(referralRecordRef, referralRecordData);
-
-                batch.update(referrerWaitlistRef, {
-                    referralCount: increment(1),
-                    bonusPositions: increment(10)
                 });
-
-                // This part is also removed from client
-                // batch.update(statsRef, {
-                //     totalReferrals: increment(1)
-                // });
             }
         }
+      });
 
-        await batch.commit();
-        setSubmissionState('success');
+      setSubmissionState('success');
 
     } catch (error) {
         setSubmissionState('error');
         setErrorMessage('An error occurred while joining the waitlist. Please try again.');
         
+        // This is for debugging and will be caught by the error boundary
         const waitlistRef = doc(firestore, 'waitlist', user.uid);
-        const referralCodeRef = doc(firestore, 'referralCodes', 'TEMP_CODE'); // Placeholder
+        const referralCodeRef = doc(firestore, 'referralCodes', 'TEMP_CODE');
         const userRef = doc(firestore, 'users', user.uid);
         const statsRef = doc(firestore, 'stats', 'global');
 
@@ -214,7 +207,7 @@ export default function WaitlistForm() {
           operation: 'write',
           requestResourceData: {
              waitlist: values,
-             userUpdate: { onWaitlist: true }
+             userUpdate: { onWaitlist: true },
           }
         });
 
