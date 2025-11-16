@@ -56,12 +56,8 @@ service cloud.firestore {
     
     // JOBS COLLECTION - PUBLIC READ, ADMIN WRITE
     match /jobs/{jobId} {
-      // Allow anyone to query the list of jobs. This is the crucial fix.
-      allow list; 
-      
-      // Allow anyone to read a single job document if it is 'active'.
-      // Admins can read any job.
-      allow read: if resource.data.status == 'active' || isAdmin();
+      // Allow anyone to read any job document.
+      allow read: if true;
       
       // Only admins can create, update, or delete jobs.
       allow write: if isAdmin();
