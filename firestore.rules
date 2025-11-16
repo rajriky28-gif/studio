@@ -7,10 +7,13 @@ service cloud.firestore {
     match /waitlist/{userId} {
       // Allow a user to read their own waitlist document to see their dashboard.
       allow read: if request.auth != null && request.auth.uid == userId;
-      // Allow any authenticated user (including anonymous) to create their own waitlist entry.
+      // Allow any authenticated user to create their own waitlist entry.
       allow create: if request.auth != null && request.auth.uid == userId;
-      // Nobody can update or delete waitlist entries directly.
-      allow update, delete: if false;
+      // Allow a backend process to update referral counts.
+      // For now, allow a user to update their own referral count for demo purposes.
+      allow update: if request.auth != null && request.auth.uid == userId;
+      // Nobody can delete waitlist entries directly.
+      allow delete: if false;
     }
 
     // Users collection

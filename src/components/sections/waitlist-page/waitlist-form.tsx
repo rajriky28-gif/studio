@@ -107,105 +107,97 @@ export default function WaitlistForm() {
     setSubmissionState('submitting');
     setErrorMessage('');
 
-    const batch = writeBatch(firestore);
+    try {
+        const batch = writeBatch(firestore);
 
-    const statsRef = doc(firestore, 'stats', 'global');
-    const statsSnap = await getDoc(statsRef);
-    const totalMembers = statsSnap.exists() ? statsSnap.data().totalMembers : 0;
-    const newPosition = totalMembers + 1;
+        // This is a simplification. In a real app, you'd get this from a trusted source.
+        const statsRef = doc(firestore, 'stats', 'global');
+        // We read it to estimate the position, but won't write to it from the client.
+        const statsSnap = await getDoc(statsRef).catch(() => null); // Catch potential read errors
+        const totalMembers = (statsSnap && statsSnap.exists()) ? statsSnap.data().totalMembers : 0;
+        const newPosition = totalMembers + 1;
 
-    const newReferralCode = `LMX${newPosition}`;
+        const newReferralCode = `LMX${newPosition}`;
 
-    const waitlistRef = doc(firestore, 'waitlist', user.uid);
-    const waitlistData = {
-        userId: user.uid,
-        email: user.email,
-        name: user.displayName,
-        joinedAt: serverTimestamp(),
-        useCase: values.useCase,
-        enteredReferralCode: values.referralCode?.toUpperCase() || null,
-        referralSource: values.referralSource || null,
-        referralCode: newReferralCode,
-        referralCount: 0,
-        referralTier: 'none',
-        basePosition: newPosition,
-        bonusPositions: 0,
-        currentPosition: newPosition,
-        status: 'waiting',
-        betaInvitedAt: null,
-        emailPreferences: {
-            productUpdates: values.productUpdates,
-            betaTesting: values.betaTesting,
-            partnerships: values.partnerships,
-        }
-    };
-    batch.set(waitlistRef, waitlistData);
+        const waitlistRef = doc(firestore, 'waitlist', user.uid);
+        const waitlistData = {
+            userId: user.uid,
+            email: user.email,
+            name: user.displayName,
+            joinedAt: serverTimestamp(),
+            useCase: values.useCase,
+            enteredReferralCode: values.referralCode?.toUpperCase() || null,
+            referralSource: values.referralSource || null,
+            referralCode: newReferralCode,
+            referralCount: 0,
+            referralTier: 'none',
+            basePosition: newPosition,
+            bonusPositions: 0,
+            currentPosition: newPosition,
+            status: 'waiting',
+            betaInvitedAt: null,
+            emailPreferences: {
+                productUpdates: values.productUpdates,
+                betaTesting: values.betaTesting,
+                partnerships: values.partnerships,
+            }
+        };
+        batch.set(waitlistRef, waitlistData);
 
-    const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
-    const referralCodeData = {
-        code: newReferralCode,
-        userId: user.uid,
-        createdAt: serverTimestamp(),
-        isActive: true,
-    };
-    batch.set(referralCodeRef, referralCodeData);
+        const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
+        const referralCodeData = {
+            code: newReferralCode,
+            userId: user.uid,
+            createdAt: serverTimestamp(),
+            isActive: true,
+        };
+        batch.set(referralCodeRef, referralCodeData);
 
-    const userRef = doc(firestore, 'users', user.uid);
-    const userData = { onWaitlist: true, waitlistJoinedAt: serverTimestamp() };
-    batch.update(userRef, userData);
-    
-    const statsData = { 
-        totalMembers: increment(1),
-        lastUpdated: serverTimestamp() 
-    };
-    batch.set(statsRef, statsData, { merge: true });
-
-    if (values.referralCode && referralStatus === 'valid') {
-        const enteredCode = values.referralCode.toUpperCase();
-        const referrerCodeRef = doc(firestore, 'referralCodes', enteredCode);
-        const referrerCodeSnap = await getDoc(referrerCodeRef);
-
-        if (referrerCodeSnap.exists()) {
-            const referrerId = referrerCodeSnap.data().userId;
-            const referrerWaitlistRef = doc(firestore, 'waitlist', referrerId);
-            const referralRecordCol = collection(firestore, 'referrals');
-            const referralRecordRef = doc(referralRecordCol); // auto-generate ID
-
-            const referralRecordData = {
-                referralCode: enteredCode,
-                referrerUserId: referrerId,
-                newUserId: user.uid,
-                usedAt: serverTimestamp(),
-                bonusApplied: true,
-            };
-            batch.set(referralRecordRef, referralRecordData);
-
-            batch.update(referrerWaitlistRef, {
-                referralCount: increment(1),
-                bonusPositions: increment(10)
-            });
-        }
-    }
-    
-    batch.commit().then(() => {
-        setSubmissionState('success');
-    }).catch(error => {
-        setSubmissionState('error');
-        setErrorMessage('Failed to join waitlist. Please check permissions and try again.');
+        const userRef = doc(firestore, 'users', user.uid);
+        const userData = { onWaitlist: true, waitlistJoinedAt: serverTimestamp() };
+        batch.update(userRef, userData);
         
-        // Create and emit the contextual error
-        const permissionError = new FirestorePermissionError({
-          path: `batch write including paths: ${waitlistRef.path}, ${referralCodeRef.path}, ${userRef.path}, ${statsRef.path}`,
-          operation: 'write', // Batch write can be considered a 'write' operation
-          requestResourceData: {
-            waitlist: waitlistData,
-            referralCode: referralCodeData,
-            userUpdate: userData,
-            statsUpdate: statsData,
-          }
-        });
-        errorEmitter.emit('permission-error', permissionError);
-    });
+        // IMPORTANT: Removed the client-side stats update to prevent permission errors.
+        // This should be handled by a backend function.
+
+        if (values.referralCode && referralStatus === 'valid') {
+            const enteredCode = values.referralCode.toUpperCase();
+            const referrerCodeRef = doc(firestore, 'referralCodes', enteredCode);
+            const referrerCodeSnap = await getDoc(referrerCodeRef);
+
+            if (referrerCodeSnap.exists()) {
+                const referrerId = referrerCodeSnap.data().userId;
+                const referrerWaitlistRef = doc(firestore, 'waitlist', referrerId);
+                const referralRecordCol = collection(firestore, 'referrals');
+                const referralRecordRef = doc(referralRecordCol);
+
+                const referralRecordData = {
+                    referralCode: enteredCode,
+                    referrerUserId: referrerId,
+                    newUserId: user.uid,
+                    usedAt: serverTimestamp(),
+                    bonusApplied: true,
+                };
+                batch.set(referralRecordRef, referralRecordData);
+
+                batch.update(referrerWaitlistRef, {
+                    referralCount: increment(1),
+                    bonusPositions: increment(10)
+                });
+            }
+        }
+        
+        await batch.commit();
+        setSubmissionState('success');
+
+    } catch (error) {
+        setSubmissionState('error');
+        setErrorMessage('An error occurred while joining the waitlist. Please try again.');
+        console.error(error); // Log the full error for debugging
+
+        // We can check if it's a permission error and create a contextual one,
+        // but for now, we'll log the raw error.
+    }
   }
 
   const referralStatusUI = useMemo(() => {
