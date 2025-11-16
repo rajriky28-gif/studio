@@ -28,10 +28,12 @@ service cloud.firestore {
         allow write: if isAdmin();
     }
 
-    // Public jobs can be read by anyone if active
-    // Admin can read/write all jobs
+    // --- Corrected Jobs Rules ---
+    // Anyone can query the collection to see the list of jobs.
+    // Anyone can read a specific job if it's active.
+    // Only admins can create, update, or delete jobs.
     match /jobs/{jobId} {
-      allow list: if true; // Allow anyone to query the collection
+      allow list: if true;
       allow read: if resource.data.status == "active" || isAdmin();
       allow write: if isAdmin();
     }
