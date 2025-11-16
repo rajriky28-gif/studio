@@ -2,37 +2,63 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
     function isAdmin() {
-      return request.auth != null && request.auth.token.email in ['riky@google.com', 'admin@lumivex.com', 'founder@lumivex.com', 'lumivex.company@gmail.com'];
+      return isAuthenticated() && 
+             request.auth.token.email in [
+               'riky@google.com',
+               'admin@lumivex.com', 
+               'founder@lumivex.com',
+               'lumivex.company@gmail.com'
+             ];
     }
-
+    
+    // Users collection
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId || isAdmin();
+      allow read, write: if isOwner(userId) || isAdmin();
     }
-
+    
+    // Waitlist collection
     match /waitlist/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId || isAdmin();
-      allow create: if request.auth != null && request.auth.uid == userId;
-      allow update: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
       allow delete: if isAdmin();
     }
     
+    // Referral codes collection
     match /referralCodes/{code} {
-        allow read: if request.auth != null;
-        allow create: if request.auth != null;
-        allow write: if isAdmin();
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow write: if isAdmin();
     }
     
-    match /stats/global {
-        allow read: if true;
-        allow write: if isAdmin();
+    // Referrals collection
+    match /referrals/{referralId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if false;
     }
-
+    
+    // Global stats
+    match /stats/global {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
     // JOBS COLLECTION - PUBLIC READ FOR ACTIVE JOBS, ADMIN WRITE
     match /jobs/{jobId} {
       // Anyone (logged in or not) can query the collection and read active jobs.
       allow list;
-      allow read: if resource.data.status == 'active';
+      allow read: if resource.data.status == 'active' || isAdmin();
       
       // Only admins can create, update, or delete jobs.
       allow write: if isAdmin();
