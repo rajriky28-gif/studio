@@ -33,7 +33,7 @@ service cloud.firestore {
     // Anyone can read a specific job if it's active.
     // Only admins can create, update, or delete jobs.
     match /jobs/{jobId} {
-      allow list: if true;
+      allow list;
       allow read: if resource.data.status == "active" || isAdmin();
       allow write: if isAdmin();
     }
