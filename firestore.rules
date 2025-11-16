@@ -24,12 +24,17 @@ service cloud.firestore {
     }
     
     match /stats/global {
-        allow read: if request.auth != null;
+        allow read: if true;
         allow write: if isAdmin();
     }
 
+    // JOBS COLLECTION - PUBLIC READ FOR ACTIVE JOBS, ADMIN WRITE
     match /jobs/{jobId} {
-      allow read: if true;
+      // Anyone (logged in or not) can query the collection and read active jobs.
+      allow list;
+      allow read: if resource.data.status == 'active';
+      
+      // Only admins can create, update, or delete jobs.
       allow write: if isAdmin();
     }
   }
