@@ -112,17 +112,14 @@ export default function WaitlistForm() {
         const statsRef = doc(firestore, 'stats', 'global');
         const statsSnap = await transaction.get(statsRef);
         
-        let referrerWaitlistRef = null;
-        let referrerWaitlistSnap = null;
         const enteredCode = values.referralCode?.toUpperCase();
-        
+        let referrerData: { userId: string } | null = null;
+
         if (enteredCode && referralStatus === 'valid') {
             const referrerCodeRef = doc(firestore, 'referralCodes', enteredCode);
             const referrerCodeSnap = await transaction.get(referrerCodeRef);
             if (referrerCodeSnap.exists()) {
-                const referrerId = referrerCodeSnap.data().userId;
-                referrerWaitlistRef = doc(firestore, 'waitlist', referrerId);
-                referrerWaitlistSnap = await transaction.get(referrerWaitlistRef);
+                referrerData = referrerCodeSnap.data() as { userId: string };
             }
         }
 
@@ -131,36 +128,40 @@ export default function WaitlistForm() {
             newPosition = (statsSnap.data().totalMembers || 0) + 1;
         }
 
+        if (referrerData) {
+            const referrerWaitlistRef = doc(firestore, 'waitlist', referrerData.userId);
+            const referrerWaitlistSnap = await transaction.get(referrerWaitlistRef);
+            if (referrerWaitlistSnap.exists()) {
+                const currentReferrerData = referrerWaitlistSnap.data();
+                const newReferralCount = (currentReferrerData.referralCount || 0) + 1;
+                let newTier = currentReferrerData.referralTier;
+
+                if (newReferralCount >= 25) newTier = 'ambassador';
+                else if (newReferralCount >= 10) newTier = 'champion';
+                else if (newReferralCount >= 3) newTier = 'advocate';
+
+                transaction.update(referrerWaitlistRef, {
+                    referralCount: increment(1),
+                    bonusPositions: increment(10),
+                    currentPosition: increment(-10),
+                    referralTier: newTier,
+                });
+                
+                const referralRecordRef = doc(collection(firestore, 'referrals'));
+                transaction.set(referralRecordRef, {
+                  referralCode: enteredCode,
+                  referrerUserId: referrerData.userId,
+                  newUserId: user.uid,
+                  usedAt: serverTimestamp(),
+                  bonusApplied: true,
+                });
+            }
+        }
+        
         const newReferralCode = `LMX${newPosition}`;
         const waitlistRef = doc(firestore, 'waitlist', user.uid);
         const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
         const userRef = doc(firestore, 'users', user.uid);
-        
-        if (referrerWaitlistRef && referrerWaitlistSnap?.exists()) {
-            const referrerData = referrerWaitlistSnap.data();
-            const newReferralCount = (referrerData.referralCount || 0) + 1;
-            let newTier = referrerData.referralTier;
-
-            if (newReferralCount >= 25) newTier = 'ambassador';
-            else if (newReferralCount >= 10) newTier = 'champion';
-            else if (newReferralCount >= 3) newTier = 'advocate';
-            
-            transaction.update(referrerWaitlistRef, {
-                referralCount: increment(1),
-                bonusPositions: increment(10),
-                currentPosition: increment(-10),
-                referralTier: newTier,
-            });
-            
-            const referralRecordRef = doc(collection(firestore, 'referrals'));
-            transaction.set(referralRecordRef, {
-              referralCode: enteredCode,
-              referrerUserId: referrerData.userId,
-              newUserId: user.uid,
-              usedAt: serverTimestamp(),
-              bonusApplied: true,
-            });
-        }
 
         transaction.set(waitlistRef, {
             userId: user.uid,
