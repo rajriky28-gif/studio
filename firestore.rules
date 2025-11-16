@@ -29,12 +29,9 @@ service cloud.firestore {
     }
 
     // --- Corrected Jobs Rules ---
-    // Anyone can query the collection to see the list of jobs.
-    // Anyone can read a specific job if it's active.
-    // Only admins can create, update, or delete jobs.
+    // This allows anyone to read the jobs collection, but only admins can write.
     match /jobs/{jobId} {
-      allow list;
-      allow read: if resource.data.status == "active" || isAdmin();
+      allow read: if true;
       allow write: if isAdmin();
     }
 
