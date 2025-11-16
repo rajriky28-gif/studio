@@ -8,7 +8,7 @@ import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { signOut } from 'firebase/auth';
 
-const ADMIN_EMAILS = ['riky@google.com', 'admin@lumivex.com', 'founder@lumivex.com']; 
+const ADMIN_EMAILS = ['riky@google.com', 'admin@lumivex.com', 'founder@lumivex.com', 'lumivex.company@gmail.com']; 
 
 function AdminAccessGate() {
     const router = useRouter();
