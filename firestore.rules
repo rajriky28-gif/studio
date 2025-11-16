@@ -28,15 +28,9 @@ service cloud.firestore {
         allow write: if isAdmin();
     }
 
-    // --- Corrected Jobs Rules ---
-    // This allows anyone to read the jobs collection, but only admins can write.
     match /jobs/{jobId} {
       allow read: if true;
       allow write: if isAdmin();
-    }
-
-    match /{document=**} {
-      allow read, write: if false; // Default deny
     }
   }
 }
