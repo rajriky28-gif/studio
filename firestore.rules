@@ -9,8 +9,7 @@ service cloud.firestore {
       allow read: if request.auth != null && request.auth.uid == userId;
       // Allow any authenticated user to create their own waitlist entry.
       allow create: if request.auth != null && request.auth.uid == userId;
-      // Allow a backend process to update referral counts.
-      // For now, allow a user to update their own referral count for demo purposes.
+      // Allow a user to update their own waitlist document (e.g., for referral counts).
       allow update: if request.auth != null && request.auth.uid == userId;
       // Nobody can delete waitlist entries directly.
       allow delete: if false;
@@ -37,10 +36,11 @@ service cloud.firestore {
     
     // Referrals collection
     match /referrals/{referralId} {
-        // Referrals are write-only for logging purposes.
-        allow read, update, delete: if false;
-        // Any authenticated user can create a referral log when they sign up.
+        // Allow any authenticated user to create a referral log when they sign up.
         allow create: if request.auth != null;
+        // Referrals are mostly write-only for logging, but we might need to read them for activity feeds.
+        allow read: if request.auth != null && (request.auth.uid == resource.data.referrerUserId || request.auth.uid == resource.data.newUserId);
+        allow update, delete: if false;
     }
 
     // Stats collection
