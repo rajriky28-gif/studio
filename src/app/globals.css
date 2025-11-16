@@ -110,6 +110,15 @@
   }
 }
 
+@layer base {
+  .prose {
+    @apply text-charcoal;
+  }
+  .prose h1, .prose h2, .prose h3, .prose h4 {
+    @apply text-navy;
+  }
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
