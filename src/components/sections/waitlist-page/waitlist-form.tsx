@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -102,112 +103,113 @@ export default function WaitlistForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore) {
         setErrorMessage('Authentication error. Please refresh and try again.');
+        setSubmissionState('error');
         return;
     }
     setSubmissionState('submitting');
     setErrorMessage('');
 
-    const batch = writeBatch(firestore);
-
-    const statsRef = doc(firestore, 'stats', 'global');
-    let newPosition = 1;
-    
     try {
+        const batch = writeBatch(firestore);
+
+        const statsRef = doc(firestore, 'stats', 'global');
+        let newPosition = 1;
+
+        // Atomically get the current member count before writing
         const statsSnap = await getDoc(statsRef);
         if (statsSnap.exists()) {
             newPosition = (statsSnap.data().totalMembers || 0) + 1;
         }
-    } catch (e) {
-        console.warn("Could not read global stats, defaulting position to 1. This might be a permissions issue for initial setup.", e);
-    }
-    
-    const newReferralCode = `LMX${newPosition}`;
+        
+        const newReferralCode = `LMX${newPosition}`;
 
-    const waitlistRef = doc(firestore, 'waitlist', user.uid);
-    const waitlistData = {
-        userId: user.uid,
-        email: user.email,
-        name: user.displayName,
-        joinedAt: serverTimestamp(),
-        useCase: values.useCase,
-        enteredReferralCode: values.referralCode?.toUpperCase() || null,
-        referralSource: values.referralSource || null,
-        referralCode: newReferralCode,
-        referralCount: 0,
-        referralTier: 'none',
-        basePosition: newPosition,
-        bonusPositions: 0,
-        currentPosition: newPosition,
-        status: 'waiting',
-        betaInvitedAt: null,
-        emailPreferences: {
-            productUpdates: values.productUpdates,
-            betaTesting: values.betaTesting,
-            partnerships: values.partnerships,
+        const waitlistRef = doc(firestore, 'waitlist', user.uid);
+        const waitlistData = {
+            userId: user.uid,
+            email: user.email,
+            name: user.displayName,
+            joinedAt: serverTimestamp(),
+            useCase: values.useCase,
+            enteredReferralCode: values.referralCode?.toUpperCase() || null,
+            referralSource: values.referralSource || null,
+            referralCode: newReferralCode,
+            referralCount: 0,
+            referralTier: 'none',
+            basePosition: newPosition,
+            bonusPositions: 0,
+            currentPosition: newPosition,
+            status: 'waiting',
+            betaInvitedAt: null,
+            emailPreferences: {
+                productUpdates: values.productUpdates,
+                betaTesting: values.betaTesting,
+                partnerships: values.partnerships,
+            }
+        };
+        batch.set(waitlistRef, waitlistData);
+
+        const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
+        const referralCodeData = {
+            code: newReferralCode,
+            userId: user.uid,
+            createdAt: serverTimestamp(),
+            isActive: true,
+        };
+        batch.set(referralCodeRef, referralCodeData);
+
+        const userRef = doc(firestore, 'users', user.uid);
+        const userData = { onWaitlist: true, waitlistJoinedAt: serverTimestamp() };
+        batch.update(userRef, userData);
+        
+        if (values.referralCode && referralStatus === 'valid') {
+            const enteredCode = values.referralCode.toUpperCase();
+            const referrerCodeRef = doc(firestore, 'referralCodes', enteredCode);
+            const referrerCodeSnap = await getDoc(referrerCodeRef);
+
+            if (referrerCodeSnap.exists()) {
+                const referrerId = referrerCodeSnap.data().userId;
+                const referrerWaitlistRef = doc(firestore, 'waitlist', referrerId);
+                const referralRecordCol = collection(firestore, 'referrals');
+                const referralRecordRef = doc(referralRecordCol);
+
+                const referralRecordData = {
+                    referralCode: enteredCode,
+                    referrerUserId: referrerId,
+                    newUserId: user.uid,
+                    usedAt: serverTimestamp(),
+                    bonusApplied: true,
+                };
+                batch.set(referralRecordRef, referralRecordData);
+
+                batch.update(referrerWaitlistRef, {
+                    referralCount: increment(1),
+                    bonusPositions: increment(10)
+                });
+            }
         }
-    };
-    batch.set(waitlistRef, waitlistData);
-
-    const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
-    const referralCodeData = {
-        code: newReferralCode,
-        userId: user.uid,
-        createdAt: serverTimestamp(),
-        isActive: true,
-    };
-    batch.set(referralCodeRef, referralCodeData);
-
-    const userRef = doc(firestore, 'users', user.uid);
-    const userData = { onWaitlist: true, waitlistJoinedAt: serverTimestamp() };
-    batch.update(userRef, userData);
-    
-    if (values.referralCode && referralStatus === 'valid') {
-        const enteredCode = values.referralCode.toUpperCase();
-        const referrerCodeRef = doc(firestore, 'referralCodes', enteredCode);
-        const referrerCodeSnap = await getDoc(referrerCodeRef);
-
-        if (referrerCodeSnap.exists()) {
-            const referrerId = referrerCodeSnap.data().userId;
-            const referrerWaitlistRef = doc(firestore, 'waitlist', referrerId);
-            const referralRecordCol = collection(firestore, 'referrals');
-            const referralRecordRef = doc(referralRecordCol);
-
-            const referralRecordData = {
-                referralCode: enteredCode,
-                referrerUserId: referrerId,
-                newUserId: user.uid,
-                usedAt: serverTimestamp(),
-                bonusApplied: true,
-            };
-            batch.set(referralRecordRef, referralRecordData);
-
-            batch.update(referrerWaitlistRef, {
-                referralCount: increment(1),
-                bonusPositions: increment(10)
-            });
-        }
-    }
-    
-    batch.commit()
-      .then(() => {
+        
+        await batch.commit();
         setSubmissionState('success');
-      })
-      .catch((error) => {
+
+    } catch (error) {
         setSubmissionState('error');
         setErrorMessage('An error occurred while joining the waitlist. Please try again.');
         
+        const waitlistRef = doc(firestore, 'waitlist', user.uid);
+        const referralCodeRef = doc(firestore, 'referralCodes', 'TEMP_CODE');
+        const userRef = doc(firestore, 'users', user.uid);
+
         const permissionError = new FirestorePermissionError({
           path: `batch write including paths: ${waitlistRef.path}, ${referralCodeRef.path}, ${userRef.path}`,
           operation: 'write',
           requestResourceData: {
-            waitlist: waitlistData,
-            referralCode: referralCodeData,
-            userUpdate: userData
+             waitlist: form.getValues(),
+             userUpdate: { onWaitlist: true }
           }
         });
 
         errorEmitter.emit('permission-error', permissionError);
-      });
+    }
   }
 
   const referralStatusUI = useMemo(() => {
@@ -341,7 +343,7 @@ export default function WaitlistForm() {
                         <Button
                           type="submit"
                           className="w-full h-14 bg-navy-gradient text-lg font-semibold text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-ocean/30 disabled:bg-gray-400"
-                          disabled={submissionState === 'submitting' || referralStatus === 'self'}
+                          disabled={submissionState === 'submitting' || referralStatus === 'self' || referralStatus === 'checking'}
                         >
                           {submissionState === 'submitting' ? (
                             <><Loader2 className="mr-2 h-6 w-6 animate-spin" /> Joining...</>
@@ -360,3 +362,5 @@ export default function WaitlistForm() {
     </div>
   );
 }
+
+    
