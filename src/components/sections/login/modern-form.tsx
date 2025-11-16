@@ -19,6 +19,7 @@ import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FormField } from '@/components/ui/form';
+import { useRouter } from 'next/navigation';
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -43,6 +44,7 @@ export function ModernForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const { auth, firestore } = useFirebase();
+  const router = useRouter();
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -63,12 +65,19 @@ export function ModernForm() {
     signupForm.reset();
   };
 
+  const redirectToReturnUrl = () => {
+    const returnUrl = sessionStorage.getItem('returnUrl') || '/';
+    sessionStorage.removeItem('returnUrl');
+    router.push(returnUrl);
+  };
+
   const onLoginSubmit = async (values: z.infer<typeof loginSchema>) => {
     if (!auth) return;
     setIsLoading(true);
     setError('');
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
+      redirectToReturnUrl();
     } catch (err: any) {
       setError(err.code === 'auth/invalid-credential' ? 'Invalid email or password.' : 'An error occurred. Please try again.');
     } finally {
@@ -91,8 +100,12 @@ export function ModernForm() {
         email: user.email,
         displayName: values.fullName,
         photoURL: user.photoURL,
-        createdAt: serverTimestamp()
+        authProvider: 'password',
+        createdAt: serverTimestamp(),
+        lastLoginAt: serverTimestamp(),
+        onWaitlist: false,
       });
+      redirectToReturnUrl();
     } catch (err: any) {
       if (err.code === 'auth/email-already-in-use') {
         setError('This email is already registered. Please login instead.');

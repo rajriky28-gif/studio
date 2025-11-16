@@ -7,6 +7,7 @@ import { GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo } from "fire
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useRouter } from 'next/navigation';
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -27,6 +28,7 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 export function GoogleButton() {
   const { auth, firestore } = useFirebase();
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleGoogleLogin = async () => {
     if (!auth || !firestore) return;
@@ -44,9 +46,17 @@ export function GoogleButton() {
             email: user.email,
             displayName: user.displayName,
             photoURL: user.photoURL,
+            authProvider: 'google.com',
             createdAt: serverTimestamp(),
+            lastLoginAt: serverTimestamp(),
+            onWaitlist: false,
         });
       }
+      
+      const returnUrl = sessionStorage.getItem('returnUrl') || '/';
+      sessionStorage.removeItem('returnUrl');
+      router.push(returnUrl);
+
     } catch (error) {
       console.error('Error during Google sign-in:', error);
     } finally {
