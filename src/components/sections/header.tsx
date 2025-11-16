@@ -95,7 +95,7 @@ export function Header() {
                         className="text-2xl font-medium text-primary transition-colors hover:text-ocean"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        {link.name}
+                        {link.name === 'Waitlist' ? 'Dashboard' : link.name}
                       </Link>
                     ))}
                      <Link
