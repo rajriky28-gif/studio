@@ -56,7 +56,7 @@ export default function WaitlistForm() {
       }
       
       const upperCaseCode = code.toUpperCase();
-      if (!/^LMX[0-9]{1,7}$/.test(upperCaseCode)) {
+      if (!/^LMX[0-9A-Z]{1,7}$/.test(upperCaseCode)) {
         setReferralStatus('invalid');
         return;
       }
@@ -80,7 +80,6 @@ export default function WaitlistForm() {
             setReferralStatus('invalid');
           }
         } catch (error) {
-          console.error("Error validating referral code:", error);
           setReferralStatus('invalid');
         }
       }, 1000);
@@ -110,25 +109,22 @@ export default function WaitlistForm() {
 
     try {
       await runTransaction(firestore, async (transaction) => {
-        // --- ALL READS MUST HAPPEN FIRST ---
-
         const statsRef = doc(firestore, 'stats', 'global');
         const statsSnap = await transaction.get(statsRef);
         
         let referrerWaitlistRef = null;
         let referrerWaitlistSnap = null;
-        if (values.referralCode && referralStatus === 'valid') {
-          const enteredCode = values.referralCode.toUpperCase();
-          const referrerCodeRef = doc(firestore, 'referralCodes', enteredCode);
-          const referrerCodeSnap = await transaction.get(referrerCodeRef);
-          if (referrerCodeSnap.exists()) {
-            const referrerId = referrerCodeSnap.data().userId;
-            referrerWaitlistRef = doc(firestore, 'waitlist', referrerId);
-            referrerWaitlistSnap = await transaction.get(referrerWaitlistRef);
-          }
+        const enteredCode = values.referralCode?.toUpperCase();
+        
+        if (enteredCode && referralStatus === 'valid') {
+            const referrerCodeRef = doc(firestore, 'referralCodes', enteredCode);
+            const referrerCodeSnap = await transaction.get(referrerCodeRef);
+            if (referrerCodeSnap.exists()) {
+                const referrerId = referrerCodeSnap.data().userId;
+                referrerWaitlistRef = doc(firestore, 'waitlist', referrerId);
+                referrerWaitlistSnap = await transaction.get(referrerWaitlistRef);
+            }
         }
-
-        // --- ALL WRITES HAPPEN AFTER READS ---
 
         let newPosition = 1;
         if (statsSnap.exists()) {
@@ -140,8 +136,7 @@ export default function WaitlistForm() {
         const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
         const userRef = doc(firestore, 'users', user.uid);
         
-        // 1. Handle referral bonus if a valid code was used
-        if (referrerWaitlistRef && referrerWaitlistSnap && referrerWaitlistSnap.exists()) {
+        if (referrerWaitlistRef && referrerWaitlistSnap?.exists()) {
             const referrerData = referrerWaitlistSnap.data();
             const newReferralCount = (referrerData.referralCount || 0) + 1;
             let newTier = referrerData.referralTier;
@@ -157,10 +152,9 @@ export default function WaitlistForm() {
                 referralTier: newTier,
             });
             
-            // Create referral record
             const referralRecordRef = doc(collection(firestore, 'referrals'));
             transaction.set(referralRecordRef, {
-              referralCode: values.referralCode!.toUpperCase(),
+              referralCode: enteredCode,
               referrerUserId: referrerData.userId,
               newUserId: user.uid,
               usedAt: serverTimestamp(),
@@ -168,14 +162,13 @@ export default function WaitlistForm() {
             });
         }
 
-        // 2. Set new user's waitlist data
         transaction.set(waitlistRef, {
             userId: user.uid,
             email: user.email,
             name: user.displayName,
             joinedAt: serverTimestamp(),
             useCase: values.useCase,
-            enteredReferralCode: values.referralCode?.toUpperCase() || null,
+            enteredReferralCode: enteredCode || null,
             referralSource: values.referralSource || null,
             referralCode: newReferralCode,
             referralCount: 0,
@@ -192,7 +185,6 @@ export default function WaitlistForm() {
             }
         });
 
-        // 3. Create the new referral code document
         transaction.set(referralCodeRef, {
             code: newReferralCode,
             userId: user.uid,
@@ -200,36 +192,38 @@ export default function WaitlistForm() {
             isActive: true,
         });
 
-        // 4. Update the user's main profile
         transaction.update(userRef, { 
             onWaitlist: true,
             waitlistJoinedAt: serverTimestamp() 
         });
 
-        // 5. Update global stats
         transaction.update(statsRef, { 
             totalMembers: increment(1),
             lastUpdated: serverTimestamp()
         });
-
       });
 
       setSubmissionState('success');
 
     } catch (error) {
-        setSubmissionState('error');
-        setErrorMessage('An error occurred. Your Firestore security rules may be blocking this operation.');
-        console.error("Transaction failed: ", error);
-        
-        const permissionError = new FirestorePermissionError({
-          path: `Transaction involving multiple documents`,
-          operation: 'write',
-          requestResourceData: {
-             waitlistData: values,
-             userId: user.uid,
-          }
-        });
-        errorEmitter.emit('permission-error', permissionError);
+      setSubmissionState('error');
+      setErrorMessage('An error occurred while joining the waitlist. Please try again.');
+      
+      const permissionError = new FirestorePermissionError({
+        path: `Transaction to join waitlist for user ${user.uid}`,
+        operation: 'write',
+        requestResourceData: {
+           useCase: values.useCase,
+           enteredReferralCode: values.referralCode,
+           referralSource: values.referralSource,
+           emailPreferences: {
+                productUpdates: values.productUpdates,
+                betaTesting: values.betaTesting,
+                partnerships: values.partnerships,
+            }
+        }
+      });
+      errorEmitter.emit('permission-error', permissionError);
     }
   }
 
