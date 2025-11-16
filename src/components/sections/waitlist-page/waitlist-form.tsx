@@ -110,9 +110,26 @@ export default function WaitlistForm() {
 
     try {
       await runTransaction(firestore, async (transaction) => {
+        // --- ALL READS MUST HAPPEN FIRST ---
+
         const statsRef = doc(firestore, 'stats', 'global');
         const statsSnap = await transaction.get(statsRef);
         
+        let referrerWaitlistRef = null;
+        let referrerWaitlistSnap = null;
+        if (values.referralCode && referralStatus === 'valid') {
+          const enteredCode = values.referralCode.toUpperCase();
+          const referrerCodeRef = doc(firestore, 'referralCodes', enteredCode);
+          const referrerCodeSnap = await transaction.get(referrerCodeRef);
+          if (referrerCodeSnap.exists()) {
+            const referrerId = referrerCodeSnap.data().userId;
+            referrerWaitlistRef = doc(firestore, 'waitlist', referrerId);
+            referrerWaitlistSnap = await transaction.get(referrerWaitlistRef);
+          }
+        }
+
+        // --- ALL WRITES HAPPEN AFTER READS ---
+
         let newPosition = 1;
         if (statsSnap.exists()) {
             newPosition = (statsSnap.data().totalMembers || 0) + 1;
@@ -122,8 +139,36 @@ export default function WaitlistForm() {
         const waitlistRef = doc(firestore, 'waitlist', user.uid);
         const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
         const userRef = doc(firestore, 'users', user.uid);
+        
+        // 1. Handle referral bonus if a valid code was used
+        if (referrerWaitlistRef && referrerWaitlistSnap && referrerWaitlistSnap.exists()) {
+            const referrerData = referrerWaitlistSnap.data();
+            const newReferralCount = (referrerData.referralCount || 0) + 1;
+            let newTier = referrerData.referralTier;
 
-        // 1. Set user's waitlist data
+            if (newReferralCount >= 25) newTier = 'ambassador';
+            else if (newReferralCount >= 10) newTier = 'champion';
+            else if (newReferralCount >= 3) newTier = 'advocate';
+            
+            transaction.update(referrerWaitlistRef, {
+                referralCount: increment(1),
+                bonusPositions: increment(10),
+                currentPosition: increment(-10),
+                referralTier: newTier,
+            });
+            
+            // Create referral record
+            const referralRecordRef = doc(collection(firestore, 'referrals'));
+            transaction.set(referralRecordRef, {
+              referralCode: values.referralCode!.toUpperCase(),
+              referrerUserId: referrerData.userId,
+              newUserId: user.uid,
+              usedAt: serverTimestamp(),
+              bonusApplied: true,
+            });
+        }
+
+        // 2. Set new user's waitlist data
         transaction.set(waitlistRef, {
             userId: user.uid,
             email: user.email,
@@ -147,7 +192,7 @@ export default function WaitlistForm() {
             }
         });
 
-        // 2. Create the new referral code document
+        // 3. Create the new referral code document
         transaction.set(referralCodeRef, {
             code: newReferralCode,
             userId: user.uid,
@@ -155,57 +200,18 @@ export default function WaitlistForm() {
             isActive: true,
         });
 
-        // 3. Update the user's main profile
+        // 4. Update the user's main profile
         transaction.update(userRef, { 
             onWaitlist: true,
             waitlistJoinedAt: serverTimestamp() 
         });
 
-        // 4. Update global stats
+        // 5. Update global stats
         transaction.update(statsRef, { 
             totalMembers: increment(1),
             lastUpdated: serverTimestamp()
         });
 
-        // 5. Handle referral bonus if a valid code was used
-        if (values.referralCode && referralStatus === 'valid') {
-            const enteredCode = values.referralCode.toUpperCase();
-            const referrerCodeRef = doc(firestore, 'referralCodes', enteredCode);
-            const referrerCodeSnap = await transaction.get(referrerCodeRef);
-
-            if (referrerCodeSnap.exists()) {
-                const referrerId = referrerCodeSnap.data().userId;
-                const referrerWaitlistRef = doc(firestore, 'waitlist', referrerId);
-                const referrerWaitlistSnap = await transaction.get(referrerWaitlistRef);
-                
-                if(referrerWaitlistSnap.exists()){
-                    const referrerData = referrerWaitlistSnap.data();
-                    const newReferralCount = (referrerData.referralCount || 0) + 1;
-                    let newTier = referrerData.referralTier;
-
-                    if (newReferralCount >= 25) newTier = 'ambassador';
-                    else if (newReferralCount >= 10) newTier = 'champion';
-                    else if (newReferralCount >= 3) newTier = 'advocate';
-                    
-                    transaction.update(referrerWaitlistRef, {
-                        referralCount: increment(1),
-                        bonusPositions: increment(10),
-                        currentPosition: increment(-10),
-                        referralTier: newTier,
-                    });
-                    
-                    // Create referral record
-                    const referralRecordRef = doc(collection(firestore, 'referrals'));
-                    transaction.set(referralRecordRef, {
-                      referralCode: enteredCode,
-                      referrerUserId: referrerId,
-                      newUserId: user.uid,
-                      usedAt: serverTimestamp(),
-                      bonusApplied: true,
-                    });
-                }
-            }
-        }
       });
 
       setSubmissionState('success');
@@ -215,8 +221,6 @@ export default function WaitlistForm() {
         setErrorMessage('An error occurred. Your Firestore security rules may be blocking this operation.');
         console.error("Transaction failed: ", error);
         
-        // The error object from a failed transaction may not be a standard Firestore error
-        // so we create a generic one for debugging.
         const permissionError = new FirestorePermissionError({
           path: `Transaction involving multiple documents`,
           operation: 'write',
