@@ -108,81 +108,101 @@ export default function WaitlistForm() {
     setErrorMessage('');
 
     try {
-      // This is a simplified approach for demonstration.
-      // A robust, scalable solution would use a backend function to generate the position.
-      const waitlistQuery = query(collection(firestore, 'waitlist'));
-      const waitlistSnapshot = await getDocs(waitlistQuery);
-      const newPosition = waitlistSnapshot.size + 2848; // Get current count and add to base
-      
-      const newReferralCode = `LMX${newPosition}`;
-      const enteredCode = values.referralCode?.toUpperCase();
+        await runTransaction(firestore, async (transaction) => {
+            const statsRef = doc(firestore, "stats", "global");
+            const statsSnap = await transaction.get(statsRef);
+            
+            if (!statsSnap.exists()) {
+                throw new Error("Global stats document not found!");
+            }
 
-      const batch = writeBatch(firestore);
-      
-      const waitlistRef = doc(firestore, 'waitlist', user.uid);
-      const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
-      const userRef = doc(firestore, 'users', user.uid);
-      
-      let bonusPositions = 0;
-      let finalPosition = newPosition;
+            const newPosition = (statsSnap.data().totalMembers || 0) + 1;
+            const newReferralCode = `LMX${newPosition}`;
+            const enteredCode = values.referralCode?.toUpperCase();
 
-      if (enteredCode && referralStatus === 'valid') {
-          // This part is simplified. A real app would use a Cloud Function
-          // to securely update the referrer's count. We are only setting the
-          // bonus for the new user here to avoid complex client-side reads/writes.
-          bonusPositions = 10;
-          finalPosition = newPosition - bonusPositions;
-      }
+            const waitlistRef = doc(firestore, 'waitlist', user.uid);
+            const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
+            const userRef = doc(firestore, 'users', user.uid);
 
-      // 1. Set the new user's waitlist document
-      batch.set(waitlistRef, {
-          userId: user.uid,
-          email: user.email,
-          name: user.displayName,
-          joinedAt: serverTimestamp(),
-          useCase: values.useCase,
-          enteredReferralCode: enteredCode && referralStatus === 'valid' ? enteredCode : null,
-          referralSource: values.referralSource || null,
-          referralCode: newReferralCode,
-          referralCount: 0,
-          referralTier: 'none',
-          basePosition: newPosition,
-          bonusPositions,
-          currentPosition: finalPosition,
-          status: 'waiting',
-          betaInvitedAt: null,
-          emailPreferences: {
-              productUpdates: values.productUpdates,
-              betaTesting: values.betaTesting,
-              partnerships: values.partnerships,
-          }
-      });
+            let bonusPositions = 0;
+            let finalPosition = newPosition;
 
-      // 2. Create their unique referral code
-      batch.set(referralCodeRef, {
-          code: newReferralCode,
-          userId: user.uid,
-          createdAt: serverTimestamp(),
-          isActive: true,
-      });
-      
-      // 3. Update their user profile
-      batch.update(userRef, { 
-          onWaitlist: true,
-          waitlistJoinedAt: serverTimestamp() 
-      });
+            // Handle referral logic
+            if (enteredCode && referralStatus === 'valid') {
+                const q = query(collection(firestore, 'waitlist'), where('referralCode', '==', enteredCode), limit(1));
+                const referrerSnap = await getDocs(q);
+                
+                if (!referrerSnap.empty) {
+                    const referrerDoc = referrerSnap.docs[0];
+                    const referrerRef = referrerDoc.ref;
+                    const referrerData = referrerDoc.data();
+                    
+                    bonusPositions = 10;
+                    finalPosition -= bonusPositions;
+                    
+                    const newReferrerReferralCount = (referrerData.referralCount || 0) + 1;
+                    const newReferrerBonusPositions = (referrerData.bonusPositions || 0) + 10;
 
-      await batch.commit();
-      
-      setSubmissionState('success');
+                    transaction.update(referrerRef, {
+                        referralCount: newReferrerReferralCount,
+                        bonusPositions: newReferrerBonusPositions,
+                        currentPosition: referrerData.basePosition - newReferrerBonusPositions
+                    });
+                }
+            }
+
+            // 1. Set the new user's waitlist document
+            transaction.set(waitlistRef, {
+                userId: user.uid,
+                email: user.email,
+                name: user.displayName,
+                joinedAt: serverTimestamp(),
+                useCase: values.useCase,
+                enteredReferralCode: enteredCode && referralStatus === 'valid' ? enteredCode : null,
+                referralSource: values.referralSource || null,
+                referralCode: newReferralCode,
+                referralCount: 0,
+                referralTier: 'none',
+                basePosition: newPosition,
+                bonusPositions,
+                currentPosition: finalPosition,
+                status: 'waiting',
+                betaInvitedAt: null,
+                emailPreferences: {
+                    productUpdates: values.productUpdates,
+                    betaTesting: values.betaTesting,
+                    partnerships: values.partnerships,
+                }
+            });
+
+            // 2. Create their unique referral code
+            transaction.set(referralCodeRef, {
+                code: newReferralCode,
+                userId: user.uid,
+                createdAt: serverTimestamp(),
+                isActive: true,
+            });
+
+            // 3. Update their user profile
+            transaction.set(userRef, {
+                onWaitlist: true,
+                waitlistJoinedAt: serverTimestamp()
+            }, { merge: true });
+
+            // 4. Update global stats
+            transaction.update(statsRef, {
+                totalMembers: newPosition
+            });
+        });
+        
+        setSubmissionState('success');
 
     } catch (error) {
       console.error(error);
       setSubmissionState('error');
-      setErrorMessage('An error occurred. With open rules, this suggests a code logic issue.');
       
       const permissionError = new FirestorePermissionError({
-        path: `Batch write for user ${user.uid}`,
+        path: `Transaction to join waitlist for user ${user.uid}`,
         operation: 'write',
         requestResourceData: {
            useCase: values.useCase,
