@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useUser, useFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, doc, getDoc, writeBatch, serverTimestamp, runTransaction, getDocs, query, where, limit } from 'firebase/firestore';
+import { collection, doc, getDoc, writeBatch, serverTimestamp, runTransaction, query, where, getDocs, limit } from 'firebase/firestore';
 
 const formSchema = z.object({
   useCase: z.string().min(20, { message: "Please describe your use case (minimum 20 characters)" }).max(300, { message: "Use case cannot exceed 300 characters." }),
@@ -111,51 +111,44 @@ export default function WaitlistForm() {
         await runTransaction(firestore, async (transaction) => {
             const statsRef = doc(firestore, "stats", "global");
             let statsSnap = await transaction.get(statsRef);
-            
-            // If the global stats document doesn't exist, create it within the transaction
-            if (!statsSnap.exists()) {
-                const initialStats = {
-                    totalMembers: 0,
-                    totalReferrals: 0,
-                    countriesCount: 0,
-                    lastUpdated: serverTimestamp()
-                };
-                transaction.set(statsRef, initialStats);
-                // Create a temporary snapshot to use for the rest of the transaction
-                statsSnap = {
-                    exists: () => true,
-                    data: () => initialStats
-                } as any;
+            let currentTotalMembers = 0;
+
+            if (statsSnap.exists()) {
+                currentTotalMembers = statsSnap.data().totalMembers || 0;
+            } else {
+                // If global stats doc doesn't exist, create it within the transaction
+                transaction.set(statsRef, { totalMembers: 0, totalReferrals: 0, lastUpdated: serverTimestamp() });
             }
+
+            const newPosition = currentTotalMembers + 1;
+            const newReferralCode = `LMX${newPosition}`;
 
             let bonusPositions = 0;
             const enteredCode = values.referralCode?.toUpperCase();
             
-            // Perform all reads first
+            // All reads must happen before any writes
             let referrerRef: any = null;
-            let referrerData: any = null;
+            let referrerSnap: any = null;
             if (enteredCode && referralStatus === 'valid') {
                 const q = query(collection(firestore, 'waitlist'), where('referralCode', '==', enteredCode), limit(1));
-                const referrerSnap = await getDocs(q);
+                const referrerQuerySnap = await getDocs(q); // Use getDocs for queries in transactions
                 
-                if (!referrerSnap.empty) {
-                    const referrerDoc = referrerSnap.docs[0];
+                if (!referrerQuerySnap.empty) {
+                    const referrerDoc = referrerQuerySnap.docs[0];
                     referrerRef = referrerDoc.ref;
-                    referrerData = referrerDoc.data();
-                    bonusPositions = 10;
+                    // Read the document using the transaction to ensure consistency
+                    referrerSnap = await transaction.get(referrerRef);
+                    if (referrerSnap.exists()) {
+                      bonusPositions = 10;
+                    }
                 }
             }
             
-            // Now perform all writes
-            const newPosition = (statsSnap.data().totalMembers || 0) + 1;
-            const newReferralCode = `LMX${newPosition}`;
-            const finalPosition = newPosition - bonusPositions;
-
-            const waitlistRef = doc(firestore, 'waitlist', user.uid);
-            const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
-            const userRef = doc(firestore, 'users', user.uid);
+            // Now, perform all writes
             
-            if (referrerRef && referrerData) {
+            // 1. Update referrer if one was found and exists
+            if (referrerRef && referrerSnap && referrerSnap.exists()) {
+                const referrerData = referrerSnap.data();
                 const newReferrerReferralCount = (referrerData.referralCount || 0) + 1;
                 const newReferrerBonusPositions = (referrerData.bonusPositions || 0) + 10;
                 transaction.update(referrerRef, {
@@ -165,6 +158,8 @@ export default function WaitlistForm() {
                 });
             }
 
+            // 2. Set new user's waitlist entry
+            const waitlistRef = doc(firestore, 'waitlist', user.uid);
             transaction.set(waitlistRef, {
                 userId: user.uid,
                 email: user.email,
@@ -178,7 +173,7 @@ export default function WaitlistForm() {
                 referralTier: 'none',
                 basePosition: newPosition,
                 bonusPositions,
-                currentPosition: finalPosition,
+                currentPosition: newPosition - bonusPositions,
                 status: 'waiting',
                 betaInvitedAt: null,
                 emailPreferences: {
@@ -188,6 +183,8 @@ export default function WaitlistForm() {
                 }
             });
 
+            // 3. Set new user's referral code
+            const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
             transaction.set(referralCodeRef, {
                 code: newReferralCode,
                 userId: user.uid,
@@ -195,11 +192,14 @@ export default function WaitlistForm() {
                 isActive: true,
             });
 
+            // 4. Update user's main profile
+            const userRef = doc(firestore, 'users', user.uid);
             transaction.set(userRef, {
                 onWaitlist: true,
                 waitlistJoinedAt: serverTimestamp()
             }, { merge: true });
 
+            // 5. Update global stats
             transaction.update(statsRef, {
                 totalMembers: newPosition
             });
