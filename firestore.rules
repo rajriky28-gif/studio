@@ -1,52 +1,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
-    }
-    
-    // Users can read/update their own profile.
-    match /users/{userId} {
-      allow read, update: if isOwner(userId);
-      allow create: if isAuthenticated();
-    }
-    
-    // Users can create and read their own waitlist entry.
-    // They can update their entry to reflect new referral counts.
-    match /waitlist/{userId} {
-      allow read: if isOwner(userId);
-      allow create: if isAuthenticated() && isOwner(userId) && request.resource.data.userId == request.auth.uid;
-      allow update: if isAuthenticated() && isOwner(userId);
-      allow delete: if false;
-    }
-    
-    // Any authenticated user can read codes for validation.
-    // Users can only create a code linked to their own UID.
-    match /referralCodes/{code} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if false;
-    }
-    
-    // Authenticated users can create referral records.
-    // Users can only read referrals they are a part of.
-    match /referrals/{referralId} {
-      allow create: if isAuthenticated();
-      allow read: if isAuthenticated() && (resource.data.referrerUserId == request.auth.uid || resource.data.newUserId == request.auth.uid);
-      allow update, delete: if false;
-    }
-
-    // Global stats are not client-writable for security.
-    // This must be handled by a secure backend function in a real app.
-    // Reads are allowed for UI purposes.
-    match /stats/global {
-      allow read: if true;
-      allow write: if false; // Deny all client-side writes
+    match /{document=**} {
+      allow read, write: if request.auth != null;
     }
   }
 }
