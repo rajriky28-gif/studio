@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useCollection, useMemoFirebase } from '@/firebase';
+import { useCollection, useMemoFirebase, useFirebase } from '@/firebase';
 import { collection, query, where, orderBy } from 'firebase/firestore';
 import JobCard, { Job } from './job-card';
 import Link from 'next/link';
@@ -33,13 +33,13 @@ function JobListingSkeleton() {
 }
 
 export function JobListings() {
-  const { firestore } = useCollection(null);
+  const { firestore } = useFirebase();
 
   const jobsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(
-      collection(firestore, 'jobs'), 
-      where('status', '==', 'active'), 
+      collection(firestore, 'jobs'),
+      where('status', '==', 'active'),
       orderBy('postedDate', 'desc')
     );
   }, [firestore]);
