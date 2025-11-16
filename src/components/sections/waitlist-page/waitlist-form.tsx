@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useUser, useFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, doc, getDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, getDoc, writeBatch, serverTimestamp, runTransaction } from 'firebase/firestore';
 
 const formSchema = z.object({
   useCase: z.string().min(20, { message: "Please describe your use case (minimum 20 characters)" }).max(300, { message: "Use case cannot exceed 300 characters." }),
@@ -108,62 +108,113 @@ export default function WaitlistForm() {
     setErrorMessage('');
 
     try {
-      // NOTE: This simplified logic does not use a transaction to read global stats
-      // to avoid read/write order errors. A backend function is recommended for
-      // handling atomic increments and referral updates in production.
-      const batch = writeBatch(firestore);
+      await runTransaction(firestore, async (transaction) => {
+        const statsRef = doc(firestore, 'stats', 'global');
+        const statsDoc = await transaction.get(statsRef);
+        
+        let newPosition = 2848; // Default fallback
+        if (statsDoc.exists()) {
+          newPosition = (statsDoc.data().totalMembers || 0) + 1;
+        } else {
+          // If global doc doesn't exist, create it in this transaction
+           transaction.set(statsRef, { totalMembers: 1, totalReferrals: 0, lastUpdated: serverTimestamp() });
+        }
 
-      const enteredCode = values.referralCode?.toUpperCase();
+        const newReferralCode = `LMX${newPosition}`;
+        const enteredCode = values.referralCode?.toUpperCase();
+
+        const waitlistRef = doc(firestore, 'waitlist', user.uid);
+        const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
+        const userRef = doc(firestore, 'users', user.uid);
+        
+        // Handle referral logic
+        let bonusPositions = 0;
+        let finalPosition = newPosition;
+        if (enteredCode && referralStatus === 'valid') {
+            const referrerCodeRef = doc(firestore, 'referralCodes', enteredCode);
+            const referrerCodeDoc = await transaction.get(referrerCodeRef);
+
+            if(referrerCodeDoc.exists()){
+                const referrerId = referrerCodeDoc.data().userId;
+                const referrerWaitlistRef = doc(firestore, 'waitlist', referrerId);
+                const referrerWaitlistDoc = await transaction.get(referrerWaitlistRef);
+
+                if(referrerWaitlistDoc.exists()){
+                    // Update referrer's data
+                    const referrerData = referrerWaitlistDoc.data();
+                    const newReferralCount = (referrerData.referralCount || 0) + 1;
+                    const newReferrerBonus = (referrerData.bonusPositions || 0) + 10;
+                    
+                    transaction.update(referrerWaitlistRef, {
+                        referralCount: newReferralCount,
+                        bonusPositions: newReferrerBonus,
+                        currentPosition: referrerData.basePosition - newReferrerBonus
+                    });
+
+                    // Set bonus for new user
+                    bonusPositions = 10;
+                    finalPosition = newPosition - bonusPositions;
+
+                     // Log the referral event
+                    const referralEventRef = doc(collection(firestore, 'referrals'));
+                    transaction.set(referralEventRef, {
+                        referralCode: enteredCode,
+                        referrerUserId: referrerId,
+                        newUserId: user.uid,
+                        usedAt: serverTimestamp(),
+                        bonusApplied: true,
+                    });
+                }
+            }
+        }
+
+        // 1. Set the new user's waitlist document
+        transaction.set(waitlistRef, {
+            userId: user.uid,
+            email: user.email,
+            name: user.displayName,
+            joinedAt: serverTimestamp(),
+            useCase: values.useCase,
+            enteredReferralCode: enteredCode && referralStatus === 'valid' ? enteredCode : null,
+            referralSource: values.referralSource || null,
+            referralCode: newReferralCode,
+            referralCount: 0,
+            referralTier: 'none',
+            basePosition: newPosition,
+            bonusPositions,
+            currentPosition: finalPosition,
+            status: 'waiting',
+            betaInvitedAt: null,
+            emailPreferences: {
+                productUpdates: values.productUpdates,
+                betaTesting: values.betaTesting,
+                partnerships: values.partnerships,
+            }
+        });
+
+        // 2. Create their unique referral code
+        transaction.set(referralCodeRef, {
+            code: newReferralCode,
+            userId: user.uid,
+            createdAt: serverTimestamp(),
+            isActive: true,
+        });
+        
+        // 3. Update their user profile
+        transaction.update(userRef, { 
+            onWaitlist: true,
+            waitlistJoinedAt: serverTimestamp() 
+        });
+        
+        // 4. Update stats
+        if (statsDoc.exists()) {
+          transaction.update(statsRef, {
+            totalMembers: newPosition,
+            lastUpdated: serverTimestamp()
+          });
+        }
+      });
       
-      // Basic new position - in a real app, this should be a server-determined value
-      const newPosition = Math.floor(Math.random() * 1000) + 3000;
-      const newReferralCode = `LMX${newPosition}`;
-
-      const waitlistRef = doc(firestore, 'waitlist', user.uid);
-      const referralCodeRef = doc(firestore, 'referralCodes', newReferralCode);
-      const userRef = doc(firestore, 'users', user.uid);
-
-      // 1. Set the new user's waitlist document
-      batch.set(waitlistRef, {
-          userId: user.uid,
-          email: user.email,
-          name: user.displayName,
-          joinedAt: serverTimestamp(),
-          useCase: values.useCase,
-          enteredReferralCode: enteredCode && referralStatus === 'valid' ? enteredCode : null,
-          referralSource: values.referralSource || null,
-          referralCode: newReferralCode,
-          referralCount: 0,
-          referralTier: 'none',
-          basePosition: newPosition,
-          bonusPositions: 0,
-          currentPosition: newPosition - (enteredCode && referralStatus === 'valid' ? 10 : 0), // Simple client-side boost
-          status: 'waiting',
-          betaInvitedAt: null,
-          emailPreferences: {
-              productUpdates: values.productUpdates,
-              betaTesting: values.betaTesting,
-              partnerships: values.partnerships,
-          }
-      });
-
-      // 2. Create their unique referral code
-      batch.set(referralCodeRef, {
-          code: newReferralCode,
-          userId: user.uid,
-          createdAt: serverTimestamp(),
-          isActive: true,
-      });
-      
-      // 3. Update their user profile
-      batch.update(userRef, { 
-          onWaitlist: true,
-          waitlistJoinedAt: serverTimestamp() 
-      });
-
-      // Commit the batch
-      await batch.commit();
-
       setSubmissionState('success');
 
     } catch (error) {
@@ -171,7 +222,7 @@ export default function WaitlistForm() {
       setErrorMessage('An error occurred while joining the waitlist. Please try again.');
       
       const permissionError = new FirestorePermissionError({
-        path: `Batch write for user ${user.uid}`,
+        path: `Transaction to join waitlist for user ${user.uid}`,
         operation: 'write',
         requestResourceData: {
            useCase: values.useCase,
@@ -338,3 +389,5 @@ export default function WaitlistForm() {
     </div>
   );
 }
+
+    
