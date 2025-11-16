@@ -109,13 +109,18 @@ export default function WaitlistForm() {
 
     const batch = writeBatch(firestore);
 
-    // This is a simplification. In a real app, you'd get this from a trusted source.
     const statsRef = doc(firestore, 'stats', 'global');
-    // We read it to estimate the position, but won't write to it from the client.
-    const statsSnap = await getDoc(statsRef).catch(() => null); // Catch potential read errors
-    const totalMembers = (statsSnap && statsSnap.exists()) ? statsSnap.data().totalMembers : 0;
-    const newPosition = totalMembers + 1;
-
+    let newPosition = 1;
+    
+    try {
+        const statsSnap = await getDoc(statsRef);
+        if (statsSnap.exists()) {
+            newPosition = (statsSnap.data().totalMembers || 0) + 1;
+        }
+    } catch (e) {
+        console.warn("Could not read global stats, defaulting position to 1. This might be a permissions issue for initial setup.", e);
+    }
+    
     const newReferralCode = `LMX${newPosition}`;
 
     const waitlistRef = doc(firestore, 'waitlist', user.uid);
@@ -191,10 +196,9 @@ export default function WaitlistForm() {
         setSubmissionState('error');
         setErrorMessage('An error occurred while joining the waitlist. Please try again.');
         
-        // Create and emit the contextual error
         const permissionError = new FirestorePermissionError({
           path: `batch write including paths: ${waitlistRef.path}, ${referralCodeRef.path}, ${userRef.path}`,
-          operation: 'write', // Batch write can be considered a 'write' operation
+          operation: 'write',
           requestResourceData: {
             waitlist: waitlistData,
             referralCode: referralCodeData,
@@ -222,7 +226,6 @@ export default function WaitlistForm() {
   }, [referralStatus]);
 
   if (submissionState === 'success') {
-    // The parent component handles rendering the dashboard
     return null;
   }
   
@@ -338,7 +341,7 @@ export default function WaitlistForm() {
                         <Button
                           type="submit"
                           className="w-full h-14 bg-navy-gradient text-lg font-semibold text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-ocean/30 disabled:bg-gray-400"
-                          disabled={submissionState === 'submitting'}
+                          disabled={submissionState === 'submitting' || referralStatus === 'self'}
                         >
                           {submissionState === 'submitting' ? (
                             <><Loader2 className="mr-2 h-6 w-6 animate-spin" /> Joining...</>

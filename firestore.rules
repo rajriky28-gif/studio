@@ -5,49 +5,36 @@ service cloud.firestore {
 
     // Waitlist collection
     match /waitlist/{userId} {
-      // Allow a user to read their own waitlist document to see their dashboard.
       allow read: if request.auth != null && request.auth.uid == userId;
-      // Allow any authenticated user to create their own waitlist entry.
       allow create: if request.auth != null && request.auth.uid == userId;
-      // Allow a user to update their own waitlist document (e.g., for referral counts).
       allow update: if request.auth != null && request.auth.uid == userId;
-      // Nobody can delete waitlist entries directly.
       allow delete: if false;
     }
 
     // Users collection
     match /users/{userId} {
-      // Allow a user to read and update their own profile.
       allow read, update: if request.auth != null && request.auth.uid == userId;
-      // Allow a user to create their own profile document.
       allow create: if request.auth != null && request.auth.uid == userId;
-      // Nobody can delete user profiles.
       allow delete: if false;
     }
     
     // Referral Codes collection
     match /referralCodes/{code} {
-        // Allow any authenticated user to read a referral code for validation.
         allow read: if request.auth != null;
-        // Only the user who owns the code can create it (done in a batch write).
         allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
         allow update, delete: if false;
     }
     
     // Referrals collection
     match /referrals/{referralId} {
-        // Allow any authenticated user to create a referral log when they sign up.
         allow create: if request.auth != null;
-        // Referrals are mostly write-only for logging, but we might need to read them for activity feeds.
         allow read: if request.auth != null && (request.auth.uid == resource.data.referrerUserId || request.auth.uid == resource.data.newUserId);
         allow update, delete: if false;
     }
 
     // Stats collection
     match /stats/global {
-      // Everyone can read global stats.
       allow read: if true;
-      // Only backend functions should write to stats. Deny client writes.
       allow write: if false;
     }
   }
