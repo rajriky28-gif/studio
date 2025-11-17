@@ -6,7 +6,11 @@ service cloud.firestore {
     // Helper function - check if user is admin
     function isAdmin() {
       return request.auth != null && 
-             request.auth.token.email == 'lumivex.company@gmail.com';
+             request.auth.token.email in [
+               'lumivex.company@gmail.com',
+               'rajriky28@gmail.com',
+               'riky@gmail.com'
+             ];
     }
     
     // JOBS COLLECTION - PUBLIC READ, ADMIN WRITE
@@ -15,9 +19,7 @@ service cloud.firestore {
       allow read: if true;
       
       // Only admin can create, update, delete
-      allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      allow write: if isAdmin();
     }
     
     // USERS COLLECTION - AUTHENTICATED USERS ONLY

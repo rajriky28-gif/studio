@@ -10,7 +10,11 @@ import { Button } from '@/components/ui/button';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 
-const ADMIN_EMAILS = ['lumivex.company@gmail.com', 'riky@google.com', 'admin@lumivex.com', 'founder@lumivex.com', 'rajriky28@gmail.com', 'riky@gmail.com'];
+const ADMIN_EMAILS = [
+  'lumivex.company@gmail.com',
+  'rajriky28@gmail.com',
+  'riky@gmail.com'
+];
 
 function AdminAccessGate() {
     return (
