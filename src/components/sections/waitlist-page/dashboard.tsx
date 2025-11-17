@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Copy, Check, Twitter, Linkedin, MessageSquare, Award, Shield, Star, Trophy, Users, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 const tiers = {
   none: { name: 'No Badge', goal: 3, next: 'Advocate', nextIcon: Award, nextColor: 'text-orange-500' },
@@ -117,12 +118,18 @@ export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: an
                 {/* Share Options */}
                 <div className="text-center">
                      <p className="text-lg font-semibold text-navy mb-4">Share Your Code</p>
-                     <div className="flex justify-center gap-4">
-                        <Button onClick={shareOnTwitter} className="bg-[#1DA1F2] hover:bg-[#1DA1F2]/90"><Twitter className="mr-2"/> Share on X</Button>
-                        <Button onClick={shareOnLinkedIn} className="bg-[#0A66C2] hover:bg-[#0A66C2]/90"><Linkedin className="mr-2"/> Share on LinkedIn</Button>
-                        <Button onClick={() => copyToClipboard(shareMessage, 'msg')} variant="outline">
-                            {msgCopied ? <Check className="mr-2"/> : <MessageSquare className="mr-2"/>}
-                            {msgCopied ? 'Copied' : 'Copy Message'}
+                     <div className="flex justify-center gap-2 sm:gap-4">
+                        <Button onClick={shareOnTwitter} className="bg-[#1DA1F2] hover:bg-[#1DA1F2]/90 h-12 w-12 sm:w-auto sm:px-4">
+                            <Twitter className="h-5 w-5 sm:mr-2" />
+                            <span className="hidden sm:inline">Share on X</span>
+                        </Button>
+                        <Button onClick={shareOnLinkedIn} className="bg-[#0A66C2] hover:bg-[#0A66C2]/90 h-12 w-12 sm:w-auto sm:px-4">
+                            <Linkedin className="h-5 w-5 sm:mr-2" />
+                            <span className="hidden sm:inline">Share on LinkedIn</span>
+                        </Button>
+                        <Button onClick={() => copyToClipboard(shareMessage, 'msg')} variant="outline" className="h-12 w-12 sm:w-auto sm:px-4">
+                            {msgCopied ? <Check className="h-5 w-5 sm:mr-2" /> : <MessageSquare className="h-5 w-5 sm:mr-2" />}
+                            <span className="hidden sm:inline">{msgCopied ? 'Copied' : 'Copy Message'}</span>
                         </Button>
                      </div>
                 </div>
