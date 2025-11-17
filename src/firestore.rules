@@ -15,10 +15,10 @@ service cloud.firestore {
              ];
     }
 
-    // JOBS: Public can read, only admins can write.
+    // JOBS: Public can read/list, only admins can write.
     match /jobs/{jobId} {
-      allow read: if true;
-      allow write: if isAdmin();
+      allow list, get: if true;
+      allow create, update, delete: if isAdmin();
     }
 
     // USERS: Authenticated users can read profiles, but can only write to their own.
