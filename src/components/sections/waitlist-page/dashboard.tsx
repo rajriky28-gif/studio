@@ -57,15 +57,10 @@ export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: an
 
   const currentTierInfo = tiers[waitlistEntry.referralTier as keyof typeof tiers];
   const CurrentTierIcon = tierIcons[waitlistEntry.referralTier as keyof typeof tiers];
-
-  // Logic for progress to the next tier
-  const referralsForCurrentTier = currentTierInfo.goal;
-  const referralsForNextTier = currentTierInfo.nextGoal - referralsForCurrentTier;
-  const progressInCurrentTier = waitlistEntry.referralCount - referralsForCurrentTier;
   
   const progressPercent = currentTierInfo.nextGoal === Infinity 
     ? 100 
-    : (progressInCurrentTier / referralsForNextTier) * 100;
+    : (waitlistEntry.referralCount / currentTierInfo.nextGoal) * 100;
 
   const shareMessage = `I just joined @Lumivex waitlist! 🚀\n\nBuild AI agents with just conversation - no coding needed.\n\nUse my code: ${waitlistEntry.referralCode} when you join and we both move up!\n\nJoin here: ${referralLink}`;
   
