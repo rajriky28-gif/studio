@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Menu, X, Copy, LogOut } from 'lucide-react';
+import { Menu, X, Copy, LogOut, LayoutDashboard } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -29,6 +29,8 @@ const navLinks = [
   { name: 'Contact', href: '/contact' },
 ];
 
+const ADMIN_EMAIL = 'lumivex.company@gmail.com';
+
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -37,6 +39,8 @@ export function Header() {
   const isCareersPage = pathname === '/careers';
   const { user, auth, isUserLoading } = useUser();
   const [waitlistData, setWaitlistData] = useState<any>(null); // Simplified for this example
+
+  const isAdmin = useMemo(() => user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase(), [user]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -111,6 +115,14 @@ export function Header() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin/jobs">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:bg-red-50 focus:text-red-600">
                     <LogOut className="mr-2 h-4 w-4" />
                     Log out
