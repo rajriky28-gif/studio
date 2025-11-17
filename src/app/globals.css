@@ -113,9 +113,22 @@
 @layer base {
   .prose {
     @apply text-charcoal;
-  }
-  .prose h1, .prose h2, .prose h3, .prose h4 {
-    @apply text-navy;
+    --tw-prose-body: hsl(var(--charcoal));
+    --tw-prose-headings: hsl(var(--navy));
+    --tw-prose-lead: hsl(var(--charcoal));
+    --tw-prose-links: hsl(var(--ocean));
+    --tw-prose-bold: hsl(var(--navy));
+    --tw-prose-counters: hsl(var(--ocean));
+    --tw-prose-bullets: hsl(var(--ocean));
+    --tw-prose-hr: hsl(var(--border));
+    --tw-prose-quotes: hsl(var(--navy));
+    --tw-prose-quote-borders: hsl(var(--border));
+    --tw-prose-captions: hsl(var(--muted-foreground));
+    --tw-prose-code: hsl(var(--navy));
+    --tw-prose-pre-code: hsl(var(--muted-foreground));
+    --tw-prose-pre-bg: hsl(var(--muted));
+    --tw-prose-th-borders: hsl(var(--border));
+    --tw-prose-td-borders: hsl(var(--border));
   }
 }
 
