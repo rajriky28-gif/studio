@@ -25,22 +25,28 @@ const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'About', href: '/about' },
   { name: 'Vision', href: '/vision' },
+  { name: 'Blog', href: '/blog' },
   { name: 'Careers', href: '/careers' },
   { name: 'Contact', href: '/contact' },
 ];
 
-const ADMIN_EMAIL = 'lumivex.company@gmail.com';
+const ADMIN_EMAILS = [
+  'lumivex.company@gmail.com',
+  'rajriky28@gmail.com',
+  'riky@gmail.com'
+];
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
-  const isCareersPage = pathname === '/careers';
+  const isSpecialPage = ['/', '/careers', '/blog'].includes(pathname);
+
   const { user, auth, isUserLoading } = useUser();
   const [waitlistData, setWaitlistData] = useState<any>(null); // Simplified for this example
 
-  const isAdmin = useMemo(() => user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase(), [user]);
+  const isAdmin = useMemo(() => user?.email ? ADMIN_EMAILS.includes(user.email.toLowerCase()) : false, [user]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,7 +70,7 @@ export function Header() {
   const navLinkText = waitlistData ? 'Dashboard' : 'Waitlist';
 
   const headerBg = isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent';
-  const linkColor = isScrolled ? 'text-navy' : (isHomePage || isCareersPage ? 'text-white' : 'text-navy');
+  const linkColor = isScrolled ? 'text-navy' : (isSpecialPage ? 'text-white' : 'text-navy');
   
   return (
     <header
@@ -74,7 +80,7 @@ export function Header() {
       )}
     >
       <div className={cn("flex items-center justify-between transition-all duration-300 h-20", "container mx-auto px-4 md:px-6")}>
-          <Logo isScrolled={isScrolled} isHomePage={isHomePage || isCareersPage} />
+          <Logo isScrolled={isScrolled} isHomePage={isSpecialPage} />
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center space-x-8 md:flex h-full">
@@ -116,12 +122,20 @@ export function Header() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {isAdmin && (
-                    <DropdownMenuItem asChild>
-                      <Link href="/admin/jobs">
-                        <LayoutDashboard className="mr-2 h-4 w-4" />
-                        Admin Dashboard
-                      </Link>
-                    </DropdownMenuItem>
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin/jobs">
+                          <LayoutDashboard className="mr-2 h-4 w-4" />
+                          Jobs Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                       <DropdownMenuItem asChild>
+                        <Link href="/admin/blog">
+                          <LayoutDashboard className="mr-2 h-4 w-4" />
+                          Blog Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
                   )}
                   <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:bg-red-50 focus:text-red-600">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -146,7 +160,7 @@ export function Header() {
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Menu className={cn('h-8 w-8', isScrolled ? 'text-black' : (isHomePage || isCareersPage ? 'text-white' : 'text-black'))} />
+                  <Menu className={cn('h-8 w-8', isScrolled ? 'text-black' : (isSpecialPage ? 'text-white' : 'text-black'))} />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>

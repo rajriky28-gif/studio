@@ -22,6 +22,18 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
     
+    // BLOG POSTS - PUBLIC READ, ADMIN WRITE
+    match /blog_posts/{postId} {
+      // Anyone can read published posts
+      allow read: if resource.data.status == 'published';
+      
+      // Admin can read all (including drafts)
+      allow read: if isAdmin();
+      
+      // Only admin can write
+      allow create, update, delete: if isAdmin();
+    }
+    
     // USERS COLLECTION - AUTHENTICATED USERS ONLY
     match /users/{userId} {
       allow read: if request.auth != null;
