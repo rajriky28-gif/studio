@@ -8,17 +8,18 @@ import AdminDashboard from '@/components/sections/admin/jobs/dashboard';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { signOut } from 'firebase/auth';
+import Link from 'next/link';
 
-const ADMIN_EMAILS = ['riky@google.com', 'admin@lumivex.com', 'founder@lumivex.com', 'lumivex.company@gmail.com', 'rajriky28@gmail.com', 'riky@gmail.com'];
+const ADMIN_EMAILS = ['lumivex.company@gmail.com', 'riky@google.com', 'admin@lumivex.com', 'founder@lumivex.com', 'rajriky28@gmail.com', 'riky@gmail.com'];
 
 function AdminAccessGate() {
-    const router = useRouter();
-
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-center p-4">
             <h1 className="text-4xl font-bold text-red-600 mb-4">Access Denied</h1>
             <p className="text-lg text-gray-700 mb-8">This page is only accessible to Lumivex administrators.</p>
-            <Button onClick={() => router.push('/')}>Return to Home</Button>
+            <Button asChild>
+                <Link href="/">Return to Home</Link>
+            </Button>
         </div>
     );
 }
@@ -44,8 +45,10 @@ export default function AdminJobsPage() {
             if (user && user.email && lowerCaseAdminEmails.includes(user.email.toLowerCase())) {
                 setIsAuthorized(true);
             } else if (user) {
+                // User is logged in but not an admin
                 setIsAuthorized(false);
             } else {
+                // User is not logged in, redirect to login page
                 router.push('/login');
             }
         }

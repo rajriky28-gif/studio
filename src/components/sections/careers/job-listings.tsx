@@ -61,15 +61,13 @@ export function JobListings() {
       return <JobListingSkeleton />;
     }
 
-    // If there is an error OR there are no jobs, show the empty state.
-    // This makes the component resilient to fetch errors.
     if (error || !jobs || jobs.length === 0) {
       return (
         <div className="text-center py-16 px-6 bg-cream/50 max-w-2xl mx-auto rounded-2xl border border-stone-200">
           <h3 className="text-2xl font-medium text-navy">No open positions at the moment</h3>
           <p className="text-charcoal mt-2 mb-6">Follow us on LinkedIn for updates when we're hiring.</p>
           <Button asChild>
-            <Link href="#">
+            <Link href="https://www.linkedin.com/company/lumivex" target="_blank">
               <Linkedin className="mr-2 h-5 w-5"/>
               Follow on LinkedIn
             </Link>
