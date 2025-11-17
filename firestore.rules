@@ -13,7 +13,6 @@ service cloud.firestore {
     
     // Centralized admin check.
     function isAdmin() {
-      // IMPORTANT: Add your admin emails to this list.
       return isAuthenticated() && request.auth.token.email in [
         'riky@google.com',
         'admin@lumivex.com',
