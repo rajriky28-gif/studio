@@ -29,17 +29,17 @@ service cloud.firestore {
       allow delete: if false;
     }
     
-    // WAITLIST COLLECTION - AUTHENTICATED USERS ONLY
+    // WAITLIST COLLECTION - PUBLIC READ, WRITE FOR OWNER
     match /waitlist/{userId} {
-      allow read: if request.auth != null;
+      allow read: if true;
       allow create: if request.auth != null && request.auth.uid == userId;
       allow update: if request.auth != null && request.auth.uid == userId;
       allow delete: if false;
     }
     
-    // REFERRAL CODES - READ FOR VALIDATION, WRITE ONLY BY OWNER
+    // REFERRAL CODES - PUBLIC READ, WRITE FOR AUTHENTICATED
     match /referralCodes/{code} {
-      allow read: if request.auth != null;
+      allow read: if true;
       allow create: if request.auth != null;
       allow update: if false;
       allow delete: if false;
@@ -53,10 +53,10 @@ service cloud.firestore {
       allow delete: if false;
     }
     
-    // STATS - PUBLIC READ, ADMIN WRITE ONLY
+    // STATS - PUBLIC READ, AUTHENTICATED WRITE ONLY
     match /stats/global {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if request.auth != null;
     }
   }
 }
