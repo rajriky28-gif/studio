@@ -38,8 +38,8 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
-  const isBlogPage = pathname === '/blog';
-  const isSpecialPage = ['/', '/careers'].includes(pathname) || isBlogPage;
+  const isBlogPage = pathname.startsWith('/blog');
+  const isSpecialPage = ['/', '/careers'].includes(pathname);
 
   const { user, auth, isUserLoading } = useUser();
   const [waitlistData, setWaitlistData] = useState<any>(null); // Simplified for this example
@@ -68,7 +68,7 @@ export function Header() {
   const navLinkText = waitlistData ? 'Dashboard' : 'Waitlist';
 
   const headerBg = isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent';
-  const linkColor = isScrolled ? 'text-navy' : (isHomePage || pathname === '/careers' ? 'text-white' : 'text-navy');
+  const linkColor = isScrolled ? 'text-navy' : (isSpecialPage ? 'text-white' : 'text-navy');
   
   return (
     <header
@@ -95,6 +95,7 @@ export function Header() {
                 {link.name}
               </Link>
             ))}
+            <Link href="/blog" className={cn('text-sm font-medium transition-colors hover:text-ocean', isBlogPage ? 'text-ocean font-bold' : linkColor)}>Blog</Link>
             <Link href="/waitlist" className={cn('text-sm font-medium transition-colors hover:text-ocean', linkColor)}>{navLinkText}</Link>
           </nav>
           
@@ -182,6 +183,7 @@ export function Header() {
                         {link.name}
                       </Link>
                     ))}
+                    <Link href="/blog" className="text-2xl font-medium text-primary transition-colors hover:text-ocean" onClick={() => setIsMobileMenuOpen(false)}>Blog</Link>
                     <Link href="/waitlist" className="text-2xl font-medium text-primary transition-colors hover:text-ocean" onClick={() => setIsMobileMenuOpen(false)}>{navLinkText}</Link>
                     {!user && (
                          <Link

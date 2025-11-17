@@ -7,19 +7,20 @@ import { usePathname } from 'next/navigation';
 
 export function Logo({ isScrolled, isHomePage }: { isScrolled?: boolean, isHomePage?: boolean }) {
   const pathname = usePathname();
-  const isBlogPage = pathname === '/blog';
+  const isBlogPage = pathname.startsWith('/blog');
 
   const logoTextColor = () => {
     if (isScrolled) {
-      return "text-navy";
+      return "text-navy"; // Scrolled color is always navy
     }
+    // Non-scrolled colors
     if (isHomePage) {
-      return "text-white";
+      return "text-white"; // White on transparent hero
     }
-    if(isBlogPage){
-        return "text-navy";
+     if (isBlogPage) {
+      return "text-navy"; // Navy on blog page (non-scrolled)
     }
-    return "text-navy";
+    return "text-navy"; // Default to navy for other pages
   };
 
   return (
