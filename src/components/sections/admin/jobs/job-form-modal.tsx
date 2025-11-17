@@ -90,9 +90,22 @@ export function JobFormModal({ isOpen, onClose, job }: JobFormModalProps) {
         status: job.status === 'active',
       });
     } else {
-      form.reset();
+      form.reset({
+        jobTitle: '',
+        department: '',
+        employmentType: '',
+        location: '',
+        experienceLevel: '',
+        salaryRange: '',
+        fullDescription: '',
+        responsibilities: '',
+        requirements: '',
+        niceToHave: '',
+        linkedinUrl: '',
+        status: true,
+      });
     }
-  }, [job, form]);
+  }, [job, form, isOpen]);
 
   const onSubmit = async (values: JobFormValues) => {
     if (!firestore || !user) return;
@@ -150,7 +163,7 @@ export function JobFormModal({ isOpen, onClose, job }: JobFormModalProps) {
                 )} />
                 <FormField name="department" control={form.control} render={({ field }) => (
                     <FormItem><FormLabel>Department</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                             <FormControl><SelectTrigger><SelectValue placeholder="Select a department" /></SelectTrigger></FormControl>
                             <SelectContent>
                                 <SelectItem value="Engineering">Engineering</SelectItem>
@@ -169,7 +182,7 @@ export function JobFormModal({ isOpen, onClose, job }: JobFormModalProps) {
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField name="employmentType" control={form.control} render={({ field }) => (
                      <FormItem><FormLabel>Employment Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                            <FormControl><SelectTrigger><SelectValue placeholder="Select an employment type" /></SelectTrigger></FormControl>
                             <SelectContent>
                                 <SelectItem value="Full-Time">Full-Time</SelectItem>
@@ -187,7 +200,7 @@ export function JobFormModal({ isOpen, onClose, job }: JobFormModalProps) {
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <FormField name="experienceLevel" control={form.control} render={({ field }) => (
                     <FormItem><FormLabel>Experience Level</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                             <FormControl><SelectTrigger><SelectValue placeholder="Select experience level" /></SelectTrigger></FormControl>
                             <SelectContent>
                                 <SelectItem value="Entry Level (0-2 years)">Entry Level (0-2 years)</SelectItem>

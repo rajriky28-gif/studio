@@ -126,7 +126,9 @@ export function JobsTable({ onEditJob }: { onEditJob: (job: Job) => void }) {
                                 <TableCell>{job.department}</TableCell>
                                 <TableCell>{job.location}</TableCell>
                                 <TableCell>
-                                    {job.postedDate ? format(job.postedDate.toDate(), 'MMM d, yyyy') : 'Date not available'}
+                                    {job.postedDate && typeof job.postedDate.toDate === 'function'
+                                        ? format(job.postedDate.toDate(), 'MMM d, yyyy')
+                                        : 'Date not available'}
                                 </TableCell>
                                 <TableCell>
                                     <Badge variant={job.status === 'active' ? 'default' : 'secondary'} className={job.status === 'active' ? 'bg-green-100 text-green-800' : ''}>

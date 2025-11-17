@@ -28,6 +28,7 @@ export interface Job {
   postedDate: {
     toDate: () => Date;
   };
+  status: 'active' | 'inactive';
 }
 
 const benefits = [
@@ -43,6 +44,11 @@ const benefits = [
 
 export default function JobCard({ job }: { job: Job }) {
   const [isOpen, setIsOpen] = useState(false);
+  
+  const postedDateString = job.postedDate && typeof job.postedDate.toDate === 'function'
+    ? formatDistanceToNow(job.postedDate.toDate(), { addSuffix: true })
+    : 'Date not available';
+
 
   return (
     <Collapsible
@@ -78,7 +84,7 @@ export default function JobCard({ job }: { job: Job }) {
                 )}
                 <div className="flex items-center gap-2">
                     <Calendar className="h-5 w-5 text-cyan"/>
-                    <span className="italic">Posted {formatDistanceToNow(job.postedDate.toDate(), { addSuffix: true })}</span>
+                    <span className="italic">Posted {postedDateString}</span>
                 </div>
             </div>
             <div className="flex justify-center mt-6">
