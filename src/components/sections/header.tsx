@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Menu, X, Copy, LogOut, LayoutDashboard } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import { useUser } from '@/firebase';
@@ -94,7 +94,6 @@ export function Header() {
                 {link.name}
               </Link>
             ))}
-            <Link href="/blog" className={cn('text-sm font-medium transition-colors hover:text-ocean', linkColor)}>Blog</Link>
             <Link href="/waitlist" className={cn('text-sm font-medium transition-colors hover:text-ocean', linkColor)}>{navLinkText}</Link>
           </nav>
           
@@ -163,16 +162,17 @@ export function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-full bg-white p-0">
-                <div className="flex h-full flex-col">
-                  <div className={cn("flex items-center justify-between border-b px-4 text-primary h-20")}>
-                    <Logo isScrolled={true} isHomePage={false} />
-                    <SheetClose asChild>
+                <SheetHeader className="flex flex-row items-center justify-between border-b px-4 text-primary h-20">
+                   <SheetTitle className="sr-only">Mobile Navigation Menu</SheetTitle>
+                   <Logo isScrolled={true} isHomePage={false} />
+                   <SheetClose asChild>
                        <Button variant="ghost" size="icon">
                         <X className="h-8 w-8 text-primary" />
                         <span className="sr-only">Close menu</span>
                       </Button>
                     </SheetClose>
-                  </div>
+                </SheetHeader>
+                <div className="flex h-full flex-col">
                   <nav className="flex flex-1 flex-col items-center justify-center space-y-8">
                     {navLinks.map((link) => (
                       <Link
@@ -184,7 +184,6 @@ export function Header() {
                         {link.name}
                       </Link>
                     ))}
-                    <Link href="/blog" className="text-2xl font-medium text-primary transition-colors hover:text-ocean" onClick={() => setIsMobileMenuOpen(false)}>Blog</Link>
                     <Link href="/waitlist" className="text-2xl font-medium text-primary transition-colors hover:text-ocean" onClick={() => setIsMobileMenuOpen(false)}>{navLinkText}</Link>
                     {!user && (
                          <Link
