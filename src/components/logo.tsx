@@ -1,9 +1,27 @@
+'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 
 export function Logo({ isScrolled, isHomePage }: { isScrolled?: boolean, isHomePage?: boolean }) {
+  const pathname = usePathname();
+  const isBlogPage = pathname === '/blog';
+
+  const logoTextColor = () => {
+    if (isScrolled) {
+      return "text-navy";
+    }
+    if (isHomePage) {
+      return "text-white";
+    }
+    if(isBlogPage){
+        return "text-navy";
+    }
+    return "text-navy";
+  };
+
   return (
     <Link href="/" className="inline-flex items-center gap-0">
       <Image 
@@ -17,7 +35,7 @@ export function Logo({ isScrolled, isHomePage }: { isScrolled?: boolean, isHomeP
       <span 
         className={cn(
           "text-3xl font-bold tracking-tight transition-colors -ml-4",
-          isScrolled ? "text-navy" : (isHomePage ? "text-white" : "text-navy")
+          logoTextColor()
         )}
       >
         Lumivex

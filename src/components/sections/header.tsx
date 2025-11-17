@@ -38,7 +38,8 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
-  const isSpecialPage = ['/', '/careers', '/blog'].includes(pathname);
+  const isBlogPage = pathname === '/blog';
+  const isSpecialPage = ['/', '/careers'].includes(pathname) || isBlogPage;
 
   const { user, auth, isUserLoading } = useUser();
   const [waitlistData, setWaitlistData] = useState<any>(null); // Simplified for this example
@@ -67,7 +68,7 @@ export function Header() {
   const navLinkText = waitlistData ? 'Dashboard' : 'Waitlist';
 
   const headerBg = isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent';
-  const linkColor = isScrolled ? 'text-navy' : (isSpecialPage ? 'text-white' : 'text-navy');
+  const linkColor = isScrolled ? 'text-navy' : (isHomePage || pathname === '/careers' ? 'text-white' : 'text-navy');
   
   return (
     <header
