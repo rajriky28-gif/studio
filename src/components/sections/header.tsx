@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState, useMemo } from 'react';
@@ -33,6 +34,7 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
+  const isCareersPage = pathname === '/careers';
   const { user, auth, isUserLoading } = useUser();
   const [waitlistData, setWaitlistData] = useState<any>(null); // Simplified for this example
 
@@ -58,7 +60,7 @@ export function Header() {
   const navLinkText = waitlistData ? 'Dashboard' : 'Waitlist';
 
   const headerBg = isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent';
-  const linkColor = isScrolled ? 'text-navy' : (isHomePage ? 'text-white' : 'text-navy');
+  const linkColor = isScrolled ? 'text-navy' : (isHomePage || isCareersPage ? 'text-white' : 'text-navy');
   
   return (
     <header
@@ -68,7 +70,7 @@ export function Header() {
       )}
     >
       <div className={cn("flex items-center justify-between transition-all duration-300 h-20", "container mx-auto px-4 md:px-6")}>
-          <Logo isScrolled={isScrolled} isHomePage={isHomePage} />
+          <Logo isScrolled={isScrolled} isHomePage={isHomePage || isCareersPage} />
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center space-x-8 md:flex h-full">
@@ -78,7 +80,8 @@ export function Header() {
                 href={link.href}
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-ocean',
-                  linkColor
+                  linkColor,
+                   pathname === link.href ? 'text-ocean font-bold' : ''
                 )}
               >
                 {link.name}
@@ -131,7 +134,7 @@ export function Header() {
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Menu className={cn('h-8 w-8', isScrolled ? 'text-black' : (isHomePage ? 'text-white' : 'text-black'))} />
+                  <Menu className={cn('h-8 w-8', isScrolled ? 'text-black' : (isHomePage || isCareersPage ? 'text-white' : 'text-black'))} />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
