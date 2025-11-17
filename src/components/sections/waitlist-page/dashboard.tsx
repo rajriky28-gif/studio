@@ -4,15 +4,17 @@ import React, { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
-import { Copy, Check, Twitter, Linkedin, MessageSquare, Award, Shield, Star, Trophy, Users, CheckCircle } from 'lucide-react';
+import { Copy, Check, Twitter, Linkedin, MessageSquare, Award, Shield, Star, Trophy, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useDoc, useFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 const tiers = {
   none: { name: 'No Badge', goal: 3, next: 'Advocate', nextIcon: Award, nextColor: 'text-orange-500' },
   advocate: { name: 'Advocate 🥉', goal: 10, next: 'Champion', nextIcon: Shield, nextColor: 'text-slate-500' },
   champion: { name: 'Champion 🥈', goal: 25, next: 'Ambassador', nextIcon: Star, nextColor: 'text-yellow-500' },
-  ambassador: { name: 'Ambassador 🥇', goal: Infinity, next: '', nextIcon: Star },
+  ambassador: { name: 'Ambassador 🥇', goal: Infinity, next: '', nextIcon: Star, nextColor: 'text-yellow-500' },
 };
 
 const tierColors: { [key: string]: string } = {
@@ -23,7 +25,7 @@ const tierColors: { [key: string]: string } = {
 }
 
 const tierIcons: { [key: string]: React.ElementType } = {
-  none: CheckCircle,
+  none: Users,
   advocate: Award,
   champion: Shield,
   ambassador: Star,
@@ -32,6 +34,14 @@ const tierIcons: { [key: string]: React.ElementType } = {
 export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: any }) {
   const [copied, setCopied] = useState(false);
   const [msgCopied, setMsgCopied] = useState(false);
+  const { firestore } = useFirebase();
+
+  const statsRef = useMemo(() => {
+    if (!firestore) return null;
+    return doc(firestore, 'stats', 'global');
+  }, [firestore]);
+
+  const { data: globalStats } = useDoc(statsRef);
 
   const referralLink = `https://lumivex.com/waitlist?ref=${waitlistEntry.referralCode}`;
 
@@ -98,8 +108,8 @@ export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: an
                     <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center">
                         <Trophy className="h-8 w-8 text-amber-500 mx-auto mb-2" />
                         <p className="text-xs text-slate-500 uppercase font-semibold">Your Position</p>
-                        <p className="text-4xl font-bold text-navy">#{waitlistEntry.currentPosition.toLocaleString()}</p>
-                        <p className="text-xs text-slate-400">Base: #{waitlistEntry.basePosition.toLocaleString()}</p>
+                        <p className="text-4xl font-bold text-navy">#{Math.max(1, waitlistEntry.currentPosition.toLocaleString())}</p>
+                        <p className="text-xs text-slate-400">out of {globalStats?.totalMembers.toLocaleString() || '...'}</p>
                     </div>
                     <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center">
                         <Users className="h-8 w-8 text-cyan mx-auto mb-2" />
