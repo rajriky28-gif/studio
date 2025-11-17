@@ -205,7 +205,6 @@ export default function WaitlistForm() {
         setSubmissionState('success');
 
     } catch (error: any) {
-      console.error(error);
       setSubmissionState('error');
       setErrorMessage(error.message || 'An error occurred while joining the waitlist. Please try again.');
       
@@ -377,3 +376,5 @@ export default function WaitlistForm() {
     </div>
   );
 }
+
+    
