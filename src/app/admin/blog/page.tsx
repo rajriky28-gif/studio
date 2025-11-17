@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useUser } from '@/firebase';
@@ -10,9 +11,7 @@ import Link from 'next/link';
 import BlogDashboard from '@/components/sections/admin/blog/blog-dashboard';
 
 const ADMIN_EMAILS = [
-  'lumivex.company@gmail.com',
-  'rajriky28@gmail.com',
-  'riky@gmail.com'
+  'lumivex.company@gmail.com'
 ];
 
 function AdminAccessGate() {

@@ -30,9 +30,7 @@ const navLinks = [
 ];
 
 const ADMIN_EMAILS = [
-  'lumivex.company@gmail.com',
-  'rajriky28@gmail.com',
-  'riky@gmail.com'
+  'lumivex.company@gmail.com'
 ];
 
 export function Header() {
