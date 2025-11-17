@@ -1,65 +1,9 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Helper functions to keep rules clean and readable.
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
-    }
-    
-    // Centralized admin check.
-    function isAdmin() {
-      return isAuthenticated() && request.auth.token.email in [
-        'riky@google.com',
-        'admin@lumivex.com',
-        'founder@lumivex.com',
-        'lumivex.company@gmail.com'
-      ];
-    }
-
-    // --- COLLECTION-SPECIFIC RULES ---
-
-    // USER PROFILES: Users can read/write their own profile. Admins can read/write any profile.
-    match /users/{userId} {
-      allow read, write: if isOwner(userId) || isAdmin();
-    }
-
-    // WAITLIST: Users can manage their own waitlist entry. Admins have full access.
-    match /waitlist/{userId} {
-      allow read, update: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId);
-      allow delete: if isAdmin();
-    }
-    
-    // REFERRAL CODES: Authenticated users can read and create codes. Only Admins can modify them.
-    match /referralCodes/{code} {
-      allow read, create: if isAuthenticated();
-      allow write: if isAdmin();
-    }
-
-    // REFERRALS: Authenticated users can read and create referrals. They cannot be changed.
-    match /referrals/{referralId} {
-      allow read, create: if isAuthenticated();
-      allow update, delete: if false; // Referrals are immutable.
-    }
-    
-    // STATS: Publicly readable for display on the site. Only admins can update them.
-    match /stats/global {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // JOBS: **THE DEFINITIVE FIX** Publicly readable, but only admins can manage them.
-    match /jobs/{jobId} {
-      // Allow ANYONE (logged in or not) to query the collection (list) and read documents (get).
-      allow read: if true;
-      
-      // Allow ONLY admins to create, update, or delete job postings.
-      allow write: if isAdmin();
+    match /{document=**} {
+      allow read, write;
     }
   }
 }
