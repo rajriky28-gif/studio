@@ -38,10 +38,10 @@ export function JobListings() {
 
   const jobsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
+    // Temporarily removed orderBy to test for index issue.
     return query(
       collection(firestore, 'jobs'),
-      where('status', '==', 'active'),
-      orderBy('postedDate', 'desc')
+      where('status', '==', 'active')
     );
   }, [firestore]);
 
