@@ -24,14 +24,18 @@ service cloud.firestore {
     
     // BLOG POSTS - PUBLIC READ, ADMIN WRITE
     match /blog_posts/{postId} {
-      // Anyone can read published posts
-      allow read: if resource.data.status == 'published';
+      // Admins have full read/write access
+      allow read, write: if isAdmin();
       
-      // Admin can read all (including drafts)
-      allow read: if isAdmin();
-      
-      // Only admin can write
-      allow create, update, delete: if isAdmin();
+      // Public users can only read documents where status is 'published'
+      allow get: if resource.data.status == 'published';
+    }
+
+    match /blog_posts/{postId} {
+        // Public users can list (query) documents that are published
+        allow list: if request.query.limit <= 10 && (
+          !('category' in request.query.filters) || request.query.filters.category[2] != ''
+        ) && request.query.filters.status[2] == 'published';
     }
     
     // USERS COLLECTION - AUTHENTICATED USERS ONLY
