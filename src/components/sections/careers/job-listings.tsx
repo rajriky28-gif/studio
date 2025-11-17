@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react';
 import { useCollection, useMemoFirebase, useFirebase } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query, where, orderBy } from 'firebase/firestore';
 import JobCard from './job-card';
 import type { Job } from './job-card';
 import Link from 'next/link';
@@ -41,7 +41,8 @@ export function JobListings() {
     if (!firestore) return null;
     return query(
       collection(firestore, 'jobs'),
-      where('status', '==', 'active')
+      where('status', '==', 'active'),
+      orderBy('postedDate', 'desc')
     );
   }, [firestore]);
 

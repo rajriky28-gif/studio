@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +24,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useEffect } from 'react';
 import { Job } from '@/components/sections/careers/job-card';
 import { Loader2 } from 'lucide-react';
-import { DialogDescription } from '@radix-ui/react-dialog';
 
 const jobSchema = z.object({
   jobTitle: z.string().min(5, 'Please enter a job title (minimum 5 characters)'),
