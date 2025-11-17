@@ -86,7 +86,7 @@ export function PostsTable({ onEditPost }: { onEditPost: (post: BlogPost) => voi
 
     const postsQuery = useMemo(() => {
         if (!firestore) return null;
-        return query(collection(firestore, 'blog_posts'), orderBy('createdAt', 'desc'));
+        return query(collection(firestore, 'blog_posts'), orderBy('updatedAt', 'desc'));
     }, [firestore]);
 
     const { data: posts, isLoading } = useCollection<BlogPost>(postsQuery);
@@ -144,7 +144,7 @@ export function PostsTable({ onEditPost }: { onEditPost: (post: BlogPost) => voi
                             <TableHead className="w-[30%]">Title</TableHead>
                             <TableHead>Category</TableHead>
                             <TableHead>Author</TableHead>
-                            <TableHead>Published Date</TableHead>
+                            <TableHead>Last Updated</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
@@ -156,8 +156,8 @@ export function PostsTable({ onEditPost }: { onEditPost: (post: BlogPost) => voi
                                 <TableCell>{post.category}</TableCell>
                                 <TableCell>{post.author}</TableCell>
                                 <TableCell>
-                                    {post.publishedAt && typeof post.publishedAt.toDate === 'function'
-                                        ? format(post.publishedAt.toDate(), 'MMM d, yyyy')
+                                    {post.updatedAt && typeof post.updatedAt.toDate === 'function'
+                                        ? format(post.updatedAt.toDate(), 'MMM d, yyyy')
                                         : 'N/A'}
                                 </TableCell>
                                 <TableCell>

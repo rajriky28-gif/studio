@@ -15,13 +15,14 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
     
-    // BLOG POSTS - PUBLIC READ, ADMIN WRITE
+    // BLOG POSTS - ADMIN FULL ACCESS, PUBLIC READ ONLY
     match /blog_posts/{postId} {
-      // Admins have full access.
-      // Public users can only read published posts.
+      // Admins have full read/write access to all posts
       allow read, write: if isAdmin();
+      
+      // Public users can only read documents where status is 'published'
       allow get: if resource.data.status == 'published';
-      allow list: if request.query.where.get('status', 'not-set') == 'published';
+      allow list: if request.query.where['status'][2] == 'published';
     }
     
     // USERS COLLECTION - AUTHENTICATED USERS ONLY
