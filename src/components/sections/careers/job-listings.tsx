@@ -1,8 +1,9 @@
+
 'use client';
 
-import { useMemo, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useCollection, useMemoFirebase, useFirebase } from '@/firebase';
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 import JobCard from './job-card';
 import type { Job } from './job-card';
 import Link from 'next/link';
@@ -38,7 +39,6 @@ export function JobListings() {
 
   const jobsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
-    // Temporarily removed orderBy to test for index issue.
     return query(
       collection(firestore, 'jobs'),
       where('status', '==', 'active')

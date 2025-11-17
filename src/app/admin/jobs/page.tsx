@@ -9,7 +9,7 @@ import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { signOut } from 'firebase/auth';
 
-const ADMIN_EMAILS = ['riky@google.com', 'admin@lumivex.com', 'founder@lumivex.com', 'lumivex.company@gmail.com'];
+const ADMIN_EMAILS = ['riky@google.com', 'admin@lumivex.com', 'founder@lumivex.com', 'lumivex.company@gmail.com', 'rajriky28@gmail.com', 'riky@gmail.com'];
 
 function AdminAccessGate() {
     const router = useRouter();
@@ -68,13 +68,14 @@ export default function AdminJobsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-        <header className="fixed top-0 left-0 right-0 h-16 bg-navy text-white flex items-center justify-between px-6 md:px-12 z-50">
+        <header className="fixed top-0 left-0 right-0 h-16 bg-navy text-white flex items-center justify-between px-6 md:px-12 z-50 shadow-md">
             <div className="flex items-center gap-4">
                 <Logo isScrolled={true} isHomePage={false}/>
-                <span className="text-sm font-semibold uppercase tracking-wider hidden md:block">Admin Dashboard</span>
+                <div className="w-px h-6 bg-white/20 mx-2 hidden md:block"></div>
+                <span className="text-base font-medium tracking-wide hidden md:block">Admin Dashboard</span>
             </div>
             <div className="flex items-center gap-4">
-                <span className="text-sm text-white/70 hidden sm:inline">{user?.email}</span>
+                <span className="text-sm text-white/80 hidden sm:inline">{user?.email}</span>
                 <Button onClick={handleLogout} variant="ghost" className="text-white hover:bg-white/10 hover:text-white">
                     Logout
                 </Button>

@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useCollection, useMemoFirebase, useFirebase } from '@/firebase';
 import { collection, query, orderBy, doc, deleteDoc } from 'firebase/firestore';
 import { Job } from '@/components/sections/careers/job-card';
@@ -8,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { MoreHorizontal, Trash2, Edit, AlertCircle } from 'lucide-react';
+import { MoreHorizontal, Trash2, Edit, AlertCircle, Briefcase } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -99,6 +100,7 @@ export function JobsTable({ onEditJob }: { onEditJob: (job: Job) => void }) {
     if (!jobs || jobs.length === 0) {
         return (
             <div className="text-center py-16 px-6 bg-white rounded-2xl border border-dashed">
+                <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4"/>
                 <h3 className="text-xl font-medium text-gray-800">No jobs posted yet</h3>
                 <p className="text-gray-500 mt-2">Click "Add New Job" to get started.</p>
             </div>
@@ -111,12 +113,12 @@ export function JobsTable({ onEditJob }: { onEditJob: (job: Job) => void }) {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Job Title</TableHead>
-                            <TableHead>Department</TableHead>
-                            <TableHead>Location</TableHead>
-                            <TableHead>Posted Date</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
+                            <TableHead className="w-[30%]">Job Title</TableHead>
+                            <TableHead className="w-[15%]">Department</TableHead>
+                            <TableHead className="w-[15%]">Location</TableHead>
+                            <TableHead className="w-[15%]">Posted Date</TableHead>
+                            <TableHead className="w-[10%]">Status</TableHead>
+                            <TableHead className="w-[15%] text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

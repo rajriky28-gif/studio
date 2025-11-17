@@ -1,16 +1,18 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to check for admin emails
     function isAdmin() {
-      let adminEmails = [
-        'riky@google.com',
-        'admin@lumivex.com',
-        'founder@lumivex.com',
-        'lumivex.company@gmail.com'
-      ];
-      return request.auth != null && request.auth.token.email in adminEmails;
+      return request.auth != null && 
+             request.auth.token.email in [
+               'lumivex.company@gmail.com',
+               'riky@google.com',
+               'admin@lumivex.com',
+               'founder@lumivex.com',
+               'rajriky28@gmail.com',
+               'riky@gmail.com'
+             ];
     }
 
     // JOBS: Public can read, only admins can write.

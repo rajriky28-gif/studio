@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import {
@@ -9,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogClose,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,15 +23,16 @@ import { useToast } from '@/hooks/use-toast';
 import { useEffect } from 'react';
 import { Job } from '@/components/sections/careers/job-card';
 import { Loader2 } from 'lucide-react';
+import { DialogDescription } from '@radix-ui/react-dialog';
 
 const jobSchema = z.object({
-  jobTitle: z.string().min(3, 'Job title is required'),
+  jobTitle: z.string().min(5, 'Please enter a job title (minimum 5 characters)'),
   department: z.string().min(1, 'Department is required'),
   employmentType: z.string().min(1, 'Employment type is required'),
   location: z.string().min(1, 'Location is required'),
   experienceLevel: z.string().min(1, 'Experience level is required'),
   salaryRange: z.string().optional(),
-  fullDescription: z.string().min(1, 'Full description is required'),
+  fullDescription: z.string().min(100, 'Full description must be at least 100 characters.'),
   responsibilities: z.string().min(1, 'Responsibilities are required'),
   requirements: z.string().min(1, 'Requirements are required'),
   niceToHave: z.string().optional(),
@@ -149,20 +150,23 @@ export function JobFormModal({ isOpen, onClose, job }: JobFormModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-3xl font-bold text-navy">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0">
+        <DialogHeader className="bg-navy-gradient text-white p-8 rounded-t-lg">
+          <DialogTitle className="text-3xl font-bold">
             {isEditing ? 'Edit Job Posting' : 'Add New Job Posting'}
           </DialogTitle>
+           <DialogDescription className="text-white/80">
+            {isEditing ? `Update the details for "${job?.jobTitle}"` : "Fill in the details below to post a new position"}
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-8">
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField name="jobTitle" control={form.control} render={({ field }) => (
-                    <FormItem><FormLabel>Job Title</FormLabel><FormControl><Input placeholder="e.g., Senior Full-Stack Engineer" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Job Title *</FormLabel><FormControl><Input placeholder="e.g., Senior Full-Stack Engineer" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField name="department" control={form.control} render={({ field }) => (
-                    <FormItem><FormLabel>Department</FormLabel>
+                    <FormItem><FormLabel>Department *</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                             <FormControl><SelectTrigger><SelectValue placeholder="Select a department" /></SelectTrigger></FormControl>
                             <SelectContent>
@@ -181,7 +185,7 @@ export function JobFormModal({ isOpen, onClose, job }: JobFormModalProps) {
              </div>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField name="employmentType" control={form.control} render={({ field }) => (
-                     <FormItem><FormLabel>Employment Type</FormLabel>
+                     <FormItem><FormLabel>Employment Type *</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                            <FormControl><SelectTrigger><SelectValue placeholder="Select an employment type" /></SelectTrigger></FormControl>
                             <SelectContent>
@@ -194,12 +198,12 @@ export function JobFormModal({ isOpen, onClose, job }: JobFormModalProps) {
                     <FormMessage /></FormItem>
                 )} />
                  <FormField name="location" control={form.control} render={({ field }) => (
-                    <FormItem><FormLabel>Location</FormLabel><FormControl><Input placeholder="e.g., Remote" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Location *</FormLabel><FormControl><Input placeholder="e.g., Remote" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
             </div>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <FormField name="experienceLevel" control={form.control} render={({ field }) => (
-                    <FormItem><FormLabel>Experience Level</FormLabel>
+                    <FormItem><FormLabel>Experience Level *</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                             <FormControl><SelectTrigger><SelectValue placeholder="Select experience level" /></SelectTrigger></FormControl>
                             <SelectContent>
@@ -216,32 +220,32 @@ export function JobFormModal({ isOpen, onClose, job }: JobFormModalProps) {
                 )} />
             </div>
              <FormField name="fullDescription" control={form.control} render={({ field }) => (
-                <FormItem><FormLabel>Full Job Description</FormLabel><FormControl><Textarea placeholder="Detailed description of the role..." rows={5} {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Full Job Description *</FormLabel><FormControl><Textarea placeholder="Detailed description of the role..." rows={5} {...field} /></FormControl><FormMessage /></FormItem>
             )} />
              <FormField name="responsibilities" control={form.control} render={({ field }) => (
-                <FormItem><FormLabel>Key Responsibilities (one per line)</FormLabel><FormControl><Textarea placeholder={"Design and implement scalable systems\nCollaborate with cross-functional teams"} rows={4} {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Key Responsibilities (one per line) *</FormLabel><FormControl><Textarea placeholder={"Design and implement scalable backend systems\nCollaborate with cross-functional teams"} rows={4} {...field} /></FormControl><FormMessage /></FormItem>
             )} />
              <FormField name="requirements" control={form.control} render={({ field }) => (
-                <FormItem><FormLabel>Requirements (one per line)</FormLabel><FormControl><Textarea placeholder={"5+ years of full-stack development\nStrong proficiency in React and Node.js"} rows={4} {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Requirements (one per line) *</FormLabel><FormControl><Textarea placeholder={"5+ years of full-stack development\nStrong proficiency in React and Node.js"} rows={4} {...field} /></FormControl><FormMessage /></FormItem>
             )} />
              <FormField name="niceToHave" control={form.control} render={({ field }) => (
                 <FormItem><FormLabel>Nice to Have (Optional, one per line)</FormLabel><FormControl><Textarea placeholder={"Experience with AI/ML\nOpen source contributions"} rows={3} {...field} /></FormControl><FormMessage /></FormItem>
             )} />
              <FormField name="linkedinUrl" control={form.control} render={({ field }) => (
-                <FormItem><FormLabel>LinkedIn Job Application URL</FormLabel><FormControl><Input type="url" placeholder="https://www.linkedin.com/jobs/view/..." {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>LinkedIn Job Application URL *</FormLabel><FormControl><Input type="url" placeholder="https://www.linkedin.com/jobs/view/..." {...field} /></FormControl><FormMessage /></FormItem>
             )} />
              <FormField name="status" control={form.control} render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                     <div className="space-y-0.5">
-                        <FormLabel>Job Status</FormLabel>
+                        <FormLabel>Job Status *</FormLabel>
                         <p className="text-sm text-muted-foreground">{field.value ? 'Active (Visible on careers page)' : 'Inactive (Hidden from careers page)'}</p>
                     </div>
                     <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                 </FormItem>
              )} />
-            <DialogFooter className="pt-4">
+            <DialogFooter className="pt-4 bg-gray-50 -m-8 mt-8 p-6 rounded-b-lg">
               <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
+              <Button type="submit" disabled={form.formState.isSubmitting} className="bg-navy-gradient">
                 {form.formState.isSubmitting ? (
                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>
                 ) : (

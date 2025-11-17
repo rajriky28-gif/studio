@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -33,7 +34,10 @@ export default function AdminDashboard() {
                     <h1 className="text-3xl font-bold text-navy">Manage Job Postings</h1>
                     <p className="text-gray-600 mt-1">Add, edit, or remove job listings from the careers page.</p>
                 </div>
-                <Button onClick={handleAddNewJob} className="bg-cyan hover:bg-cyan/90">
+                <Button 
+                    onClick={handleAddNewJob} 
+                    className="bg-cyan hover:bg-cyan/90 h-auto px-8 py-3 text-base font-semibold shadow-lg shadow-cyan/30 transition-all duration-300 hover:-translate-y-0.5"
+                >
                     <Plus className="mr-2 h-5 w-5"/>
                     Add New Job
                 </Button>
