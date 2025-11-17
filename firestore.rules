@@ -12,7 +12,7 @@ service cloud.firestore {
     // JOBS COLLECTION - PUBLIC READ, ADMIN WRITE
     match /jobs/{jobId} {
       // Anyone can read jobs (no auth needed)
-      allow read: if true;
+      allow get, list: if true;
       
       // Only admin can create, update, delete
       allow create: if isAdmin();
