@@ -2,54 +2,60 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
+    
+    // Helper function - check if user is admin
     function isAdmin() {
       return request.auth != null && 
-             request.auth.token.email in [
-               'lumivex.company@gmail.com',
-               'riky@google.com',
-               'admin@lumivex.com',
-               'founder@lumivex.com',
-               'rajriky28@gmail.com',
-               'riky@gmail.com'
-             ];
+             request.auth.token.email == 'lumivex.company@gmail.com';
     }
-
-    // JOBS: Public can read/list, only admins can write.
+    
+    // JOBS COLLECTION - PUBLIC READ, ADMIN WRITE
     match /jobs/{jobId} {
-      allow list, get: if true;
-      allow create, update, delete: if isAdmin();
+      // Anyone can read jobs (no auth needed)
+      allow read: if true;
+      
+      // Only admin can create, update, delete
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
-
-    // USERS: Authenticated users can read profiles, but can only write to their own.
+    
+    // USERS COLLECTION - AUTHENTICATED USERS ONLY
     match /users/{userId} {
       allow read: if request.auth != null;
-      allow write: if request.auth.uid == userId;
-    }
-
-    // WAITLIST: Users can only create and update their own entry. No one can delete.
-    match /waitlist/{userId} {
-      allow read: if request.auth.uid == userId;
-      allow create, update: if request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
       allow delete: if false;
     }
-
-    // REFERRAL CODES: Authenticated users can read/create, but cannot modify.
+    
+    // WAITLIST COLLECTION - AUTHENTICATED USERS ONLY
+    match /waitlist/{userId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false;
+    }
+    
+    // REFERRAL CODES - READ FOR VALIDATION, WRITE ONLY BY OWNER
     match /referralCodes/{code} {
-      allow read, create: if request.auth != null;
-      allow update, delete: if false;
-    }
-
-    // REFERRALS: Authenticated users can create new referral records.
-    match /referrals/{referralId} {
+      allow read: if request.auth != null;
       allow create: if request.auth != null;
-      allow read, update, delete: if false;
+      allow update: if false;
+      allow delete: if false;
     }
-
-    // STATS: Publicly readable, but only admins can update them.
+    
+    // REFERRALS - READ OWN, WRITE FOR TRACKING
+    match /referrals/{referralId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if false;
+      allow delete: if false;
+    }
+    
+    // STATS - PUBLIC READ, AUTHENTICATED WRITE
     match /stats/global {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if request.auth != null;
     }
   }
 }
