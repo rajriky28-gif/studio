@@ -95,7 +95,6 @@ export function Header() {
                 {link.name}
               </Link>
             ))}
-            <Link href="/blog" className={cn('text-sm font-medium transition-colors hover:text-ocean', isBlogPage ? 'text-ocean font-bold' : linkColor)}>Blog</Link>
             <Link href="/waitlist" className={cn('text-sm font-medium transition-colors hover:text-ocean', linkColor)}>{navLinkText}</Link>
           </nav>
           
@@ -183,7 +182,6 @@ export function Header() {
                         {link.name}
                       </Link>
                     ))}
-                    <Link href="/blog" className="text-2xl font-medium text-primary transition-colors hover:text-ocean" onClick={() => setIsMobileMenuOpen(false)}>Blog</Link>
                     <Link href="/waitlist" className="text-2xl font-medium text-primary transition-colors hover:text-ocean" onClick={() => setIsMobileMenuOpen(false)}>{navLinkText}</Link>
                     {!user && (
                          <Link
