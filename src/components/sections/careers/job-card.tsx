@@ -34,10 +34,6 @@ export interface Job {
 const benefits = [
     { icon: DollarSign, title: 'Competitive Compensation', description: "Salary + equity package that reflects your impact" },
     { icon: Globe, title: 'Remote First', description: "Work from anywhere, async collaboration" },
-    { icon: Heart, title: 'Health & Wellness', description: "Comprehensive health, dental, vision insurance" },
-    { icon: Rocket, title: 'Learning Budget', description: "$2,000/year for courses, conferences, books" },
-    { icon: Laptop, title: 'Equipment', description: "Latest MacBook Pro + $1,000 home office setup" },
-    { icon: Calendar, title: 'Unlimited PTO', description: "Take time when you need it, no questions asked" },
     { icon: Target, title: 'Equity', description: "Generous stock options with early-stage upside" },
     { icon: Star, title: 'Impact', description: "Work on products used by thousands, shape the roadmap" },
 ]
