@@ -8,7 +8,7 @@ import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { signOut } from 'firebase/auth';
 
-const ADMIN_EMAILS = ['riky@google.com', 'admin@lumivex.com', 'founder@lumivex.com', 'lumivex.company@gmail.com']; 
+const ADMIN_EMAILS = ['riky@google.com', 'admin@lumivex.com', 'founder@lumivex.com', 'lumivex.company@gmail.com'];
 
 function AdminAccessGate() {
     const router = useRouter();
@@ -39,7 +39,8 @@ export default function AdminJobsPage() {
 
     useEffect(() => {
         if (!isUserLoading) {
-            if (user && user.email && ADMIN_EMAILS.includes(user.email)) {
+            const lowerCaseAdminEmails = ADMIN_EMAILS.map(email => email.toLowerCase());
+            if (user && user.email && lowerCaseAdminEmails.includes(user.email.toLowerCase())) {
                 setIsAuthorized(true);
             } else if (user) {
                 setIsAuthorized(false);
