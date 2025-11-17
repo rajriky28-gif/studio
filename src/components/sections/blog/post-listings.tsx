@@ -2,31 +2,37 @@
 
 import { useMemo, useState } from 'react';
 import { useCollection, useFirebase } from '@/firebase';
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 import { BlogPost } from '@/components/sections/admin/blog/posts-table';
 import BlogPostCard from './post-card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Star } from 'lucide-react';
+import FeaturedBlogPostCard from './featured-post-card';
 
 function PostListingsSkeleton() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-      {[...Array(6)].map((_, i) => (
-        <div key={i} className="bg-white border border-stone-200 rounded-2xl overflow-hidden">
-          <Skeleton className="h-60 w-full" />
-          <div className="p-8 space-y-4">
-            <Skeleton className="h-4 w-1/3" />
-            <Skeleton className="h-6 w-full" />
-            <Skeleton className="h-5 w-4/5" />
-            <div className="flex justify-between items-center pt-4 border-t mt-4">
-              <Skeleton className="h-8 w-24" />
-              <Skeleton className="h-5 w-20" />
+    <>
+      <div className="space-y-8">
+        <Skeleton className="h-96 w-full rounded-2xl" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-16">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="bg-white border border-stone-200 rounded-2xl overflow-hidden">
+            <Skeleton className="h-60 w-full" />
+            <div className="p-8 space-y-4">
+              <Skeleton className="h-4 w-1/3" />
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-5 w-4/5" />
+              <div className="flex justify-between items-center pt-4 border-t mt-4">
+                <Skeleton className="h-8 w-24" />
+                <Skeleton className="h-5 w-20" />
+              </div>
             </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -52,6 +58,23 @@ export function PostListings() {
 
   const { data: posts, isLoading, error } = useCollection<BlogPost>(postsQuery);
 
+  const sortedPosts = useMemo(() => {
+    if (!posts) return { featured: [], regular: [] };
+    
+    const sorted = [...posts].sort((a, b) => {
+        const dateA = a.publishedAt?.toDate ? a.publishedAt.toDate().getTime() : 0;
+        const dateB = b.publishedAt?.toDate ? b.publishedAt.toDate().getTime() : 0;
+        return dateB - dateA;
+    });
+
+    const featured = sorted.filter(p => p.featured);
+    const regular = sorted.filter(p => !p.featured);
+
+    return { featured, regular };
+
+  }, [posts]);
+
+
   const renderContent = () => {
     if (isLoading) {
       return <PostListingsSkeleton />;
@@ -71,19 +94,35 @@ export function PostListings() {
       );
     }
 
-    // Manual sort on the client-side
-    const sortedPosts = posts.sort((a, b) => {
-        const dateA = a.publishedAt?.toDate ? a.publishedAt.toDate().getTime() : 0;
-        const dateB = b.publishedAt?.toDate ? b.publishedAt.toDate().getTime() : 0;
-        return dateB - dateA;
-    });
+    const { featured, regular } = sortedPosts;
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {sortedPosts.map((post) => (
-          <BlogPostCard key={post.id} post={post} />
-        ))}
-      </div>
+      <>
+        {featured.length > 0 && (
+          <div className="mb-20">
+            <h2 className="text-3xl font-bold text-navy mb-8 flex items-center gap-3">
+              <Star className="text-amber-500" />
+              Featured Posts
+            </h2>
+            <div className="space-y-8">
+              {featured.map(post => (
+                <FeaturedBlogPostCard key={post.id} post={post} />
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {regular.length > 0 && (
+            <>
+                {featured.length > 0 && <hr className="my-20 border-stone-200" />}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                    {regular.map((post) => (
+                    <BlogPostCard key={post.id} post={post} />
+                    ))}
+                </div>
+            </>
+        )}
+      </>
     );
   };
 
@@ -105,7 +144,7 @@ export function PostListings() {
         
         {renderContent()}
         
-        {posts && posts.length > 0 && (
+        {posts && posts.length > 6 && (
             <div className="text-center mt-20">
                 <Button size="lg" variant="outline" className="h-14 px-10 text-base">Load More Posts</Button>
             </div>
