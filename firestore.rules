@@ -53,10 +53,10 @@ service cloud.firestore {
       allow delete: if false;
     }
     
-    // STATS - PUBLIC READ, AUTHENTICATED WRITE
+    // STATS - PUBLIC READ, ADMIN WRITE ONLY
     match /stats/global {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isAdmin();
     }
   }
 }
