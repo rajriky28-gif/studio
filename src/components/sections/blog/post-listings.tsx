@@ -38,15 +38,16 @@ export function PostListings() {
 
   const postsQuery = useMemo(() => {
     if (!firestore) return null;
+    
     const baseQuery = collection(firestore, 'blog_posts');
-    const queries = [
-        where('status', '==', 'published'),
-        orderBy('publishedAt', 'desc')
-    ];
-    if (activeCategory !== "All Posts") {
-        queries.unshift(where('category', '==', activeCategory));
+    const filters = [where('status', '==', 'published')];
+
+    if (activeCategory !== 'All Posts') {
+      filters.push(where('category', '==', activeCategory));
     }
-    return query(baseQuery, ...queries);
+    
+    return query(baseQuery, ...filters);
+
   }, [firestore, activeCategory]);
 
   const { data: posts, isLoading, error } = useCollection<BlogPost>(postsQuery);
@@ -70,9 +71,16 @@ export function PostListings() {
       );
     }
 
+    // Manual sort on the client-side
+    const sortedPosts = posts.sort((a, b) => {
+        const dateA = a.publishedAt?.toDate ? a.publishedAt.toDate().getTime() : 0;
+        const dateB = b.publishedAt?.toDate ? b.publishedAt.toDate().getTime() : 0;
+        return dateB - dateA;
+    });
+
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {posts.map((post) => (
+        {sortedPosts.map((post) => (
           <BlogPostCard key={post.id} post={post} />
         ))}
       </div>
