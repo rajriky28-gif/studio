@@ -10,25 +10,13 @@ import { doc } from 'firebase/firestore';
 import { XIcon } from '@/components/x-icon';
 
 const tiers = {
-  none: { name: 'No Badge', goal: 0, next: 'Advocate', nextGoal: 3, nextIcon: Award, nextColor: 'text-orange-500' },
-  advocate: { name: 'Advocate 🥉', goal: 3, next: 'Champion', nextGoal: 10, nextIcon: Shield, nextColor: 'text-slate-500' },
-  champion: { name: 'Champion 🥈', goal: 10, next: 'Ambassador', nextGoal: 25, nextIcon: Star, nextColor: 'text-yellow-500' },
-  ambassador: { name: 'Ambassador 🥇', goal: 25, next: '', nextGoal: Infinity, nextIcon: Trophy, nextColor: 'text-yellow-500' },
+  none: { name: 'No Badge', goal: 0, icon: Users, color: 'text-cyan', next: 'Advocate' },
+  advocate: { name: 'Advocate 🥉', goal: 3, icon: Award, color: 'text-orange-500', next: 'Champion' },
+  champion: { name: 'Champion 🥈', goal: 10, icon: Shield, color: 'text-slate-500', next: 'Ambassador' },
+  ambassador: { name: 'Ambassador 🥇', goal: 25, icon: Trophy, color: 'text-yellow-500', next: null },
 };
 
-const tierColors: { [key: string]: string } = {
-  none: 'text-cyan',
-  advocate: 'text-orange-500',
-  champion: 'text-slate-500',
-  ambassador: 'text-yellow-500',
-}
-
-const tierIcons: { [key: string]: React.ElementType } = {
-  none: Users,
-  advocate: Award,
-  champion: Shield,
-  ambassador: Trophy,
-}
+const tierOrder: (keyof typeof tiers)[] = ['none', 'advocate', 'champion', 'ambassador'];
 
 export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: any }) {
   const [copied, setCopied] = useState(false);
@@ -55,12 +43,17 @@ export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: an
     }
   };
 
-  const currentTierInfo = tiers[waitlistEntry.referralTier as keyof typeof tiers];
-  const CurrentTierIcon = tierIcons[waitlistEntry.referralTier as keyof typeof tiers];
+  // Determine current and next tier
+  const currentTierKey = waitlistEntry.referralTier as keyof typeof tiers;
+  const currentTierInfo = tiers[currentTierKey];
+  const nextTierKey = currentTierInfo.next ? (currentTierInfo.next.toLowerCase() as keyof typeof tiers) : null;
+  const nextTierInfo = nextTierKey ? tiers[nextTierKey] : null;
+
+  const CurrentTierIcon = currentTierInfo.icon;
   
-  const progressPercent = currentTierInfo.nextGoal === Infinity 
-    ? 100 
-    : (waitlistEntry.referralCount / currentTierInfo.nextGoal) * 100;
+  const progressPercent = nextTierInfo
+    ? (waitlistEntry.referralCount / nextTierInfo.goal) * 100
+    : 100;
 
   const shareMessage = `I just joined @Lumivex waitlist! 🚀\n\nBuild AI agents with just conversation - no coding needed.\n\nUse my code: ${waitlistEntry.referralCode} when you join and we both move up!\n\nJoin here: ${referralLink}`;
   
@@ -121,9 +114,9 @@ export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: an
                         <p className="text-xs text-slate-400">&nbsp;</p>
                     </div>
                     <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center">
-                        <CurrentTierIcon className={`h-8 w-8 ${tierColors[waitlistEntry.referralTier]} mx-auto mb-2`} />
+                        <CurrentTierIcon className={`h-8 w-8 ${currentTierInfo.color} mx-auto mb-2`} />
                         <p className="text-xs text-slate-500 uppercase font-semibold">Current Badge</p>
-                        <p className={`text-2xl font-bold ${tierColors[waitlistEntry.referralTier]}`}>{currentTierInfo.name}</p>
+                        <p className={`text-2xl font-bold ${currentTierInfo.color}`}>{currentTierInfo.name}</p>
                          <p className="text-xs text-green-500">+{waitlistEntry.bonusPositions} position boost</p>
                     </div>
                 </div>
@@ -148,14 +141,14 @@ export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: an
                 </div>
                 
                 {/* Progress to Next Badge */}
-                {waitlistEntry.referralTier !== 'ambassador' && (
+                {nextTierInfo && (
                     <div className="mt-10 bg-gradient-to-r from-cream to-white p-6 rounded-xl">
                         <div className="flex justify-between items-center mb-2">
-                             <p className="text-lg font-semibold text-navy">Next Badge: {currentTierInfo.next}</p>
-                             {React.createElement(currentTierInfo.nextIcon, { className: `h-6 w-6 ${currentTierInfo.nextColor}` })}
+                             <p className="text-lg font-semibold text-navy">Next Badge: {nextTierInfo.name}</p>
+                             {React.createElement(nextTierInfo.icon, { className: `h-6 w-6 ${nextTierInfo.color}` })}
                         </div>
                         <Progress value={progressPercent} className="h-3" />
-                        <p className="text-sm text-charcoal mt-2">{waitlistEntry.referralCount} of {currentTierInfo.nextGoal} referrals ({Math.max(0, currentTierInfo.nextGoal - waitlistEntry.referralCount)} more to go!)</p>
+                        <p className="text-sm text-charcoal mt-2">{waitlistEntry.referralCount} of {nextTierInfo.goal} referrals ({Math.max(0, nextTierInfo.goal - waitlistEntry.referralCount)} more to go!)</p>
                     </div>
                 )}
             </div>
