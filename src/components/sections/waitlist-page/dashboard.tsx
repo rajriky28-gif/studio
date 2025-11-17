@@ -27,7 +27,7 @@ const tierIcons: { [key: string]: React.ElementType } = {
   none: Users,
   advocate: Award,
   champion: Shield,
-  ambassador: Star,
+  ambassador: Trophy,
 }
 
 export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: any }) {
@@ -56,14 +56,16 @@ export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: an
   };
 
   const currentTierInfo = tiers[waitlistEntry.referralTier as keyof typeof tiers];
-  
+  const CurrentTierIcon = tierIcons[waitlistEntry.referralTier as keyof typeof tiers];
+
   // Logic for progress to the next tier
-  const referralsAfterCurrentTier = waitlistEntry.referralCount - currentTierInfo.goal;
-  const referralsForNextTier = currentTierInfo.nextGoal - currentTierInfo.goal;
+  const referralsForCurrentTier = currentTierInfo.goal;
+  const referralsForNextTier = currentTierInfo.nextGoal - referralsForCurrentTier;
+  const progressInCurrentTier = waitlistEntry.referralCount - referralsForCurrentTier;
   
   const progressPercent = currentTierInfo.nextGoal === Infinity 
     ? 100 
-    : (referralsAfterCurrentTier / referralsForNextTier) * 100;
+    : (progressInCurrentTier / referralsForNextTier) * 100;
 
   const shareMessage = `I just joined @Lumivex waitlist! 🚀\n\nBuild AI agents with just conversation - no coding needed.\n\nUse my code: ${waitlistEntry.referralCode} when you join and we both move up!\n\nJoin here: ${referralLink}`;
   
@@ -124,7 +126,7 @@ export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: an
                         <p className="text-xs text-slate-400">&nbsp;</p>
                     </div>
                     <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center">
-                        {React.createElement(tierIcons[waitlistEntry.referralTier], { className: `h-8 w-8 ${tierColors[waitlistEntry.referralTier]} mx-auto mb-2`})}
+                        <CurrentTierIcon className={`h-8 w-8 ${tierColors[waitlistEntry.referralTier]} mx-auto mb-2`} />
                         <p className="text-xs text-slate-500 uppercase font-semibold">Current Badge</p>
                         <p className={`text-2xl font-bold ${tierColors[waitlistEntry.referralTier]}`}>{currentTierInfo.name}</p>
                          <p className="text-xs text-green-500">+{waitlistEntry.bonusPositions} position boost</p>
@@ -158,7 +160,7 @@ export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: an
                              {React.createElement(currentTierInfo.nextIcon, { className: `h-6 w-6 ${currentTierInfo.nextColor}` })}
                         </div>
                         <Progress value={progressPercent} className="h-3" />
-                        <p className="text-sm text-charcoal mt-2">{waitlistEntry.referralCount} of {currentTierInfo.nextGoal} referrals ({currentTierInfo.nextGoal - waitlistEntry.referralCount} more to go!)</p>
+                        <p className="text-sm text-charcoal mt-2">{waitlistEntry.referralCount} of {currentTierInfo.nextGoal} referrals ({Math.max(0, currentTierInfo.nextGoal - waitlistEntry.referralCount)} more to go!)</p>
                     </div>
                 )}
             </div>
