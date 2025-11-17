@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useUser, useDoc, useMemoFirebase } from '@/firebase';
+import { useUser, useDoc, useFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 import { Header } from '@/components/sections/header';
@@ -23,7 +23,7 @@ import { Community } from '@/components/sections/waitlist-page/community';
 export default function WaitlistPage() {
   const { user, isUserLoading, firestore } = useUser();
 
-  const userWaitlistRef = useMemoFirebase(() => {
+  const userWaitlistRef = useMemo(() => {
     if (!user || !firestore) return null;
     return doc(firestore, 'waitlist', user.uid);
   }, [user, firestore]);

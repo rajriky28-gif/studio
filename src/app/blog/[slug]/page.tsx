@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { useParams } from 'next/navigation';
-import { useCollection, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, where, limit } from 'firebase/firestore';
 import { BlogPost } from '@/components/sections/admin/blog/posts-table';
 
@@ -41,9 +41,9 @@ function PostSkeleton() {
 export default function BlogPostPage() {
   const params = useParams();
   const slug = params.slug as string;
-  const { firestore } = useMemoFirebase();
+  const { firestore } = useFirebase();
 
-  const postQuery = useMemoFirebase(() => {
+  const postQuery = useMemo(() => {
     if (!firestore || !slug) return null;
     return query(
       collection(firestore, 'blog_posts'),

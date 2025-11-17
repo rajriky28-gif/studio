@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useCollection, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, where, orderBy } from 'firebase/firestore';
 import { BlogPost } from '@/components/sections/admin/blog/posts-table';
 import BlogPostCard from './post-card';
@@ -33,10 +33,10 @@ function PostListingsSkeleton() {
 const categories = ["All Posts", "Product Updates", "AI & Technology", "Company News", "Tutorials"];
 
 export function PostListings() {
-  const { firestore } = useMemoFirebase();
+  const { firestore } = useFirebase();
   const [activeCategory, setActiveCategory] = useState("All Posts");
 
-  const postsQuery = useMemoFirebase(() => {
+  const postsQuery = useMemo(() => {
     if (!firestore) return null;
     const baseQuery = collection(firestore, 'blog_posts');
     const queries = [

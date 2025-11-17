@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useState } from 'react';
-import { useCollection, useMemoFirebase } from '@/firebase';
+import { useState, useMemo } from 'react';
+import { useCollection } from '@/firebase';
 import { collection, query, orderBy, doc, deleteDoc } from 'firebase/firestore';
 import { Job } from '@/components/sections/careers/job-card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -66,7 +66,7 @@ export function JobsTable({ onEditJob }: { onEditJob: (job: Job) => void }) {
     const [jobToDelete, setJobToDelete] = useState<Job | null>(null);
     const { toast } = useToast();
 
-    const jobsQuery = useMemoFirebase(() => {
+    const jobsQuery = useMemo(() => {
         if (!firestore) return null;
         return query(collection(firestore, 'jobs'), orderBy('postedDate', 'desc'));
     }, [firestore]);

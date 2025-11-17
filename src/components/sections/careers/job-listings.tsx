@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useEffect } from 'react';
-import { useCollection, useMemoFirebase, useFirebase } from '@/firebase';
+import { useEffect, useMemo } from 'react';
+import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import JobCard from './job-card';
 import type { Job } from './job-card';
@@ -37,7 +37,7 @@ function JobListingSkeleton() {
 export function JobListings() {
   const { firestore } = useFirebase();
 
-  const jobsQuery = useMemoFirebase(() => {
+  const jobsQuery = useMemo(() => {
     if (!firestore) return null;
     return query(
       collection(firestore, 'jobs'),

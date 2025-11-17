@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useCollection, useMemoFirebase, useFirebase } from '@/firebase';
+import { useState, useMemo } from 'react';
+import { useCollection, useFirebase } from '@/firebase';
 import { collection, query, orderBy, doc, deleteDoc } from 'firebase/firestore';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -84,7 +84,7 @@ export function PostsTable({ onEditPost }: { onEditPost: (post: BlogPost) => voi
     const [postToDelete, setPostToDelete] = useState<BlogPost | null>(null);
     const { toast } = useToast();
 
-    const postsQuery = useMemoFirebase(() => {
+    const postsQuery = useMemo(() => {
         if (!firestore) return null;
         return query(collection(firestore, 'blog_posts'), orderBy('createdAt', 'desc'));
     }, [firestore]);
