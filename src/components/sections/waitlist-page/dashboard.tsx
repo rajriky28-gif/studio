@@ -1,13 +1,13 @@
-
 'use client';
 
 import React, { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Copy, Check, Twitter, Linkedin, MessageSquare, Award, Shield, Star, Trophy, Users } from 'lucide-react';
+import { Copy, Check, Linkedin, MessageSquare, Award, Shield, Star, Trophy, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import { useDoc, useFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { XIcon } from '@/components/x-icon';
 
 const tiers = {
   none: { name: 'No Badge', goal: 0, next: 'Advocate', nextGoal: 3, nextIcon: Award, nextColor: 'text-orange-500' },
@@ -57,12 +57,13 @@ export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: an
 
   const currentTierInfo = tiers[waitlistEntry.referralTier as keyof typeof tiers];
   
-  const referralsInCurrentTier = waitlistEntry.referralCount - currentTierInfo.goal;
+  // Logic for progress to the next tier
+  const referralsAfterCurrentTier = waitlistEntry.referralCount - currentTierInfo.goal;
   const referralsForNextTier = currentTierInfo.nextGoal - currentTierInfo.goal;
   
   const progressPercent = currentTierInfo.nextGoal === Infinity 
     ? 100 
-    : (referralsInCurrentTier / referralsForNextTier) * 100;
+    : (referralsAfterCurrentTier / referralsForNextTier) * 100;
 
   const shareMessage = `I just joined @Lumivex waitlist! 🚀\n\nBuild AI agents with just conversation - no coding needed.\n\nUse my code: ${waitlistEntry.referralCode} when you join and we both move up!\n\nJoin here: ${referralLink}`;
   
@@ -134,15 +135,15 @@ export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: an
                 <div className="text-center">
                      <p className="text-lg font-semibold text-navy mb-4">Share Your Code</p>
                      <div className="flex justify-center gap-2 sm:gap-4">
-                        <Button onClick={shareOnTwitter} className="bg-[#1DA1F2] hover:bg-[#1DA1F2]/90 h-12 w-12 sm:w-auto sm:px-4">
-                            <Twitter className="h-5 w-5 sm:mr-2" />
+                        <Button onClick={shareOnTwitter} className="bg-[#1DA1F2] hover:bg-[#1DA1F2]/90 h-12 w-12 sm:h-auto sm:w-auto sm:px-4">
+                            <XIcon className="h-5 w-5 sm:mr-2" />
                             <span className="hidden sm:inline">Share on X</span>
                         </Button>
-                        <Button onClick={shareOnLinkedIn} className="bg-[#0A66C2] hover:bg-[#0A66C2]/90 h-12 w-12 sm:w-auto sm:px-4">
+                        <Button onClick={shareOnLinkedIn} className="bg-[#0A66C2] hover:bg-[#0A66C2]/90 h-12 w-12 sm:h-auto sm:w-auto sm:px-4">
                             <Linkedin className="h-5 w-5 sm:mr-2" />
                             <span className="hidden sm:inline">Share on LinkedIn</span>
                         </Button>
-                        <Button onClick={() => copyToClipboard(shareMessage, 'msg')} variant="outline" className="h-12 w-12 sm:w-auto sm:px-4">
+                        <Button onClick={() => copyToClipboard(shareMessage, 'msg')} variant="outline" className="h-12 w-12 sm:h-auto sm:w-auto sm:px-4">
                             {msgCopied ? <Check className="h-5 w-5 sm:mr-2" /> : <MessageSquare className="h-5 w-5 sm:mr-2" />}
                             <span className="hidden sm:inline">{msgCopied ? 'Copied' : 'Copy Message'}</span>
                         </Button>
