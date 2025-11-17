@@ -25,6 +25,13 @@ const formSchema = z.object({
 
 type ReferralStatus = 'idle' | 'checking' | 'valid' | 'invalid' | 'self';
 
+const getReferralTier = (referralCount: number): 'none' | 'advocate' | 'champion' | 'ambassador' => {
+  if (referralCount >= 25) return 'ambassador';
+  if (referralCount >= 10) return 'champion';
+  if (referralCount >= 3) return 'advocate';
+  return 'none';
+};
+
 export default function WaitlistForm() {
   const { user } = useUser();
   const { firestore } = useFirebase();
@@ -146,14 +153,17 @@ export default function WaitlistForm() {
                 }
             }
             
-            // All writes must happen after all reads.
             if (referrerRef && referrerSnap && referrerSnap.exists()) {
                 const referrerData = referrerSnap.data();
+                const newReferralCount = (referrerData.referralCount || 0) + 1;
+                const newReferralTier = getReferralTier(newReferralCount);
                 const newReferrerBonus = (referrerData.bonusPositions || 0) + 10;
+                
                 transaction.update(referrerRef, {
-                    referralCount: (referrerData.referralCount || 0) + 1,
+                    referralCount: newReferralCount,
+                    referralTier: newReferralTier,
                     bonusPositions: newReferrerBonus,
-                    currentPosition: referrerData.basePosition - newReferrerBonus,
+                    currentPosition: Math.max(1, referrerData.basePosition - newReferrerBonus),
                 });
             }
             
@@ -171,7 +181,7 @@ export default function WaitlistForm() {
                 referralTier: 'none',
                 basePosition: newPosition,
                 bonusPositions,
-                currentPosition: newPosition - bonusPositions,
+                currentPosition: Math.max(1, newPosition - bonusPositions),
                 status: 'waiting',
                 betaInvitedAt: null,
                 emailPreferences: {
@@ -376,5 +386,3 @@ export default function WaitlistForm() {
     </div>
   );
 }
-
-    
