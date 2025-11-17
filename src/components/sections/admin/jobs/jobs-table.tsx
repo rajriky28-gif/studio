@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useCollection, useMemoFirebase, useFirebase } from '@/firebase';
+import { useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, doc, deleteDoc } from 'firebase/firestore';
 import { Job } from '@/components/sections/careers/job-card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useFirebase } from '@/firebase';
 
 function JobsTableSkeleton() {
   return (
