@@ -1,20 +1,19 @@
+
 'use client';
 
 import React, { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Copy, Check, Twitter, Linkedin, MessageSquare, Award, Shield, Star, Trophy, Users } from 'lucide-react';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 import { useDoc, useFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 const tiers = {
-  none: { name: 'No Badge', goal: 3, next: 'Advocate', nextIcon: Award, nextColor: 'text-orange-500' },
-  advocate: { name: 'Advocate 🥉', goal: 10, next: 'Champion', nextIcon: Shield, nextColor: 'text-slate-500' },
-  champion: { name: 'Champion 🥈', goal: 25, next: 'Ambassador', nextIcon: Star, nextColor: 'text-yellow-500' },
-  ambassador: { name: 'Ambassador 🥇', goal: Infinity, next: '', nextIcon: Star, nextColor: 'text-yellow-500' },
+  none: { name: 'No Badge', goal: 0, next: 'Advocate', nextGoal: 3, nextIcon: Award, nextColor: 'text-orange-500' },
+  advocate: { name: 'Advocate 🥉', goal: 3, next: 'Champion', nextGoal: 10, nextIcon: Shield, nextColor: 'text-slate-500' },
+  champion: { name: 'Champion 🥈', goal: 10, next: 'Ambassador', nextGoal: 25, nextIcon: Star, nextColor: 'text-yellow-500' },
+  ambassador: { name: 'Ambassador 🥇', goal: 25, next: '', nextGoal: Infinity, nextIcon: Trophy, nextColor: 'text-yellow-500' },
 };
 
 const tierColors: { [key: string]: string } = {
@@ -57,8 +56,14 @@ export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: an
   };
 
   const currentTierInfo = tiers[waitlistEntry.referralTier as keyof typeof tiers];
-  const progressPercent = currentTierInfo.goal === Infinity ? 100 : (waitlistEntry.referralCount / currentTierInfo.goal) * 100;
   
+  const referralsInCurrentTier = waitlistEntry.referralCount - currentTierInfo.goal;
+  const referralsForNextTier = currentTierInfo.nextGoal - currentTierInfo.goal;
+  
+  const progressPercent = currentTierInfo.nextGoal === Infinity 
+    ? 100 
+    : (referralsInCurrentTier / referralsForNextTier) * 100;
+
   const shareMessage = `I just joined @Lumivex waitlist! 🚀\n\nBuild AI agents with just conversation - no coding needed.\n\nUse my code: ${waitlistEntry.referralCode} when you join and we both move up!\n\nJoin here: ${referralLink}`;
   
   const shareOnTwitter = () => {
@@ -108,7 +113,7 @@ export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: an
                     <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center">
                         <Trophy className="h-8 w-8 text-amber-500 mx-auto mb-2" />
                         <p className="text-xs text-slate-500 uppercase font-semibold">Your Position</p>
-                        <p className="text-4xl font-bold text-navy">#{Math.max(1, waitlistEntry.currentPosition.toLocaleString())}</p>
+                        <p className="text-4xl font-bold text-navy">#{Math.max(1, waitlistEntry.currentPosition).toLocaleString()}</p>
                         <p className="text-xs text-slate-400">out of {globalStats?.totalMembers.toLocaleString() || '...'}</p>
                     </div>
                     <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center">
@@ -152,7 +157,7 @@ export default function WaitlistDashboard({ waitlistEntry }: { waitlistEntry: an
                              {React.createElement(currentTierInfo.nextIcon, { className: `h-6 w-6 ${currentTierInfo.nextColor}` })}
                         </div>
                         <Progress value={progressPercent} className="h-3" />
-                        <p className="text-sm text-charcoal mt-2">{waitlistEntry.referralCount} of {currentTierInfo.goal} referrals ({currentTierInfo.goal - waitlistEntry.referralCount} more to go!)</p>
+                        <p className="text-sm text-charcoal mt-2">{waitlistEntry.referralCount} of {currentTierInfo.nextGoal} referrals ({currentTierInfo.nextGoal - waitlistEntry.referralCount} more to go!)</p>
                     </div>
                 )}
             </div>
