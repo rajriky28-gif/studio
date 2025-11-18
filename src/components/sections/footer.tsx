@@ -16,7 +16,7 @@ export function Footer() {
   const socialLinks = [
     { name: 'X', icon: XIcon, href: 'https://x.com/LumivexAI', isImage: false },
     { name: 'LinkedIn', icon: Linkedin, href: 'https://www.linkedin.com/company/lumivexai/', isImage: false },
-    { name: 'Discord', icon: '/discord-white.png', href: 'https://discord.gg/jmUWSa3N', isImage: true },
+    { name: 'Discord', icon: '/discord.png', href: 'https://discord.gg/jmUWSa3N', isImage: true },
     { name: 'Instagram', icon: InstagramIcon, href: 'https://www.instagram.com/lumivexbuildbeyond/?utm_source=ig_web_button_share_sheet', isImage: false },
   ];
 
@@ -51,7 +51,7 @@ export function Footer() {
                 <Button key={social.name} variant="ghost" size="icon" asChild className="text-white/70 hover:bg-white/10 hover:text-cyan">
                   <a href={social.href} aria-label={social.name} target="_blank" rel="noopener noreferrer">
                     {social.isImage ? (
-                      <Image src={social.icon as string} alt={social.name} width={20} height={20} />
+                      <Image src={social.icon as string} alt={social.name} width={20} height={20} className="filter invert brightness-0" />
                     ) : (
                       <social.icon className="h-5 w-5" />
                     )}
