@@ -51,7 +51,7 @@ export function Footer() {
                 <Button key={social.name} variant="ghost" size="icon" asChild className="text-white/70 hover:bg-white/10 hover:text-cyan">
                   <a href={social.href} aria-label={social.name} target="_blank" rel="noopener noreferrer">
                     {social.isImage ? (
-                      <Image src={social.icon as string} alt={social.name} width={20} height={20} className="filter invert brightness-0" />
+                      <Image src={social.icon as string} alt={social.name} width={20} height={20} className="filter invert" />
                     ) : (
                       <social.icon className="h-5 w-5" />
                     )}
