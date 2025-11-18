@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
@@ -6,11 +5,18 @@ import { Linkedin } from 'lucide-react';
 import Image from 'next/image';
 import { XIcon } from '../x-icon';
 
+function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+  )
+}
+
 export function Footer() {
   const socialLinks = [
-    { name: 'X', icon: XIcon, href: '#', isImage: false },
-    { name: 'LinkedIn', icon: Linkedin, href: '#', isImage: false },
-    { name: 'Discord', icon: '/discord.png', href: '#', isImage: true },
+    { name: 'X', icon: XIcon, href: 'https://x.com/LumivexAI', isImage: false },
+    { name: 'LinkedIn', icon: Linkedin, href: 'https://www.linkedin.com/company/lumivexai/', isImage: false },
+    { name: 'Discord', icon: '/discord.png', href: 'https://discord.gg/jmUWSa3N', isImage: true },
+    { name: 'Instagram', icon: InstagramIcon, href: 'https://www.instagram.com/lumivexbuildbeyond/?utm_source=ig_web_button_share_sheet', isImage: false },
   ];
 
   const links = {
@@ -23,7 +29,7 @@ export function Footer() {
     ],
     "Stay Updated": [
       { name: 'Join Waitlist', href: '/waitlist' },
-      { name: 'Subscribe to Newsletter', href: '#' },
+      { name: 'Subscribe to Newsletter', href: '/waitlist' },
     ],
   };
 
@@ -42,7 +48,7 @@ export function Footer() {
             <div className="flex space-x-2 pt-2">
               {socialLinks.map((social) => (
                 <Button key={social.name} variant="ghost" size="icon" asChild className="text-white/70 hover:bg-white/10 hover:text-cyan">
-                  <a href={social.href} aria-label={social.name}>
+                  <a href={social.href} aria-label={social.name} target="_blank" rel="noopener noreferrer">
                     {social.isImage ? (
                       <Image src={social.icon as string} alt={social.name} width={20} height={20} />
                     ) : (

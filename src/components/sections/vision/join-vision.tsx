@@ -10,14 +10,14 @@ const contributions = [
     title: "Join the Waitlist",
     description: "Be among the first to use Lumivex when we launch. Your early adoption validates the vision and provides crucial feedback.",
     cta: "Join Waitlist →",
-    href: "/#waitlist",
+    href: "/waitlist",
   },
   {
     number: "2.",
     title: "Spread the Word",
     description: "Share our vision with others who believe technology should serve everyone. Every conversation plants seeds for the future.",
-    cta: "Share on Twitter →",
-    href: "#",
+    cta: "Share on X →",
+    href: "https://x.com/LumivexAI",
     isShare: true,
   },
   {
@@ -32,8 +32,8 @@ const contributions = [
 export function JoinVision() {
 
   const handleShare = useCallback(() => {
-    const text = "I'm excited about @Lumivex's vision to make AI creation as simple as conversation. A world where every idea can become an intelligent system—instantly. Check it out:";
-    const url = "https://lumivex.com/vision";
+    const text = "I'm excited about @LumivexAI's vision to make AI creation as simple as conversation. A world where every idea can become an intelligent system—instantly. Check it out:";
+    const url = "https://lumivex.com/vision"; // Assuming this is the correct URL.
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
     window.open(twitterUrl, '_blank', 'width=550,height=420');
   }, [])

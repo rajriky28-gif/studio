@@ -11,9 +11,9 @@ interface SocialLink {
 }
 
 const socialLinks: SocialLink[] = [
-  { name: 'Join us on X', icon: XIcon, href: '#' },
-  { name: 'Connect on LinkedIn', icon: Linkedin, href: '#' },
-  { name: 'Subscribe', icon: Mail, href: '#waitlist' },
+  { name: 'Join us on X', icon: XIcon, href: 'https://x.com/LumivexAI' },
+  { name: 'Connect on LinkedIn', icon: Linkedin, href: 'https://www.linkedin.com/company/lumivexai/' },
+  { name: 'Subscribe', icon: Mail, href: '/waitlist' },
 ];
 
 export function SocialProof() {
@@ -34,7 +34,7 @@ export function SocialProof() {
               className="h-auto rounded-xl border-white/30 bg-white/10 px-8 py-4 text-base font-medium text-white transition-all hover:bg-white/20 hover:border-white/40 hover:-translate-y-1"
               asChild
             >
-              <Link href={link.href}>
+              <Link href={link.href} target="_blank" rel="noopener noreferrer">
                 <link.icon className="mr-3 h-5 w-5" />
                 {link.name}
               </Link>

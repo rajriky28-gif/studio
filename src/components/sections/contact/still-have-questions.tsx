@@ -16,7 +16,7 @@ export function StillHaveQuestions() {
             <Link href="#contact-form">Send Message</Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white font-semibold px-8 py-6 text-lg">
-            <Link href="#">Join Discord</Link>
+            <Link href="https://discord.gg/jmUWSa3N" target="_blank">Join Discord</Link>
           </Button>
         </div>
       </div>

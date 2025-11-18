@@ -19,8 +19,8 @@ const socialChannels: SocialChannel[] = [
     name: 'Twitter / X',
     icon: XIcon,
     description: 'Development updates and thoughts',
-    cta: 'Follow @lumivex',
-    href: '#',
+    cta: 'Follow @LumivexAI',
+    href: 'https://x.com/LumivexAI',
     isImage: false,
   },
   {
@@ -28,7 +28,7 @@ const socialChannels: SocialChannel[] = [
     icon: Linkedin,
     description: 'Company milestones and team news',
     cta: 'Connect with us',
-    href: '#',
+    href: 'https://www.linkedin.com/company/lumivexai/',
     isImage: false,
   },
   {
@@ -36,7 +36,7 @@ const socialChannels: SocialChannel[] = [
     icon: '/discord.png',
     description: 'Community discussions and direct access',
     cta: 'Join Community',
-    href: '#',
+    href: 'https://discord.gg/jmUWSa3N',
     isImage: true,
   },
   {
@@ -44,7 +44,7 @@ const socialChannels: SocialChannel[] = [
     icon: Mail,
     description: 'In-depth updates every two weeks',
     cta: 'Subscribe',
-    href: '#waitlist',
+    href: '/waitlist',
     isImage: false,
   },
 ];
@@ -63,7 +63,7 @@ export function StayConnected() {
         </div>
         <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
           {socialChannels.map((channel) => (
-            <Link key={channel.name} href={channel.href} className="group rounded-2xl border border-stone-200 bg-white p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:border-cyan hover:shadow-2xl hover:shadow-cyan/10 flex flex-col items-center">
+            <Link key={channel.name} href={channel.href} target="_blank" rel="noopener noreferrer" className="group rounded-2xl border border-stone-200 bg-white p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:border-cyan hover:shadow-2xl hover:shadow-cyan/10 flex flex-col items-center">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-cream">
                 {channel.isImage ? (
                   <Image src={channel.icon as string} alt={channel.name} width={32} height={32} />

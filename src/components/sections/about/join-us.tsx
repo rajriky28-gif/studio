@@ -20,7 +20,7 @@ export function JoinUs() {
             <h3 className="text-2xl font-medium mb-2">Get Early Access</h3>
             <p className="text-white/80 mb-6">Be first to build when we launch. Exclusive early access and founder pricing for supporters.</p>
             <Button asChild className="bg-cyan hover:bg-cyan/90 text-white font-semibold">
-              <Link href="#waitlist">Join Waitlist</Link>
+              <Link href="/waitlist">Join Waitlist</Link>
             </Button>
           </div>
           {/* Follow Updates */}
@@ -29,7 +29,7 @@ export function JoinUs() {
             <h3 className="text-2xl font-medium mb-2">Stay Informed</h3>
             <p className="text-white/80 mb-6">Follow our journey. Behind-the-scenes updates, progress reports, and launch announcements.</p>
             <Button asChild className="bg-white text-navy font-semibold hover:bg-white/90">
-              <Link href="#">Follow on X</Link>
+              <Link href="https://x.com/LumivexAI" target="_blank">Follow on X</Link>
             </Button>
           </div>
           {/* Join Community */}
@@ -40,7 +40,7 @@ export function JoinUs() {
             <h3 className="text-2xl font-medium mb-2">Join the Community</h3>
             <p className="text-white/80 mb-6">Connect with other early supporters. Share ideas, provide feedback, shape the future.</p>
             <Button asChild className="bg-white text-navy font-semibold hover:bg-white/90">
-              <Link href="#">Join Discord</Link>
+              <Link href="https://discord.gg/jmUWSa3N" target="_blank">Join Discord</Link>
             </Button>
           </div>
         </div>

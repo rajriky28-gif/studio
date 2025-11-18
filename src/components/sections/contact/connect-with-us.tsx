@@ -20,10 +20,10 @@ const socialChannels: SocialChannel[] = [
   {
     name: 'Twitter / X',
     icon: XIcon,
-    handle: '@lumivex',
+    handle: '@LumivexAI',
     purpose: 'Real-time updates, announcements, and behind-the-scenes insights into our development journey.',
     cta: 'Follow on X →',
-    href: '#',
+    href: 'https://x.com/LumivexAI',
     isImage: false,
   },
   {
@@ -32,7 +32,7 @@ const socialChannels: SocialChannel[] = [
     handle: 'Lumivex',
     purpose: 'Company updates, team announcements, thought leadership, and professional networking.',
     cta: 'Connect on LinkedIn →',
-    href: '#',
+    href: 'https://www.linkedin.com/company/lumivexai/',
     isImage: false,
   },
   {
@@ -41,7 +41,7 @@ const socialChannels: SocialChannel[] = [
     handle: 'Lumivex Community',
     purpose: 'Join discussions with other early supporters, share ideas, provide feedback, and shape the future of Lumivex.',
     cta: 'Join Discord →',
-    href: '#',
+    href: 'https://discord.gg/jmUWSa3N',
     isImage: true,
   },
   {
@@ -50,7 +50,7 @@ const socialChannels: SocialChannel[] = [
     handle: 'Bi-weekly',
     purpose: 'Exclusive development updates, early access opportunities, and in-depth articles delivered to your inbox.',
     cta: 'Subscribe →',
-    href: '#waitlist',
+    href: '/waitlist',
     isImage: false,
   },
 ];
@@ -84,7 +84,7 @@ export function ConnectWithUs() {
               <p className="text-sm text-silver">{channel.handle}</p>
               <p className="mt-4 text-base text-charcoal/80 flex-grow">{channel.purpose}</p>
               <Button asChild variant="link" className="mt-6 text-ocean">
-                <Link href={channel.href}>
+                <Link href={channel.href} target="_blank" rel="noopener noreferrer">
                   {channel.cta}
                 </Link>
               </Button>

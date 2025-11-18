@@ -27,7 +27,7 @@ const channels: CommunityChannel[] = [
     description: 'Join discussions, share ideas, get sneak peeks, and connect directly with our team and other waitlist members.',
     details: ['#general - Community chat', '#feature-requests - Suggest ideas', '#use-cases - Share what you\'ll build', '#announcements - Official updates'],
     cta: 'Join Discord →',
-    href: '#',
+    href: 'https://discord.gg/jmUWSa3N',
   },
   {
     name: 'Twitter/X Community',
@@ -37,7 +37,7 @@ const channels: CommunityChannel[] = [
     description: 'Follow for daily updates, behind-the-scenes development insights, AI industry thoughts, and launch announcements.',
     details: ['Development progress', 'Feature previews', 'Team insights', 'Launch countdown'],
     cta: 'Follow on X →',
-    href: '#',
+    href: 'https://x.com/LumivexAI',
   },
   {
     name: 'LinkedIn Page',
@@ -47,7 +47,7 @@ const channels: CommunityChannel[] = [
     description: 'Connect for professional updates, company milestones, team announcements, and thought leadership content.',
     details: ['Company updates', 'Team introductions', 'Industry insights', 'Partnership news'],
     cta: 'Follow on LinkedIn →',
-    href: '#',
+    href: 'https://www.linkedin.com/company/lumivexai/',
   },
 ];
 
@@ -89,7 +89,7 @@ export function Community() {
               </div>
 
               <Button asChild variant="outline" className="mt-6 w-full bg-white hover:bg-ocean/10 border-ocean/50 text-ocean font-semibold">
-                <Link href={channel.href}>{channel.cta}</Link>
+                <Link href={channel.href} target="_blank" rel="noopener noreferrer">{channel.cta}</Link>
               </Button>
             </div>
           ))}
