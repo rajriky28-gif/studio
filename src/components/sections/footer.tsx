@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
@@ -95,7 +96,7 @@ export function Footer() {
           <p>© {new Date().getFullYear()} Lumivex. Building the future of AI creation.</p>
           <div className="flex space-x-4">
             <Link href="/privacy" className="transition-colors hover:text-cyan">Privacy</Link>
-            <Link href="#" className="transition-colors hover:text-cyan">Terms</Link>
+            <Link href="/terms" className="transition-colors hover:text-cyan">Terms</Link>
           </div>
         </div>
       </div>
