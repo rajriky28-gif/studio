@@ -16,7 +16,7 @@ export function Footer() {
   const socialLinks = [
     { name: 'X', icon: XIcon, href: 'https://x.com/LumivexAI', isImage: false },
     { name: 'LinkedIn', icon: Linkedin, href: 'https://www.linkedin.com/company/lumivexai/', isImage: false },
-    { name: 'Discord', icon: '/discord.png', href: 'https://discord.gg/jmUWSa3N', isImage: true },
+    { name: 'Discord', icon: '/discord-white.png', href: 'https://discord.gg/jmUWSa3N', isImage: true },
     { name: 'Instagram', icon: InstagramIcon, href: 'https://www.instagram.com/lumivexbuildbeyond/?utm_source=ig_web_button_share_sheet', isImage: false },
   ];
 
